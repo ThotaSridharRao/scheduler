@@ -442,16 +442,24 @@
     <!-- Firebase SDKs -->
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-      import { getAuth, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, GithubAuthProvider, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+      import { getAuth, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, GithubAuthProvider, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
       import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+      // Directly use your Firebase configuration here to resolve the API key issue
+      const firebaseConfig = {
+        apiKey: "AIzaSyCuvtre7aemdaOQJUYjabhkPybe_xR17sM",
+        authDomain: "schedulemaster03.firebaseapp.com",
+        projectId: "schedulemaster03",
+        storageBucket: "schedulemaster03.firebasestorage.app",
+        messagingSenderId: "732684603723",
+        appId: "1:732684603723:web:9a59ad6ffa06af091258ce"
+      };
 
-      // Initialize Firebase using the global __firebase_config provided by the environment
-      const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
       const app = initializeApp(firebaseConfig);
       const auth = getAuth(app);
       const db = getFirestore(app);
-      const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id'; // Get the app ID for Firestore paths
+      // The appId is derived from firebaseConfig.projectId for Firestore paths
+      const appId = firebaseConfig.projectId;
 
       // Function to show a temporary notification (re-defined here for modularity with Firebase)
       function showNotification(message, bgColorClass, iconClass) {
@@ -476,7 +484,7 @@
           }, 3000);
         }
 
-      // Authenticate with custom token or anonymously if not available
+      // Authenticate with custom token or anonymously if not available (for Canvas environment)
       onAuthStateChanged(auth, async (user) => {
         if (!user) {
           try {
