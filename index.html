@@ -735,7 +735,9 @@
 
             // Reset all priority buttons to their default (unselected) state
             document.querySelectorAll('.priority-btn').forEach(btn => {
-                btn.classList.remove('selected', priorityColors.low, priorityColors.medium, priorityColors.high);
+                // Split the classes string into individual class names
+                const classesToRemove = Object.values(priorityColors);
+                btn.classList.remove('selected', ...classesToRemove);
                 btn.classList.add('default'); // Add the default unselected class
             });
 
@@ -743,7 +745,7 @@
             const selectedBtn = document.querySelector(`[data-priority="${priority}"]`);
             if (selectedBtn) {
                 selectedBtn.classList.remove('default'); // Remove default class
-                selectedBtn.classList.add('selected', priorityColors[priority]); // Add selected and specific color classes
+                selectedBtn.classList.add('selected', ...priorityColors[priority].split(' ')); // Apply individual classes
             }
         }
 
@@ -1395,7 +1397,7 @@
                         maintainAspectRatio: false,
                         plugins: {
                             legend: {
-                                display: false // Hide default legend, we'll create a custom one
+                                display: false
                             }
                         }
                     }
