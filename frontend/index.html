@@ -8,6 +8,23 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyBwP_Ok2MOzbpllIzC56ZJIV-2kIKUg6Ms",
+        authDomain: "timesaver-7fbe1.firebaseapp.com",
+        projectId: "timesaver-7fbe1",
+        storageBucket: "timesaver-7fbe1.firebasestorage.app",
+        messagingSenderId: "112094643461",
+        appId: "1:112094643461:web:7ebc8b5f493528edf7a36c",
+        measurementId: "G-LJX30ZGW3M"
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const analytics = getAnalytics(app);
+    </script>
     <style>
         /* Keyframe animation for fade-in effect */
         @keyframes fade-in {
