@@ -6,6 +6,7 @@
     <title>Schedule Master</title>
     <script src="https://cdn.tailwindcss.com/3.4.16"></script>
     <script>
+      // Tailwind CSS configuration (unchanged)
       tailwind.config = {
         theme: {
           extend: {
@@ -33,1126 +34,911 @@
       rel="stylesheet"
     />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css"
       rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
     />
     <style>
-      :where([class^="ri-"])::before { content: "\f3c2"; }
-      .loading-spinner {
-      text-align: center;
-      }
-      .spinner {
-      width: 40px;
-      height: 40px;
-      margin: 0 auto;
-      border: 3px solid #e5e7eb;
-      border-top-color: #4F46E5;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      }
-      @keyframes spin {
-      to {
-      transform: rotate(360deg);
-      }
-      }
       body {
-      font-family: 'Inter', sans-serif;
-      background-color: #f8fafc;
+        font-family: "Inter", sans-serif;
       }
-      .glass {
-      background: rgba(255, 255, 255, 0.7);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+      .font-pacifico {
+        font-family: "Pacifico", cursive;
       }
-      .task-card {
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      /* Custom scrollbar styles */
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 8px; /* Width for vertical scrollbar */
+        height: 8px; /* Height for horizontal scrollbar */
       }
-      .task-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: #f1f1f1; /* Light grey track */
+        border-radius: 10px;
       }
-      .progress-circle {
-      transform: rotate(-90deg);
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #888; /* Darker grey thumb */
+        border-radius: 10px;
       }
-      .modal {
-      transition: opacity 0.3s ease, transform 0.3s ease;
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #555; /* Even darker grey on hover */
       }
-      .modal-enter {
-      opacity: 0;
-      transform: scale(0.95);
+      .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 1rem 2rem;
+        border-radius: 0.5rem;
+        color: white;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        z-index: 1000;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transform: translateY(-100px);
+        opacity: 0;
+        transition: transform 0.5s ease-out, opacity 0.5s ease-out;
       }
-      .modal-enter-active {
-      opacity: 1;
-      transform: scale(1);
-      }
-      .add-button {
-      transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-      }
-      .add-button:hover {
-      transform: rotate(90deg);
-      box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
-      }
-      .form-field {
-      transition: all 0.3s ease;
-      }
-      .form-field:focus-within label {
-      transform: translateY(-20px) scale(0.85);
-      color: #4F46E5;
-      }
-      .form-field label {
-      transition: transform 0.3s ease, color 0.3s ease;
-      transform-origin: left top;
-      }
-      .priority-indicator {
-      transition: all 0.3s ease;
-      }
-      .category-icon {
-      animation: float 3s ease-in-out infinite;
-      }
-      @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-5px); }
-      }
-      .pulse {
-      animation: pulse 2s infinite;
-      }
-      @keyframes pulse {
-      0% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.4); }
-      70% { box-shadow: 0 0 0 10px rgba(79, 70, 229, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0); }
-      }
-      .confetti {
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      background-color: #4F46E5;
-      opacity: 0;
-      }
-      @keyframes confetti-fall {
-      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-      100% { transform: translateY(100px) rotate(360deg); opacity: 0; }
-      }
-      .ripple {
-      position: absolute;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.4);
-      transform: scale(0);
-      animation: ripple 0.6s linear;
-      }
-      @keyframes ripple {
-      to { transform: scale(2.5); opacity: 0; }
-      }
-      .progress-bar {
-      transition: width 0.3s ease;
-      }
-      input[type="number"]::-webkit-inner-spin-button,
-      input[type="number"]::-webkit-outer-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-      }
-      .custom-checkbox {
-      appearance: none;
-      -webkit-appearance: none;
-      width: 20px;
-      height: 20px;
-      border: 2px solid #d1d5db;
-      border-radius: 4px;
-      outline: none;
-      transition: all 0.2s ease;
-      position: relative;
-      cursor: pointer;
-      }
-      .custom-checkbox:checked {
-      background-color: #4F46E5;
-      border-color: #4F46E5;
-      }
-      .custom-checkbox:checked::after {
-      content: '';
-      position: absolute;
-      top: 2px;
-      left: 6px;
-      width: 6px;
-      height: 10px;
-      border: solid white;
-      border-width: 0 2px 2px 0;
-      transform: rotate(45deg);
-      }
-      .custom-radio {
-      appearance: none;
-      -webkit-appearance: none;
-      width: 20px;
-      height: 20px;
-      border: 2px solid #d1d5db;
-      border-radius: 50%;
-      outline: none;
-      transition: all 0.2s ease;
-      position: relative;
-      cursor: pointer;
-      }
-      .custom-radio:checked {
-      border-color: #4F46E5;
-      }
-      .custom-radio:checked::after {
-      content: '';
-      position: absolute;
-      top: 3px;
-      left: 3px;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background-color: #4F46E5;
-      }
-      .custom-switch {
-      position: relative;
-      display: inline-block;
-      width: 44px;
-      height: 24px;
-      }
-      .custom-switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-      }
-      .switch-slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: #e5e7eb;
-      transition: .4s;
-      border-radius: 34px;
-      }
-      .switch-slider:before {
-      position: absolute;
-      content: "";
-      height: 18px;
-      width: 18px;
-      left: 3px;
-      bottom: 3px;
-      background-color: white;
-      transition: .4s;
-      border-radius: 50%;
-      }
-      input:checked + .switch-slider {
-      background-color: #4F46E5;
-      }
-      input:checked + .switch-slider:before {
-      transform: translateX(20px);
-      }
-      .range-slider {
-      -webkit-appearance: none;
-      width: 100%;
-      height: 6px;
-      border-radius: 5px;
-      background: #e5e7eb;
-      outline: none;
-      }
-      .range-slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: #4F46E5;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      }
-      .range-slider::-webkit-slider-thumb:hover {
-      transform: scale(1.2);
-      box-shadow: 0 0 0 6px rgba(79, 70, 229, 0.2);
-      }
-      .range-slider::-moz-range-thumb {
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: #4F46E5;
-      cursor: pointer;
-      border: none;
-      transition: all 0.2s ease;
-      }
-      .range-slider::-moz-range-thumb:hover {
-      transform: scale(1.2);
-      box-shadow: 0 0 0 6px rgba(79, 70, 229, 0.2);
+      .notification.show {
+        transform: translateY(0);
+        opacity: 1;
       }
     </style>
   </head>
-  <body class="min-h-screen">
-    <div
-      id="loading-screen"
-      class="fixed inset-0 bg-white z-50 flex items-center justify-center"
-    >
-      <div class="loading-spinner">
-        <div class="spinner"></div>
-        <p class="mt-4 text-gray-600">Loading amazing things...</p>
-      </div>
-    </div>
-    <header class="bg-white shadow-sm py-4">
-      <div class="container mx-auto px-4 flex justify-between items-center">
-        <div class="flex items-center">
-          <h1 class="text-2xl font-['Pacifico'] text-gray-800 mr-2">logo</h1>
-          <p class="text-gray-600 text-sm hidden sm:block">
-            Your personal productivity companion
-          </p>
-        </div>
-        <nav class="hidden md:flex items-center space-x-6" id="desktop-nav">
-          <a
-            href="#"
-            class="text-gray-600 hover:text-primary transition-colors duration-200 text-sm font-medium"
-            >Today's Tasks</a
+  <body class="bg-gradient-to-br from-primary to-secondary min-h-screen text-gray-800">
+    <div id="notification-container"></div>
+
+    <div class="container mx-auto p-4">
+      <header
+        class="bg-white rounded-lg shadow-lg p-6 mb-8 flex flex-col md:flex-row justify-between items-center"
+      >
+        <h1 class="text-4xl font-pacifico text-primary mb-4 md:mb-0">
+          Schedule Master
+        </h1>
+        <div class="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4">
+          <button
+            id="logout-button"
+            class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-6 rounded-button transition duration-300 ease-in-out shadow-md"
           >
+            Logout
+          </button>
           <a
-            href="#"
-            class="text-gray-600 hover:text-primary transition-colors duration-200 text-sm font-medium"
-            >Weekly Dashboard</a
-          >
-          <a
-            id="login-link-desktop"
-            class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-button text-sm font-medium transition-colors duration-200 whitespace-nowrap"
             href="login.html"
+            id="login-link"
+            class="hidden bg-primary hover:bg-indigo-700 text-white font-semibold py-2 px-6 rounded-button transition duration-300 ease-in-out shadow-md text-center"
           >
             Login
           </a>
           <a
-            id="signup-link-desktop"
-            class="bg-primary hover:bg-indigo-600 text-white px-4 py-2 rounded-button text-sm font-medium transition-colors duration-200 whitespace-nowrap"
             href="signup.html"
+            id="signup-link"
+            class="hidden bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-6 rounded-button transition duration-300 ease-in-out shadow-md text-center"
           >
             Sign Up
           </a>
-          <!-- User info and logout will be dynamically added here -->
-          <div id="user-info-desktop" class="hidden items-center space-x-2">
-            <span class="text-gray-700 font-medium"></span>
+        </div>
+      </header>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <section class="lg:col-span-1 bg-white rounded-lg shadow-lg p-6">
+          <h2 class="text-2xl font-bold text-gray-700 mb-6">Add New Task</h2>
+          <form id="task-form" class="space-y-4">
+            <div>
+              <label for="task-name" class="block text-sm font-medium text-gray-700"
+                >Task Name</label
+              >
+              <input
+                type="text"
+                id="task-name"
+                name="task-name"
+                required
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-primary focus:border-primary"
+              />
+            </div>
+            <div>
+              <label
+                for="task-description"
+                class="block text-sm font-medium text-gray-700"
+                >Description (Optional)</label
+              >
+              <textarea
+                id="task-description"
+                name="task-description"
+                rows="3"
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-primary focus:border-primary"
+              ></textarea>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label
+                  for="task-date"
+                  class="block text-sm font-medium text-gray-700"
+                  >Due Date</label
+                >
+                <input
+                  type="date"
+                  id="task-date"
+                  name="task-date"
+                  required
+                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-primary focus:border-primary"
+                />
+              </div>
+              <div>
+                <label
+                  for="task-time"
+                  class="block text-sm font-medium text-gray-700"
+                  >Due Time</label
+                >
+                <input
+                  type="time"
+                  id="task-time"
+                  name="task-time"
+                  required
+                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-primary focus:border-primary"
+                />
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700"
+                >Priority</label
+              >
+              <div class="mt-2 flex space-x-4">
+                <label class="inline-flex items-center">
+                  <input
+                    type="radio"
+                    name="priority"
+                    value="low"
+                    class="form-radio text-primary focus:ring-primary"
+                  />
+                  <span class="ml-2">Low</span>
+                </label>
+                <label class="inline-flex items-center">
+                  <input
+                    type="radio"
+                    name="priority"
+                    value="medium"
+                    checked
+                    class="form-radio text-primary focus:ring-primary"
+                  />
+                  <span class="ml-2">Medium</span>
+                </label>
+                <label class="inline-flex items-center">
+                  <input
+                    type="radio"
+                    name="priority"
+                    value="high"
+                    class="form-radio text-primary focus:ring-primary"
+                  />
+                  <span class="ml-2">High</span>
+                </label>
+              </div>
+            </div>
+            <div>
+              <label
+                for="task-category"
+                class="block text-sm font-medium text-gray-700"
+                >Category</label
+              >
+              <select
+                id="task-category"
+                name="task-category"
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-primary focus:border-primary"
+              >
+                <option value="work">Work</option>
+                <option value="personal">Personal</option>
+                <option value="health">Health</option>
+                <option value="finance">Finance</option>
+                <option value="home">Home</option>
+                <option value="social">Social</option>
+                <option value="education">Education</option>
+                <option value="general">General</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700"
+                >Duration (minutes)</label
+              >
+              <div class="flex items-center space-x-4">
+                <input
+                  type="range"
+                  id="task-duration-range"
+                  name="task-duration-range"
+                  min="5"
+                  max="240"
+                  step="5"
+                  value="30"
+                  class="flex-grow accent-primary"
+                />
+                <input
+                  type="number"
+                  id="task-duration-number"
+                  name="task-duration-number"
+                  min="5"
+                  max="240"
+                  step="5"
+                  value="30"
+                  class="w-20 border border-gray-300 rounded-md shadow-sm p-2 text-center focus:ring-primary focus:border-primary"
+                />
+              </div>
+            </div>
             <button
-              id="logout-button-desktop"
-              class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-button text-sm font-medium transition-colors duration-200 whitespace-nowrap"
+              type="submit"
+              class="w-full bg-primary hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-button transition duration-300 ease-in-out shadow-lg"
             >
-              Logout
+              Add Task
             </button>
-          </div>
-        </nav>
-        <button
-          id="mobile-menu-button"
-          class="md:hidden w-10 h-10 flex items-center justify-center text-gray-500 hover:text-primary transition-colors duration-200"
-        >
-          <i class="ri-menu-line ri-lg"></i>
-        </button>
-      </div>
-      <div id="mobile-menu" class="hidden md:hidden">
-        <div class="container mx-auto px-4 py-4 bg-white border-t">
-          <nav class="flex flex-col space-y-4">
-            <a
-              href="#"
-              class="text-gray-600 hover:text-primary transition-colors duration-200 text-sm font-medium"
-              >Today's Tasks</a
-            >
-            <a
-              href="#"
-              class="text-gray-600 hover:text-primary transition-colors duration-200 text-sm font-medium"
-              >Weekly Dashboard</a
-            >
-            <div class="flex flex-col space-y-2" id="auth-links-mobile">
-              <a
-                id="login-link-mobile"
-                class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-button text-sm font-medium transition-colors duration-200 whitespace-nowrap text-center"
-                href="login.html"
+          </form>
+        </section>
+
+        <section class="lg:col-span-2 bg-white rounded-lg shadow-lg p-6">
+          <h2 class="text-2xl font-bold text-gray-700 mb-6">Your Tasks</h2>
+          <div class="mb-4 flex flex-wrap gap-4 items-center">
+            <div class="relative flex-grow min-w-[150px]">
+              <select
+                id="filter-category"
+                class="block w-full border border-gray-300 rounded-md shadow-sm p-2 pr-10 focus:ring-primary focus:border-primary appearance-none"
               >
-                Login
-              </a>
-              <a
-                id="signup-link-mobile"
-                class="bg-primary hover:bg-indigo-600 text-white px-4 py-2 rounded-button text-sm font-medium transition-colors duration-200 whitespace-nowrap w-full"
-                href="signup.html"
+                <option value="all">All Categories</option>
+                <option value="work">Work</option>
+                <option value="personal">Personal</option>
+                <option value="health">Health</option>
+                <option value="finance">Finance</option>
+                <option value="home">Home</option>
+                <option value="social">Social</option>
+                <option value="education">Education</option>
+                <option value="general">General</option>
+              </select>
+              <div
+                class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700"
               >
-                Sign Up
-              </a>
+                <i class="ri-arrow-down-s-line"></i>
+              </div>
             </div>
-            <!-- User info and logout for mobile -->
-            <div id="user-info-mobile" class="hidden flex-col space-y-2">
-              <span class="text-gray-700 font-medium text-center"></span>
-              <button
-                id="logout-button-mobile"
-                class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-button text-sm font-medium transition-colors duration-200 whitespace-nowrap w-full"
+            <div class="relative flex-grow min-w-[150px]">
+              <select
+                id="filter-status"
+                class="block w-full border border-gray-300 rounded-md shadow-sm p-2 pr-10 focus:ring-primary focus:border-primary appearance-none"
               >
-                Logout
-              </button>
+                <option value="all">All Statuses</option>
+                <option value="pending">Pending</option>
+                <option value="completed">Completed</option>
+              </select>
+              <div
+                class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700"
+              >
+                <i class="ri-arrow-down-s-line"></i>
+              </div>
             </div>
-          </nav>
-        </div>
-      </div>
-    </header>
-    <section class="py-16 bg-gradient-to-br from-indigo-50 to-blue-50">
-      <div class="container mx-auto px-4 text-center">
-        <h2
-          class="text-4xl md:text-5xl font-bold text-gray-900 mb-4 animate-fade-in"
-        >
-          Organize Your Life, Master Your Time
-        </h2>
-        <p class="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
-          Schedule Master helps you track tasks, set priorities, and visualize
-          your progress with ease.
-        </p>
-        <button
-          id="hero-cta"
-          class="bg-primary hover:bg-indigo-600 text-white px-8 py-3 rounded-button font-medium transition-all duration-300 transform hover:scale-105 hover:shadow-lg whitespace-nowrap"
-        >
-          Start Managing Tasks
-        </button>
-      </div>
-    </section>
-    <section class="py-12">
-      <div class="container mx-auto px-4">
-        <div class="bg-white rounded-lg shadow-lg p-6 mb-8 glass">
-          <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-semibold text-gray-800">
-              Today's Progress
-            </h3>
-            <div class="text-2xl font-bold text-primary">0%</div>
+            <div class="relative flex-grow min-w-[150px]">
+              <select
+                id="sort-by"
+                class="block w-full border border-gray-300 rounded-md shadow-sm p-2 pr-10 focus:ring-primary focus:border-primary appearance-none"
+              >
+                <option value="dueDate">Sort by Due Date</option>
+                <option value="priority">Sort by Priority</option>
+                <option value="name">Sort by Name</option>
+              </select>
+              <div
+                class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700"
+              >
+                <i class="ri-arrow-down-s-line"></i>
+              </div>
+            </div>
           </div>
-          <div class="w-full bg-gray-200 rounded-full h-3 mb-1">
-            <div
-              class="bg-primary h-3 rounded-full progress-bar"
-              style="width: 0%"
-            ></div>
-          </div>
-          <div class="text-right text-sm text-gray-500">0 of 0 completed</div>
-        </div>
-        <div class="flex justify-between items-center mb-6">
-          <h3 class="text-2xl font-bold text-gray-800">Today's Tasks</h3>
-          <button
-            id="add-task-btn"
-            class="add-button bg-primary text-white w-10 h-10 rounded-full flex items-center justify-center shadow-lg hover:bg-indigo-600 transition-all duration-300 whitespace-nowrap"
-          >
-            <i class="ri-add-line ri-lg"></i>
-          </button>
-        </div>
-        <div
-          id="tasks-container"
-          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-        >
           <div
-            class="flex flex-col items-center justify-center text-center p-10 border border-dashed border-gray-300 rounded-lg bg-white"
+            id="task-list"
+            class="space-y-4 custom-scrollbar max-h-[600px] overflow-y-auto pr-2"
           >
-            <div
-              class="w-16 h-16 flex items-center justify-center bg-indigo-100 rounded-full mb-4"
-            >
-              <i class="ri-calendar-line ri-xl text-primary"></i>
-            </div>
-            <h4 class="text-lg font-medium text-gray-800 mb-2">
-              No tasks for today
-            </h4>
-            <p class="text-gray-500 mb-4">
-              Add your first task to get started!
+            <p class="text-center text-gray-500" id="no-tasks-message">
+              No tasks to display. Add a new task above!
             </p>
-            <button
-              id="empty-add-task"
-              class="text-primary hover:text-indigo-700 font-medium flex items-center transition-colors duration-200 whitespace-nowrap"
-            >
-              <i class="ri-add-line ri-lg mr-1"></i> Add Task
-            </button>
           </div>
-        </div>
+        </section>
       </div>
-    </section>
-    <!-- Task Modal -->
+    </div>
+
     <div
-      id="task-modal"
-      class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden"
+      id="edit-task-modal"
+      class="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 hidden p-4"
     >
       <div
-        class="modal modal-enter bg-white rounded-lg shadow-xl w-full max-w-md mx-4 overflow-hidden"
+        class="bg-white rounded-lg shadow-xl p-8 w-full max-w-lg relative max-h-[90vh] overflow-y-auto custom-scrollbar"
       >
-        <div class="bg-primary py-4 px-6">
-          <h3 class="text-xl font-semibold text-white">Add New Task</h3>
-        </div>
-        <form id="task-form" class="p-6">
-          <div class="mb-4 form-field relative">
-            <label
-              for="task-name"
-              class="absolute left-3 top-3 text-gray-500 pointer-events-none"
+        <button
+          class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl"
+          id="close-edit-modal"
+        >
+          <i class="ri-close-line"></i>
+        </button>
+        <h2 class="text-2xl font-bold text-gray-700 mb-6">Edit Task</h2>
+        <form id="edit-task-form" class="space-y-4">
+          <input type="hidden" id="edit-task-id" />
+          <div>
+            <label for="edit-task-name" class="block text-sm font-medium text-gray-700"
               >Task Name</label
             >
             <input
               type="text"
-              id="task-name"
-              class="w-full px-3 pt-6 pb-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              id="edit-task-name"
+              name="task-name"
               required
+              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-primary focus:border-primary"
             />
-            <div class="text-xs text-gray-500 text-right mt-1">
-              <span id="name-counter">0</span>/50
-            </div>
           </div>
-          <div class="mb-4 form-field relative">
+          <div>
             <label
-              for="task-description"
-              class="absolute left-3 top-3 text-gray-500 pointer-events-none"
+              for="edit-task-description"
+              class="block text-sm font-medium text-gray-700"
               >Description (Optional)</label
             >
             <textarea
-              id="task-description"
-              class="w-full px-3 pt-6 pb-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
+              id="edit-task-description"
+              name="task-description"
               rows="3"
+              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-primary focus:border-primary"
             ></textarea>
           </div>
-          <div class="grid grid-cols-2 gap-4 mb-4">
-            <div class="form-field relative">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
               <label
-                for="task-date"
-                class="absolute left-3 top-3 text-gray-500 pointer-events-none"
+                for="edit-task-date"
+                class="block text-sm font-medium text-gray-700"
                 >Due Date</label
-            >
-            <input
-              type="date"
-              id="task-date"
-              class="w-full px-3 pt-6 pb-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-              required
-            />
+              >
+              <input
+                type="date"
+                id="edit-task-date"
+                name="task-date"
+                required
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-primary focus:border-primary"
+              />
+            </div>
+            <div>
+              <label
+                for="edit-task-time"
+                class="block text-sm font-medium text-gray-700"
+                >Due Time</label
+              >
+              <input
+                type="time"
+                id="edit-task-time"
+                name="task-time"
+                required
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-primary focus:border-primary"
+              />
+            </div>
           </div>
-          <div class="form-field relative">
+          <div>
+            <label class="block text-sm font-medium text-gray-700"
+              >Priority</label
+            >
+            <div class="mt-2 flex space-x-4">
+              <label class="inline-flex items-center">
+                <input
+                  type="radio"
+                  name="edit-priority"
+                  value="low"
+                  class="form-radio text-primary focus:ring-primary"
+                />
+                <span class="ml-2">Low</span>
+              </label>
+              <label class="inline-flex items-center">
+                <input
+                  type="radio"
+                  name="edit-priority"
+                  value="medium"
+                  class="form-radio text-primary focus:ring-primary"
+                />
+                <span class="ml-2">Medium</span>
+              </label>
+              <label class="inline-flex items-center">
+                <input
+                  type="radio"
+                  name="edit-priority"
+                  value="high"
+                  class="form-radio text-primary focus:ring-primary"
+                />
+                <span class="ml-2">High</span>
+              </label>
+            </div>
+          </div>
+          <div>
             <label
-              for="task-time"
-              class="absolute left-3 top-3 text-gray-500 pointer-events-none"
-              >Due Time</label
+              for="edit-task-category"
+              class="block text-sm font-medium text-gray-700"
+              >Category</label
             >
-            <input
-              type="time"
-              id="task-time"
-              class="w-full px-3 pt-6 pb-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-              required
-            />
-          </div>
-        </div>
-        <div class="mb-4">
-          <label class="block text-gray-700 text-sm font-medium mb-2"
-            >Priority</label
-          >
-          <div class="flex space-x-4">
-            <label class="flex items-center">
-              <input
-                type="radio"
-                name="priority"
-                value="low"
-                class="custom-radio"
-                checked
-              />
-              <span class="ml-2 text-sm text-gray-600">Low</span>
-            </label>
-            <label class="flex items-center">
-              <input
-                type="radio"
-                name="priority"
-                value="medium"
-                class="custom-radio"
-              />
-              <span class="ml-2 text-sm text-gray-600">Medium</span>
-            </label>
-            <label class="flex items-center">
-              <input
-                type="radio"
-                name="priority"
-                value="high"
-                class="custom-radio"
-              />
-              <span class="ml-2 text-sm text-gray-600">High</span>
-            </label>
-          </div>
-        </div>
-        <div class="mb-4">
-          <label class="block text-gray-700 text-sm font-medium mb-2"
-            >Category</label
-          >
-          <div class="relative">
             <select
-              id="task-category"
-              class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent appearance-none pr-8"
+              id="edit-task-category"
+              name="task-category"
+              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-primary focus:border-primary"
             >
               <option value="work">Work</option>
               <option value="personal">Personal</option>
               <option value="health">Health</option>
-              <option value="education">Education</option>
               <option value="finance">Finance</option>
+              <option value="home">Home</option>
+              <option value="social">Social</option>
+              <option value="education">Education</option>
+              <option value="general">General</option>
             </select>
-            <div
-              class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none"
+          </div>
+          <div>
+            <label for="edit-task-status" class="block text-sm font-medium text-gray-700"
+              >Status</label
             >
-              <i class="ri-arrow-down-s-line text-gray-400"></i>
+            <select
+              id="edit-task-status"
+              name="task-status"
+              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-primary focus:border-primary"
+            >
+              <option value="pending">Pending</option>
+              <option value="completed">Completed</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700"
+              >Duration (minutes)</label
+            >
+            <div class="flex items-center space-x-4">
+              <input
+                type="range"
+                id="edit-task-duration-range"
+                name="task-duration-range"
+                min="5"
+                max="240"
+                step="5"
+                value="30"
+                class="flex-grow accent-primary"
+              />
+              <input
+                type="number"
+                id="edit-task-duration-number"
+                name="task-duration-number"
+                min="5"
+                max="240"
+                step="5"
+                value="30"
+                class="w-20 border border-gray-300 rounded-md shadow-sm p-2 text-center focus:ring-primary focus:border-primary"
+              />
             </div>
           </div>
-        </div>
-        <div class="mb-6">
-          <label class="block text-gray-700 text-sm font-medium mb-2"
-            >Duration (minutes)</label
-          >
-          <div class="flex items-center">
-            <input
-              type="range"
-              id="task-duration-range"
-              min="5"
-              max="180"
-              step="5"
-              value="30"
-              class="range-slider flex-grow mr-4"
-            />
-            <input
-              type="number"
-              id="task-duration-number"
-              min="5"
-              max="180"
-              value="30"
-              class="w-16 px-2 py-1 border border-gray-300 rounded text-center"
-            />
-          </div>
-        </div>
-        <div class="flex justify-end space-x-3">
-          <button
-            type="button"
-            id="cancel-task"
-            class="px-4 py-2 border border-gray-300 rounded-button text-gray-700 hover:bg-gray-100 transition-colors duration-200 whitespace-nowrap"
-          >
-            Cancel
-          </button>
           <button
             type="submit"
-            id="save-task"
-            class="px-4 py-2 bg-primary text-white rounded-button hover:bg-indigo-600 transition-colors duration-200 whitespace-nowrap"
+            class="w-full bg-primary hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-button transition duration-300 ease-in-out shadow-lg"
           >
-            <span class="flex items-center">
-              <i class="ri-save-line mr-1"></i> Save Task
-            </span>
+            Update Task
           </button>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
-    </div>
-    <script id="mobile-menu-script">
-      document.addEventListener("DOMContentLoaded", function () {
-        const mobileMenuButton = document.getElementById("mobile-menu-button");
-        const mobileMenu = document.getElementById("mobile-menu");
-        let isMenuOpen = false;
-        mobileMenuButton.addEventListener("click", () => {
-          isMenuOpen = !isMenuOpen;
-          mobileMenu.classList.toggle("hidden");
-          mobileMenuButton.innerHTML = isMenuOpen
-            ? '<i class="ri-close-line ri-lg"></i>'
-            : '<i class="ri-menu-line ri-lg"></i>';
-        });
-      });
-    </script>
-    <script id="loading-screen">
-      document.addEventListener("DOMContentLoaded", function () {
-        const loadingScreen = document.getElementById("loading-screen");
+
+    <script>
+      // Base URL for your backend API
+      const API_BASE_URL = 'http://localhost:5000/api'; // Ensure this matches your Express server port
+
+      // DOM Elements
+      const logoutButton = document.getElementById("logout-button");
+      const loginLink = document.getElementById("login-link");
+      const signupLink = document.getElementById("signup-link");
+      const taskForm = document.getElementById("task-form");
+      const taskList = document.getElementById("task-list");
+      const noTasksMessage = document.getElementById("no-tasks-message");
+      const editTaskModal = document.getElementById("edit-task-modal");
+      const closeEditModalButton = document.getElementById("close-edit-modal");
+      const editTaskForm = document.getElementById("edit-task-form");
+      const taskDurationRange = document.getElementById("task-duration-range");
+      const taskDurationNumber = document.getElementById("task-duration-number");
+      const editTaskDurationRange = document.getElementById("edit-task-duration-range");
+      const editTaskDurationNumber = document.getElementById("edit-task-duration-number");
+      const filterCategory = document.getElementById('filter-category');
+      const filterStatus = document.getElementById('filter-status');
+      const sortSelect = document.getElementById('sort-by');
+      let tasks = []; // Store tasks fetched from the backend
+
+      // --- Utility Functions ---
+
+      function showNotification(message, bgColor, iconClass) {
+        const notificationContainer = document.getElementById("notification-container");
+        const notification = document.createElement("div");
+        notification.className = `notification ${bgColor} transition-all duration-500 ease-out`;
+        notification.innerHTML = `
+          <i class="${iconClass} text-xl"></i>
+          <span>${message}</span>
+        `;
+        notificationContainer.appendChild(notification);
+
+        // Animate in
         setTimeout(() => {
-          loadingScreen.style.opacity = "0";
-          loadingScreen.style.transition = "opacity 0.5s ease";
+          notification.classList.add("show");
+        }, 50); // Small delay to allow reflow
+
+        // Animate out and remove
+        setTimeout(() => {
+          notification.classList.remove("show");
           setTimeout(() => {
-            loadingScreen.style.display = "none";
-          }, 500);
-        }, 1500);
-      });
-    </script>
-    <!-- Firebase SDKs -->
-    <script type="module">
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-      import { getAuth, onAuthStateChanged, signOut, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-      import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+            notification.remove();
+          }, 500); // Wait for transition to finish
+        }, 3000); // Display for 3 seconds
+      }
 
-      // Initialize Firebase (using global __firebase_config provided by the environment)
-      const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-      const app = initializeApp(firebaseConfig);
-      const auth = getAuth(app);
-      const db = getFirestore(app);
-      const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+      // --- Authentication Check ---
 
-      // Get navigation elements
-      const desktopNav = document.getElementById('desktop-nav');
-      const mobileAuthLinks = document.getElementById('auth-links-mobile');
-      const loginLinkDesktop = document.getElementById('login-link-desktop');
-      const signupLinkDesktop = document.getElementById('signup-link-desktop');
-      const logoutButtonDesktop = document.getElementById('logout-button-desktop');
-      const userInfoDesktop = document.getElementById('user-info-desktop');
-      const desktopUserNameSpan = userInfoDesktop.querySelector('span');
-
-      const loginLinkMobile = document.getElementById('login-link-mobile');
-      const signupLinkMobile = document.getElementById('signup-link-mobile');
-      const logoutButtonMobile = document.getElementById('logout-button-mobile');
-      const userInfoMobile = document.getElementById('user-info-mobile');
-      const mobileUserNameSpan = userInfoMobile.querySelector('span');
-
-
-      // Function to update UI based on auth state
-      async function updateAuthUI(user) {
-        if (user) {
-          // User is signed in
-          loginLinkDesktop.classList.add('hidden');
-          signupLinkDesktop.classList.add('hidden');
-          userInfoDesktop.classList.remove('hidden');
-          userInfoDesktop.classList.add('flex'); // Show flex for desktop user info
-
-          loginLinkMobile.classList.add('hidden');
-          signupLinkMobile.classList.add('hidden');
-          mobileAuthLinks.classList.add('hidden'); // Hide the entire div for mobile auth links
-          userInfoMobile.classList.remove('hidden');
-          userInfoMobile.classList.add('flex'); // Show flex for mobile user info
-
-
-          // Fetch user's full name from Firestore
-          const userDocRef = doc(db, `artifacts/${appId}/users/${user.uid}/profile/data/user_data`);
-          try {
-            const docSnap = await getDoc(userDocRef);
-            if (docSnap.exists()) {
-              const userData = docSnap.data();
-              const userName = userData.fullName || userData.email || 'User'; // Fallback to email if no full name
-              desktopUserNameSpan.textContent = `Hi, ${userName}`;
-              mobileUserNameSpan.textContent = `Hi, ${userName}`;
-            } else {
-              desktopUserNameSpan.textContent = `Hi, ${user.email || 'User'}`;
-              mobileUserNameSpan.textContent = `Hi, ${user.email || 'User'}`;
-            }
-          } catch (error) {
-            console.error("Error fetching user data:", error);
-            desktopUserNameSpan.textContent = `Hi, ${user.email || 'User'}`;
-            mobileUserNameSpan.textContent = `Hi, ${user.email || 'User'}`;
-          }
-
-          logoutButtonDesktop.addEventListener('click', handleLogout);
-          logoutButtonMobile.addEventListener('click', handleLogout);
-
+      function checkAuthentication() {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          // No token, show login/signup links and hide logout
+          logoutButton.classList.add('hidden');
+          loginLink.classList.remove('hidden');
+          signupLink.classList.remove('hidden');
+          // Redirect to login page as this is a protected dashboard
+          window.location.href = 'login.html';
         } else {
-          // User is signed out
-          loginLinkDesktop.classList.remove('hidden');
-          signupLinkDesktop.classList.remove('hidden');
-          userInfoDesktop.classList.add('hidden');
-          userInfoDesktop.classList.remove('flex');
-
-          loginLinkMobile.classList.remove('hidden');
-          signupLinkMobile.classList.remove('hidden');
-          mobileAuthLinks.classList.remove('hidden'); // Show the entire div for mobile auth links
-          userInfoMobile.classList.add('hidden');
-          userInfoMobile.classList.remove('flex');
+          // User is authenticated, hide login/signup links and show logout
+          logoutButton.classList.remove('hidden');
+          loginLink.classList.add('hidden');
+          signupLink.classList.add('hidden');
+          // Fetch tasks for the authenticated user
+          fetchTasks();
         }
       }
 
-      // Handle logout
-      async function handleLogout() {
+      // --- API Calls ---
+
+      async function fetchTasks() {
+        const token = localStorage.getItem('token');
+        if (!token) return; // Should be handled by checkAuthentication
+
         try {
-          await signOut(auth);
-          showNotification("Logged out successfully!", "bg-green-500", "ri-check-line");
-          // UI will update via onAuthStateChanged listener
+          const response = await fetch(`${API_BASE_URL}/tasks`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            }
+          });
+
+          if (response.ok) {
+            tasks = await response.json();
+            renderTasks();
+          } else if (response.status === 401) {
+            // Token expired or invalid
+            showNotification("Session expired. Please log in again.", "bg-red-500", "ri-error-warning-line");
+            localStorage.removeItem('token');
+            setTimeout(() => {
+              window.location.href = 'login.html';
+            }, 1500);
+          } else {
+            const errorData = await response.json();
+            showNotification(`Failed to fetch tasks: ${errorData.message}`, "bg-red-500", "ri-error-warning-line");
+          }
         } catch (error) {
-          console.error("Logout error:", error);
-          showNotification(`Logout failed: ${error.message}`, "bg-red-500", "ri-error-warning-line");
+          console.error("Error fetching tasks:", error);
+          showNotification("Network error. Could not connect to server.", "bg-red-500", "ri-error-warning-line");
         }
       }
 
-      // Firebase Auth state listener for the Canvas environment
-      onAuthStateChanged(auth, async (user) => {
-        if (!user) {
-          // If no user is authenticated, attempt anonymous sign-in with custom token
-          try {
-            if (typeof __initial_auth_token !== 'undefined') {
-              await signInWithCustomToken(auth, __initial_auth_token);
-              console.log("Signed in with custom token for Canvas environment (index.html).");
-            } else {
-              await signInAnonymously(auth);
-              console.log("Signed in anonymously for Canvas environment (index.html).");
-            }
-          } catch (error) {
-            console.error("Firebase authentication error during Canvas startup (index.html):", error);
-            // Even if anonymous auth fails, still update UI to show logged out state
-            updateAuthUI(null);
-            return; // Exit if initial auth fails
-          }
-        }
-        // Update UI based on the new user state (either logged in user or newly anonymously signed-in user)
-        updateAuthUI(user);
-      });
+      async function addTask(taskData) {
+        const token = localStorage.getItem('token');
+        if (!token) return;
 
-      // Function to show a temporary notification (consistent across pages)
-      function showNotification(message, bgColorClass, iconClass) {
-          const notification = document.createElement("div");
-          notification.className = `fixed bottom-4 right-4 ${bgColorClass} text-white px-4 py-2 rounded-lg shadow-lg transform translate-y-10 opacity-0 transition-all duration-500 z-[60]`;
-          notification.innerHTML = `
-            <div class="flex items-center">
-              <i class="${iconClass} mr-2"></i> ${message}
+        try {
+          const response = await fetch(`${API_BASE_URL}/tasks`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(taskData)
+          });
+
+          if (response.ok) {
+            const newTask = await response.json();
+            tasks.push(newTask); // Add new task to local array
+            renderTasks();
+            showNotification("Task added successfully!", "bg-green-500", "ri-check-line");
+            taskForm.reset(); // Reset form after successful submission
+            // Reset duration to default values for new task form
+            taskDurationRange.value = 30;
+            taskDurationNumber.value = 30;
+          } else {
+            const errorData = await response.json();
+            showNotification(`Failed to add task: ${errorData.message}`, "bg-red-500", "ri-error-warning-line");
+          }
+        } catch (error) {
+          console.error("Error adding task:", error);
+          showNotification("Network error. Could not add task.", "bg-red-500", "ri-error-warning-line");
+        }
+      }
+
+      async function updateTask(id, taskData) {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        try {
+          const response = await fetch(`${API_BASE_URL}/tasks/${id}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(taskData)
+          });
+
+          if (response.ok) {
+            const updatedTask = await response.json();
+            // Find and update the task in the local array
+            const index = tasks.findIndex(task => task._id === id);
+            if (index !== -1) {
+              tasks[index] = updatedTask;
+            }
+            renderTasks();
+            showNotification("Task updated successfully!", "bg-green-500", "ri-check-line");
+            editTaskModal.classList.add('hidden'); // Close modal
+          } else {
+            const errorData = await response.json();
+            showNotification(`Failed to update task: ${errorData.message}`, "bg-red-500", "ri-error-warning-line");
+          }
+        } catch (error) {
+          console.error("Error updating task:", error);
+          showNotification("Network error. Could not update task.", "bg-red-500", "ri-error-warning-line");
+        }
+      }
+
+      async function deleteTask(id) {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        if (!confirm("Are you sure you want to delete this task?")) {
+          return;
+        }
+
+        try {
+          const response = await fetch(`${API_BASE_URL}/tasks/${id}`, {
+            method: 'DELETE',
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+
+          if (response.ok) {
+            // Remove the task from the local array
+            tasks = tasks.filter(task => task._id !== id);
+            renderTasks();
+            showNotification("Task deleted successfully!", "bg-green-500", "ri-check-line");
+          } else {
+            const errorData = await response.json();
+            showNotification(`Failed to delete task: ${errorData.message}`, "bg-red-500", "ri-error-warning-line");
+          }
+        } catch (error) {
+          console.error("Error deleting task:", error);
+          showNotification("Network error. Could not delete task.", "bg-red-500", "ri-error-warning-line");
+        }
+      }
+
+      // --- Render Tasks ---
+
+      function renderTasks() {
+        taskList.innerHTML = '';
+        noTasksMessage.classList.add('hidden'); // Hide default message initially
+
+        if (tasks.length === 0) {
+          noTasksMessage.classList.remove('hidden');
+          return;
+        }
+
+        // Apply filters
+        let filteredTasks = [...tasks];
+        const selectedCategory = filterCategory.value;
+        const selectedStatus = filterStatus.value;
+
+        if (selectedCategory !== 'all') {
+            filteredTasks = filteredTasks.filter(task => task.category === selectedCategory);
+        }
+        if (selectedStatus !== 'all') {
+            filteredTasks = filteredTasks.filter(task => task.status === selectedStatus);
+        }
+
+        // Apply sorting
+        const sortBy = sortSelect.value;
+        filteredTasks.sort((a, b) => {
+            if (sortBy === 'dueDate') {
+                // Combine date and time for accurate sorting
+                const dateTimeA = new Date(`${a.dueDate}T${a.dueTime}`);
+                const dateTimeB = new Date(`${b.dueDate}T${b.dueTime}`);
+                return dateTimeA - dateTimeB;
+            } else if (sortBy === 'priority') {
+                const priorityOrder = { 'high': 3, 'medium': 2, 'low': 1 };
+                return priorityOrder[b.priority] - priorityOrder[a.priority]; // High to low
+            } else if (sortBy === 'name') {
+                return a.name.localeCompare(b.name);
+            }
+            return 0;
+        });
+
+        if (filteredTasks.length === 0) {
+            noTasksMessage.textContent = "No tasks match your current filters.";
+            noTasksMessage.classList.remove('hidden');
+            return;
+        }
+
+
+        filteredTasks.forEach(task => {
+          const taskItem = document.createElement("div");
+          taskItem.className = `bg-gray-50 p-4 rounded-lg shadow-sm border-l-4
+            ${task.priority === 'high' ? 'border-red-500' :
+              task.priority === 'medium' ? 'border-yellow-500' :
+              'border-green-500'}
+            flex items-center justify-between transition-all duration-300 ease-in-out
+            ${task.status === 'completed' ? 'opacity-70 line-through' : ''}`;
+
+          // Format date and time for display
+          const dueDateObj = new Date(task.dueDate);
+          const formattedDate = dueDateObj.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          });
+          const [hours, minutes] = task.dueTime.split(':');
+          const formattedTime = new Date(0, 0, 0, hours, minutes).toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+          });
+
+
+          taskItem.innerHTML = `
+            <div class="flex-1">
+              <h3 class="text-lg font-semibold text-gray-800">${task.name}</h3>
+              <p class="text-sm text-gray-600">${task.description || 'No description'}</p>
+              <div class="text-sm text-gray-500 mt-1 flex flex-wrap gap-x-3">
+                <span><i class="ri-calendar-line"></i> ${formattedDate}</span>
+                <span><i class="ri-time-line"></i> ${formattedTime}</span>
+                <span><i class="ri-flag-line"></i> ${task.priority.charAt(0).toUpperCase() + task.priority.slice(1)} Priority</span>
+                <span><i class="ri-folder-open-line"></i> ${task.category.charAt(0).toUpperCase() + task.category.slice(1)}</span>
+                <span><i class="ri-hourglass-line"></i> ${task.duration} min</span>
+              </div>
+            </div>
+            <div class="flex space-x-2 ml-4">
+              <button data-id="${task._id}" data-status="${task.status}"
+                      class="toggle-status-btn p-2 rounded-full
+                      ${task.status === 'completed' ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}
+                      transition duration-200 ease-in-out"
+                      title="${task.status === 'completed' ? 'Mark as Pending' : 'Mark as Complete'}">
+                <i class="ri-check-line text-lg"></i>
+              </button>
+              <button data-id="${task._id}"
+                      class="edit-task-btn p-2 rounded-full bg-blue-100 text-blue-700 hover:bg-blue-200 transition duration-200 ease-in-out"
+                      title="Edit Task">
+                <i class="ri-edit-line text-lg"></i>
+              </button>
+              <button data-id="${task._id}"
+                      class="delete-task-btn p-2 rounded-full bg-red-100 text-red-700 hover:bg-red-200 transition duration-200 ease-in-out"
+                      title="Delete Task">
+                <i class="ri-delete-bin-line text-lg"></i>
+              </button>
             </div>
           `;
-          document.body.appendChild(notification);
-
-          setTimeout(() => {
-            notification.classList.remove("translate-y-10", "opacity-0");
-          }, 100);
-
-          setTimeout(() => {
-            notification.classList.add("translate-y-10", "opacity-0");
-            setTimeout(() => {
-              notification.remove();
-            }, 500);
-          }, 3000);
-        }
-
-    </script>
-    <script id="task-management">
-      document.addEventListener("DOMContentLoaded", function () {
-        const addTaskBtn = document.getElementById("add-task-btn");
-        const emptyAddTask = document.getElementById("empty-add-task");
-        const taskModal = document.getElementById("task-modal");
-        const cancelTask = document.getElementById("cancel-task");
-        const taskForm = document.getElementById("task-form");
-        const tasksContainer = document.getElementById("tasks-container");
-        const taskNameInput = document.getElementById("task-name");
-        const nameCounter = document.getElementById("name-counter");
-        const durationRange = document.getElementById("task-duration-range");
-        const durationNumber = document.getElementById("task-duration-number");
-        const heroCta = document.getElementById("hero-cta");
-        let tasks = [];
-        // Add ripple effect to buttons
-        function createRipple(event) {
-          const button = event.currentTarget;
-          const ripple = document.createElement("span");
-          const rect = button.getBoundingClientRect();
-          const size = Math.max(rect.width, rect.height);
-          const x = event.clientX - rect.left - size / 2;
-          const y = event.clientY - rect.top - size / 2;
-          ripple.style.width = ripple.style.height = `${size}px`;
-          ripple.style.left = `${x}px`;
-          ripple.style.top = `${y}px`;
-          ripple.classList.add("ripple");
-          button.appendChild(ripple);
-          setTimeout(() => {
-            ripple.remove();
-          }, 600);
-        }
-        // Open task modal
-        function openTaskModal() {
-          taskModal.classList.remove("hidden");
-          setTimeout(() => {
-            taskModal.querySelector(".modal").classList.remove("modal-enter");
-          }, 10);
-          taskNameInput.focus();
-        }
-        // Close task modal
-        function closeTaskModal() {
-          taskModal.querySelector(".modal").classList.add("modal-enter");
-          setTimeout(() => {
-            taskModal.classList.add("hidden");
-            taskForm.reset();
-            nameCounter.textContent = "0";
-          }, 300);
-        }
-        // Update tasks display
-        function updateTasksDisplay() {
-          const progressBar = document.querySelector(".progress-bar");
-          const progressText = document.querySelector(".text-primary");
-          const progressCount = document.querySelector(".text-right.text-sm");
-          if (tasks.length === 0) {
-            tasksContainer.innerHTML = `
-      <div class="flex flex-col items-center justify-center text-center p-10 border border-dashed border-gray-300 rounded-lg bg-white">
-      <div class="w-16 h-16 flex items-center justify-center bg-indigo-100 rounded-full mb-4">
-      <i class="ri-calendar-line ri-xl text-primary"></i>
-      </div>
-      <h4 class="text-lg font-medium text-gray-800 mb-2">No tasks for today</h4>
-      <p class="text-gray-500 mb-4">Add your first task to get started!</p>
-      <button id="empty-add-task" class="text-primary hover:text-indigo-700 font-medium flex items-center transition-colors duration-200 whitespace-nowrap">
-      <i class="ri-add-line ri-lg mr-1"></i> Add Task
-      </button>
-      </div>
-      `;
-            document
-              .getElementById("empty-add-task")
-              .addEventListener("click", openTaskModal);
-            progressBar.style.width = "0%";
-            progressText.textContent = "0%";
-            progressCount.textContent = "0 of 0 completed";
-            return;
-          }
-          const completedTasks = tasks.filter((task) => task.completed).length;
-          const progressPercentage = Math.round(
-            (completedTasks / tasks.length) * 100,
-          );
-          progressBar.style.width = `${progressPercentage}%`;
-          progressText.textContent = `${progressPercentage}%`;
-          progressCount.textContent = `${completedTasks} of ${tasks.length} completed`;
-          tasksContainer.innerHTML = "";
-          tasks.forEach((task, index) => {
-            const priorityColors = {
-              low: "bg-green-500",
-              medium: "bg-yellow-500",
-              high: "bg-red-500",
-            };
-            const categoryIcons = {
-              work: "ri-briefcase-line",
-              personal: "ri-user-line",
-              health: "ri-heart-line",
-              education: "ri-book-open-line",
-              finance: "ri-money-dollar-circle-line",
-            };
-            const statusClasses = {
-              "not-started": "bg-gray-200 text-gray-800",
-              "in-progress": "bg-blue-200 text-blue-800",
-              completed: "bg-green-200 text-green-800",
-            };
-            const statusText = task.completed
-              ? "Completed"
-              : task.inProgress
-                ? "In Progress"
-                : "Not Started";
-            const statusClass = task.completed
-              ? statusClasses["completed"]
-              : task.inProgress
-                ? statusClasses["in-progress"]
-                : statusClasses["not-started"];
-            const taskCard = document.createElement("div");
-            taskCard.className =
-              "task-card bg-white rounded-lg shadow-md overflow-hidden";
-            taskCard.innerHTML = `
-      <div class="flex">
-      <div class="w-2 ${priorityColors[task.priority]}"></div>
-      <div class="flex-1 p-4">
-      <div class="flex justify-between items-start mb-2">
-      <h4 class="font-medium text-gray-800 ${task.completed ? "line-through text-gray-500" : ""}">${task.name}</h4>
-      <div class="w-8 h-8 flex items-center justify-center category-icon bg-indigo-100 rounded-full">
-      <i class="${categoryIcons[task.category]} text-primary"></i>
-      </div>
-      </div>
-      ${task.description ? `<p class="text-gray-600 text-sm mb-3 ${task.completed ? "line-through text-gray-400" : ""}">${task.description}</p>` : ""}
-      <div class="flex justify-between items-center mb-3">
-      <div class="flex items-center text-sm text-gray-500">
-      <i class="ri-time-line mr-1"></i>
-      <span>${task.duration} min</span>
-      </div>
-      <div class="flex items-center text-sm text-gray-500">
-      <i class="ri-calendar-line mr-1"></i>
-      <span>${task.date}</span>
-      </div>
-      </div>
-      <div class="flex justify-between items-center">
-      <span class="text-xs px-2 py-1 rounded-full ${statusClass}">${statusText}</span>
-      ${
-        !task.completed
-          ? `
-      <button class="task-action ${task.inProgress ? "bg-yellow-500" : "bg-primary"} hover:${task.inProgress ? "bg-yellow-600" : "bg-indigo-600"} text-white px-3 py-1 rounded-button text-sm transition-colors duration-200 ${task.inProgress ? "pulse" : ""} whitespace-nowrap" data-index="${index}">
-      ${task.inProgress ? '<i class="ri-pause-line mr-1"></i> Pause' : '<i class="ri-play-line mr-1"></i> Start'}
-      </button>
-      `
-          : `
-      <div class="flex space-x-2">
-      <button class="delete-task text-gray-500 hover:text-red-500 transition-colors duration-200 whitespace-nowrap" data-index="${index}">
-      <i class="ri-delete-bin-line"></i>
-      </button>
-      </div>
-      `
+          taskList.appendChild(taskItem);
+        });
       }
-      </div>
-      </div>
-      </div>
-      `;
-            tasksContainer.appendChild(taskCard);
-          });
-          // Add event listeners to task action buttons
-          document.querySelectorAll(".task-action").forEach((button) => {
-            button.addEventListener("click", function () {
-              const index = parseInt(this.getAttribute("data-index"));
-              toggleTaskProgress(index);
-            });
-          });
-          // Add event listeners to delete buttons
-          document.querySelectorAll(".delete-task").forEach((button) => {
-            button.addEventListener("click", function () {
-              const index = parseInt(this.getAttribute("data-index"));
-              deleteTask(index);
-            });
-          });
-        }
-        // Toggle task progress
-        function toggleTaskProgress(index) {
-          const task = tasks[index];
-          if (!task.inProgress) {
-            // Start task
-            task.inProgress = true;
-            // Create confetti effect
-            createConfetti();
-          } else {
-            // Pause task
-            task.inProgress = false;
-          }
-          updateTasksDisplay();
-        }
-        // Complete task
-        function completeTask(index) {
-          tasks[index].completed = true;
-          tasks[index].inProgress = false;
-          // Create confetti effect
-          createConfetti();
-          updateTasksDisplay();
-        }
-        // Delete task
-        function deleteTask(index) {
-          tasks.splice(index, 1);
-          updateTasksDisplay();
-        }
-        // Create confetti effect
-        function createConfetti() {
-          const confettiContainer = document.createElement("div");
-          confettiContainer.style.position = "fixed";
-          confettiContainer.style.top = "0";
-          confettiContainer.style.left = "0";
-          confettiContainer.style.width = "100%";
-          confettiContainer.style.height = "100%";
-          confettiContainer.style.pointerEvents = "none";
-          confettiContainer.style.zIndex = "9999";
-          document.body.appendChild(confettiContainer);
-          const colors = ["#4F46E5", "#818CF8", "#60A5FA", "#34D399", "#FBBF24"];
-          for (let i = 0; i < 100; i++) {
-            const confetti = document.createElement("div");
-            confetti.className = "confetti";
-            confetti.style.left = Math.random() * 100 + "vw";
-            confetti.style.backgroundColor =
-              colors[Math.floor(Math.random() * colors.length)];
-            confetti.style.width = Math.random() * 10 + 5 + "px";
-            confetti.style.height = Math.random() * 10 + 5 + "px";
-            confetti.style.opacity = "1";
-            confetti.style.animation =
-              "confetti-fall " + (Math.random() * 3 + 1) + "s linear";
-            confettiContainer.appendChild(confetti);
-          }
-          setTimeout(() => {
-            confettiContainer.remove();
-          }, 4000);
-        }
-        // Event listeners
-        addTaskBtn.addEventListener("click", function (e) {
-          createRipple(e);
-          openTaskModal();
-        });
-        emptyAddTask.addEventListener("click", openTaskModal);
-        heroCta.addEventListener("click", function (e) {
-          createRipple(e);
-          openTaskModal();
-        });
-        cancelTask.addEventListener("click", closeTaskModal);
-        taskModal.addEventListener("click", function (e) {
-          if (e.target === taskModal) {
-            closeTaskModal();
-          }
-        });
-        taskNameInput.addEventListener("input", function () {
-          nameCounter.textContent = this.value.length;
-          if (this.value.length > 50) {
-            this.value = this.value.substring(0, 50);
-            nameCounter.textContent = 50;
-          }
-        });
-        durationRange.addEventListener("input", function () {
-          durationNumber.value = this.value;
-        });
-        durationNumber.addEventListener("input", function () {
-          if (this.value < 5) this.value = 5;
-          if (this.value > 180) this.value = 180;
-          durationRange.value = this.value;
-        });
-        taskForm.addEventListener("submit", function (e) {
-          e.preventDefault();
-          const name = taskNameInput.value.trim();
-          const description = document
-            .getElementById("task-description")
-            .value.trim();
-          const date = document.getElementById("task-date").value;
-          const time = document.getElementById("task-time").value;
-          const priority = document.querySelector(
-            'input[name="priority"]:checked',
-          ).value;
-          const category = document.getElementById("task-category").value;
-          const duration = parseInt(durationNumber.value);
-          if (!name || !date || !time) {
-            return;
-          }
-          const newTask = {
-            name,
-            description,
-            date,
-            time,
-            priority,
-            category,
-            duration,
-            completed: false,
-            inProgress: false,
-          };
-          tasks.push(newTask);
-          updateTasksDisplay();
-          closeTaskModal();
-          // Show success notification
-          const notification = document.createElement("div");
-          notification.className =
-            "fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg transform translate-y-10 opacity-0 transition-all duration-500";
-          notification.innerHTML =
-            '<div class="flex items-center"><i class="ri-check-line mr-2"></i> Task added successfully!</div>';
-          document.body.appendChild(notification);
-          setTimeout(() => {
-            notification.classList.remove("translate-y-10", "opacity-0");
-          }, 100);
-          setTimeout(() => {
-            notification.classList.add("translate-y-10", "opacity-0");
-            setTimeout(() => {
-              notification.remove();
-            }, 500);
-          }, 3000);
-        });
-        // Initialize
-        updateTasksDisplay();
-      });
-    </script>
-    <script id="demo-tasks">
-      document.addEventListener("DOMContentLoaded", function () {
-        // Add demo tasks after a short delay
+
+      // --- Event Listeners ---
+
+      logoutButton.addEventListener('click', () => {
+        localStorage.removeItem('token');
+        showNotification("Logged out successfully!", "bg-green-500", "ri-check-line");
         setTimeout(() => {
-          const addTaskEvent = new Event("submit");
-          // Set form values for demo task 1
-          document.getElementById("task-name").value =
-            "Review quarterly marketing report";
-          document.getElementById("task-description").value =
-            "Analyze performance metrics and prepare feedback for team meeting";
-          document.getElementById("task-date").valueAsDate = new Date();
-          document.getElementById("task-time").value = "11:30";
-          document.querySelector('input[name="priority"][value="high"]').checked =
-            true;
-          document.getElementById("task-category").value = "work";
-          document.getElementById("task-duration-range").value = 45;
-          document.getElementById("task-duration-number").value = 45;
-          // Submit form to create demo task 1
-          document.getElementById("task-form").dispatchEvent(addTaskEvent);
-          // Set form values for demo task 2
-          document.getElementById("task-name").value = "Gym workout session";
-          document.getElementById("task-description").value =
-            "Upper body strength training and 20 min cardio";
-          document.getElementById("task-date").valueAsDate = new Date();
-          document.getElementById("task-time").value = "17:00";
-          document.querySelector('input[name="priority"][value="medium"]').checked =
-            true;
-          document.getElementById("task-category").value = "health";
-          document.getElementById("task-duration-range").value = 60;
-          document.getElementById("task-duration-number").value = 60;
-          // Submit form to create demo task 2
-          document.getElementById("task-form").dispatchEvent(addTaskEvent);
-          // Set form values for demo task 3
-          document.getElementById("task-name").value = "Call financial advisor";
-          document.getElementById("task-description").value =
-            "Discuss investment portfolio adjustments and retirement planning";
-          document.getElementById("task-date").valueAsDate = new Date();
-          document.getElementById("task-time").value = "14:15";
-          document.querySelector('input[name="priority"][value="low"]').checked =
-            true;
-          document.getElementById("task-category").value = "finance";
-          document.getElementById("task-duration-range").value = 30;
-          document.getElementById("task-duration-number").value = 30;
-          // Submit form to create demo task 3
-          document.getElementById("task-form").dispatchEvent(addTaskEvent);
-        }, 500);
+          window.location.href = 'login.html';
+        }, 1000);
+      });
+
+      taskForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const name = document.getElementById("task-name").value;
+        const description = document.getElementById("task-description").value;
+        const dueDate = document.getElementById("task-date").value;
+        const dueTime = document.getElementById("task-time").value;
+        const priority = document.querySelector('input[name="priority"]:checked').value;
+        const category = document.getElementById("task-category").value;
+        const duration = parseInt(document.getElementById("task-duration-number").value, 10);
+
+        const taskData = { name, description, dueDate, dueTime, priority, category, duration };
+        await addTask(taskData);
+      });
+
+      taskList.addEventListener('click', async (e) => {
+        // Toggle Status
+        if (e.target.closest('.toggle-status-btn')) {
+          const btn = e.target.closest('.toggle-status-btn');
+          const taskId = btn.dataset.id;
+          const currentStatus = btn.dataset.status;
+          const newStatus = currentStatus === 'completed' ? 'pending' : 'completed';
+          await updateTask(taskId, { status: newStatus });
+        }
+
+        // Edit Task
+        if (e.target.closest('.edit-task-btn')) {
+          const btn = e.target.closest('.edit-task-btn');
+          const taskId = btn.dataset.id;
+          const taskToEdit = tasks.find(task => task._id === taskId);
+
+          if (taskToEdit) {
+            document.getElementById("edit-task-id").value = taskToEdit._id;
+            document.getElementById("edit-task-name").value = taskToEdit.name;
+            document.getElementById("edit-task-description").value = taskToEdit.description;
+            document.getElementById("edit-task-date").value = taskToEdit.dueDate.split('T')[0]; // Ensure YYYY-MM-DD
+            document.getElementById("edit-task-time").value = taskToEdit.dueTime;
+            document.querySelector(`input[name="edit-priority"][value="${taskToEdit.priority}"]`).checked = true;
+            document.getElementById("edit-task-category").value = taskToEdit.category;
+            document.getElementById("edit-task-status").value = taskToEdit.status;
+            document.getElementById("edit-task-duration-range").value = taskToEdit.duration;
+            document.getElementById("edit-task-duration-number").value = taskToEdit.duration;
+
+            editTaskModal.classList.remove('hidden');
+          }
+        }
+
+        // Delete Task
+        if (e.target.closest('.delete-task-btn')) {
+          const btn = e.target.closest('.delete-task-btn');
+          const taskId = btn.dataset.id;
+          await deleteTask(taskId);
+        }
+      });
+
+      closeEditModalButton.addEventListener('click', () => {
+        editTaskModal.classList.add('hidden');
+      });
+
+      editTaskForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const taskId = document.getElementById("edit-task-id").value;
+        const name = document.getElementById("edit-task-name").value;
+        const description = document.getElementById("edit-task-description").value;
+        const dueDate = document.getElementById("edit-task-date").value;
+        const dueTime = document.getElementById("edit-task-time").value;
+        const priority = document.querySelector('input[name="edit-priority"]:checked').value;
+        const category = document.getElementById("edit-task-category").value;
+        const status = document.getElementById("edit-task-status").value;
+        const duration = parseInt(document.getElementById("edit-task-duration-number").value, 10);
+
+        const updatedData = { name, description, dueDate, dueTime, priority, category, status, duration };
+        await updateTask(taskId, updatedData);
+      });
+
+      // Sync range and number inputs for duration
+      taskDurationRange.addEventListener('input', () => {
+        taskDurationNumber.value = taskDurationRange.value;
+      });
+      taskDurationNumber.addEventListener('input', () => {
+        taskDurationRange.value = taskDurationNumber.value;
+      });
+
+      editTaskDurationRange.addEventListener('input', () => {
+        editTaskDurationNumber.value = editTaskDurationRange.value;
+      });
+      editTaskDurationNumber.addEventListener('input', () => {
+        editTaskDurationRange.value = editTaskDurationNumber.value;
+      });
+
+      // Filter and Sort Event Listeners
+      filterCategory.addEventListener('change', renderTasks);
+      filterStatus.addEventListener('change', renderTasks);
+      sortSelect.addEventListener('change', renderTasks);
+
+
+      // --- Initial Load ---
+      document.addEventListener("DOMContentLoaded", () => {
+        // Set default date to today for new task form
+        document.getElementById("task-date").valueAsDate = new Date();
+        document.getElementById("task-time").value = "17:00"; // Default time
+
+        checkAuthentication(); // Check authentication state on page load
       });
     </script>
   </body>
