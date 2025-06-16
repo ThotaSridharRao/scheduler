@@ -594,7 +594,8 @@
             // Store user's full name in Firestore
             // Path: artifacts/{appId}/users/{userId}/profile/data/user_data
             const userId = userCredential.user.uid;
-            const userDocRef = doc(db, `artifacts/${appId}/users/${userId}/profile/data/user_data`);
+            const userDocRef = doc(db, `artifacts/${appId}/users/${userId}/profile/user_data`);
+
             await setDoc(userDocRef, {
               fullName: username,
               email: email,
