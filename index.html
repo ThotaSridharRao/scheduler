@@ -62,9 +62,9 @@
     </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 font-sans">
-    <div class="container mx-auto px-4 py-6">
-        <!-- Header Section -->
-        <header class="mb-8 p-4 bg-white rounded-xl shadow-lg flex justify-between items-center animate-fade-in relative">
+    <!-- Header Section - now full width, no outer padding here -->
+    <header class="w-full bg-white shadow-lg flex justify-center items-center relative z-10">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
             <div class="flex flex-col items-start">
                 <h1 class="text-3xl font-bold text-gray-800">
                     Schedule Master
@@ -78,22 +78,22 @@
             <nav class="hidden md:flex space-x-4 items-center">
                 <button
                     id="navTodayTab"
-                    class="tab-btn px-4 py-2 rounded-full text-gray-600 hover:bg-gray-100 transition-colors duration-200"
+                    class="tab-btn text-gray-600 hover:bg-gray-100 transition-colors duration-200"
                     data-tab="today"
                 >
                     Today's Tasks
                 </button>
                 <button
                     id="navDashboardTab"
-                    class="tab-btn px-4 py-2 rounded-full text-gray-600 hover:bg-gray-100 transition-colors duration-200"
+                    class="tab-btn text-gray-600 hover:bg-gray-100 transition-colors duration-200"
                     data-tab="dashboard"
                 >
                     Weekly Dashboard
                 </button>
-                <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full transition-colors duration-200" onclick="window.location.href='login.html'">
+                <button class="bg-black hover:bg-gray-800 text-white px-4 py-2 rounded-full transition-colors duration-200" onclick="window.location.href='login.html'">
                     Login
                 </button>
-                <button class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-full transition-colors duration-200" onclick="window.location.href='signup.html'">
+                <button class="bg-black hover:bg-gray-800 text-white px-4 py-2 rounded-full transition-colors duration-200" onclick="window.location.href='signup.html'">
                     Sign Up
                 </button>
             </nav>
@@ -104,32 +104,49 @@
             </button>
 
             <!-- Mobile Floating Menu -->
-            <div id="mobileMenu" class="absolute top-full right-0 mt-2 w-48 bg-white rounded-lg shadow-xl p-4 hidden z-40 animate-fade-in">
+            <div id="mobileMenu" class="absolute top-full right-4 mt-2 w-48 bg-white rounded-lg shadow-xl p-4 hidden z-40 animate-fade-in">
                 <nav class="flex flex-col space-y-3">
                     <button
-                        class="mobile-nav-btn text-left px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                        class="mobile-nav-btn text-left px-3 py-2 text-gray-700 hover:bg-gray-100 transition-colors duration-200"
                         data-tab="today"
                     >
                         Today's Tasks
                     </button>
                     <button
-                        class="mobile-nav-btn text-left px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                        class="mobile-nav-btn text-left px-3 py-2 text-gray-700 hover:bg-gray-100 transition-colors duration-200"
                         data-tab="dashboard"
                     >
                         Weekly Dashboard
                     </button>
                     <hr class="border-gray-200 my-2">
-                    <button class="text-left px-3 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition-colors duration-200" onclick="window.location.href='login.html'">
+                    <button class="text-left px-3 py-2 rounded-md bg-black text-white hover:bg-gray-800 transition-colors duration-200" onclick="window.location.href='login.html'">
                         Login
                     </button>
-                    <button class="text-left px-3 py-2 rounded-md bg-purple-500 text-white hover:bg-purple-600 transition-colors duration-200" onclick="window.location.href='signup.html'">
+                    <button class="text-left px-3 py-2 rounded-md bg-black text-white hover:bg-gray-800 transition-colors duration-200" onclick="window.location.href='signup.html'">
                         Sign Up
                     </button>
                 </nav>
             </div>
-        </header>
+        </div>
+    </header>
 
-        <!-- Main Content Area -->
+    <!-- Hero Section - NEW -->
+    <section class="bg-gradient-to-br from-blue-50 via-white to-purple-50 text-center py-16 px-4">
+        <div class="max-w-3xl mx-auto animate-fade-in">
+            <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 leading-tight">
+                Organize Your Life, Master Your Time
+            </h2>
+            <p class="text-lg md:text-xl text-gray-700 mb-8 max-w-2xl mx-auto">
+                Schedule Master helps you track tasks, set priorities, and visualize your progress with ease.
+            </p>
+            <a href="#addTaskBtn" class="inline-block bg-gradient-to-r from-blue-500 to-purple-500 text-white px-8 py-4 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 font-semibold text-lg">
+                Start Managing Tasks
+            </a>
+        </div>
+    </section>
+
+    <!-- Main Content Area Wrapper -->
+    <div class="container mx-auto px-4 py-6">
         <main class="animate-fade-in">
             <!-- Today's Tasks View -->
             <section id="todayView" class="max-w-4xl mx-auto">
@@ -616,29 +633,29 @@
         switchTab(tab) {
             // Update styles for the desktop navigation buttons
             document.querySelectorAll('#navTodayTab, #navDashboardTab').forEach(btn => {
-                btn.classList.remove('bg-blue-500', 'text-white', 'font-semibold', 'bg-purple-500');
-                btn.classList.add('text-gray-600', 'hover:bg-gray-100');
+                btn.classList.remove('text-blue-600', 'font-bold', 'text-purple-600'); // Remove selected styles
+                btn.classList.add('text-gray-600', 'hover:bg-gray-100'); // Ensure default styles for unselected
             });
 
             // Update styles for mobile navigation buttons
             document.querySelectorAll('.mobile-nav-btn').forEach(btn => {
-                btn.classList.remove('bg-blue-500', 'text-white', 'font-semibold', 'bg-purple-500');
-                btn.classList.add('text-gray-700', 'hover:bg-gray-100');
+                btn.classList.remove('text-blue-600', 'font-bold', 'text-purple-600'); // Remove selected styles
+                btn.classList.add('text-gray-700', 'hover:bg-gray-100'); // Ensure default styles for unselected
             });
 
             // Apply selected style to the active tab across all relevant navigation elements
             if (tab === 'today') {
-                // Apply to desktop/mobile menu nav buttons
-                document.getElementById('navTodayTab').classList.add('bg-blue-500', 'text-white', 'font-semibold');
-                document.querySelector('.mobile-nav-btn[data-tab="today"]').classList.add('bg-blue-500', 'text-white', 'font-semibold');
+                // Apply a distinct text color and bold for the selected tab
+                document.getElementById('navTodayTab').classList.add('text-blue-600', 'font-bold');
+                document.querySelector('.mobile-nav-btn[data-tab="today"]').classList.add('text-blue-600', 'font-bold');
 
                 document.getElementById('todayView').classList.remove('hidden');
                 document.getElementById('dashboardView').classList.add('hidden');
                 this.renderTasks(); // Ensure today's tasks are rendered when switching back
             } else { // tab === 'dashboard'
-                // Apply to desktop/mobile menu nav buttons
-                document.getElementById('navDashboardTab').classList.add('bg-purple-500', 'text-white', 'font-semibold');
-                document.querySelector('.mobile-nav-btn[data-tab="dashboard"]').classList.add('bg-purple-500', 'text-white', 'font-semibold');
+                // Apply a distinct text color and bold for the selected tab
+                document.getElementById('navDashboardTab').classList.add('text-purple-600', 'font-bold');
+                document.querySelector('.mobile-nav-btn[data-tab="dashboard"]').classList.add('text-purple-600', 'font-bold');
 
                 document.getElementById('todayView').classList.add('hidden');
                 document.getElementById('dashboardView').classList.remove('hidden');
@@ -1352,7 +1369,7 @@
             const priorityData = [
                 { name: 'High Priority', value: priorityCounts.high, color: '#ef4444' }, // Red-500
                 { name: 'Medium Priority', value: priorityCounts.medium, color: '#f59e0b' }, // Orange-500
-                { name: 'Low Priority', value: priorityCounts.low, color: '#10b981' }, // Green-500
+                { name: 'Low Priority', value: '#10b981', color: '#10b981' }, // Green-500
             ].filter(item => item.value > 0); // Only include priorities with completed tasks
 
             // Destroy existing chart instance if it exists
@@ -1549,7 +1566,7 @@
                 <div class="text-center p-4 bg-gray-50 rounded-lg">
                     <p class="font-medium text-gray-800">${day.day}</p>
                     <p class="text-2xl font-bold text-blue-600 mt-2">${day.completed}</p>
-                    <p class="text-sm text-gray-600}>of ${day.total}</p>
+                    <p class="text-sm text-gray-600">of ${day.total}</p>
                     <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
                         <div class="bg-blue-500 h-2 rounded-full transition-all duration-300" style="width: ${day.completion}%"></div>
                     </div>
