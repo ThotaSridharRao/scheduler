@@ -52,7 +52,7 @@
             /* These will be dynamically applied by JS based on priority */
         }
 
-        /* Modal styling */
+        /* Modal styling - kept for general modal use if needed, but auth modal is removed */
         .modal {
             @apply fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50;
         }
@@ -64,7 +64,7 @@
 <body class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 font-sans">
     <div class="container mx-auto px-4 py-6">
         <!-- Header Section -->
-        <header class="mb-8 p-4 bg-white rounded-xl shadow-lg flex justify-between items-center animate-fade-in">
+        <header class="mb-8 p-4 bg-white rounded-xl shadow-lg flex justify-between items-center animate-fade-in relative">
             <div class="flex flex-col items-start">
                 <h1 class="text-3xl font-bold text-gray-800">
                     Schedule Master
@@ -73,34 +73,61 @@
                     Your personal productivity companion
                 </p>
             </div>
-            <button
-                id="loginRegisterBtn"
-                class="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-3 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
-                title="Click to Login or Register"
-            >
-                Login / Register
-            </button>
-        </header>
 
-        <!-- Navigation Tabs -->
-        <nav class="flex justify-center mb-8">
-            <div class="bg-white rounded-full shadow-lg p-2 flex space-x-2">
+            <!-- Desktop Navigation -->
+            <nav class="hidden md:flex space-x-4 items-center">
                 <button
-                    id="todayTab"
-                    class="tab-btn flex items-center space-x-2 px-6 py-3 rounded-full transition-all duration-300 bg-blue-500 text-white shadow-md transform scale-105"
+                    id="navTodayTab"
+                    class="tab-btn px-4 py-2 rounded-full text-gray-600 hover:bg-gray-100 transition-colors duration-200"
+                    data-tab="today"
                 >
-                    <i class="fas fa-calendar-day"></i>
-                    <span class="font-medium">Today's Tasks</span>
+                    Today's Tasks
                 </button>
                 <button
-                    id="dashboardTab"
-                    class="tab-btn flex items-center space-x-2 px-6 py-3 rounded-full transition-all duration-300 text-gray-600 hover:bg-gray-100"
+                    id="navDashboardTab"
+                    class="tab-btn px-4 py-2 rounded-full text-gray-600 hover:bg-gray-100 transition-colors duration-200"
+                    data-tab="dashboard"
                 >
-                    <i class="fas fa-chart-bar"></i>
-                    <span class="font-medium">Weekly Dashboard</span>
+                    Weekly Dashboard
                 </button>
+                <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full transition-colors duration-200" onclick="window.location.href='login.html'">
+                    Login
+                </button>
+                <button class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-full transition-colors duration-200" onclick="window.location.href='signup.html'">
+                    Sign Up
+                </button>
+            </nav>
+
+            <!-- Mobile Hamburger Menu Icon -->
+            <button id="hamburgerBtn" class="md:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+
+            <!-- Mobile Floating Menu -->
+            <div id="mobileMenu" class="absolute top-full right-0 mt-2 w-48 bg-white rounded-lg shadow-xl p-4 hidden z-40 animate-fade-in">
+                <nav class="flex flex-col space-y-3">
+                    <button
+                        class="mobile-nav-btn text-left px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                        data-tab="today"
+                    >
+                        Today's Tasks
+                    </button>
+                    <button
+                        class="mobile-nav-btn text-left px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                        data-tab="dashboard"
+                    >
+                        Weekly Dashboard
+                    </button>
+                    <hr class="border-gray-200 my-2">
+                    <button class="text-left px-3 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition-colors duration-200" onclick="window.location.href='login.html'">
+                        Login
+                    </button>
+                    <button class="text-left px-3 py-2 rounded-md bg-purple-500 text-white hover:bg-purple-600 transition-colors duration-200" onclick="window.location.href='signup.html'">
+                        Sign Up
+                    </button>
+                </nav>
             </div>
-        </nav>
+        </header>
 
         <!-- Main Content Area -->
         <main class="animate-fade-in">
@@ -437,93 +464,13 @@
         </main>
     </div>
 
-    <!-- Login/Registration Modal -->
-    <div id="authModal" class="modal hidden">
-        <div class="modal-content">
-            <h2 id="authModalTitle" class="text-2xl font-bold text-gray-800 mb-6 text-center">Login</h2>
-            <form id="authForm" class="space-y-4">
-                <div>
-                    <label for="authEmail" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                    <input
-                        type="email"
-                        id="authEmail"
-                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                        placeholder="your@example.com"
-                        required
-                    />
-                </div>
-                <div>
-                    <label for="authPassword" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
-                    <input
-                        type="password"
-                        id="authPassword"
-                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                        placeholder="********"
-                        required
-                    />
-                </div>
-                <div id="authMessage" class="text-red-600 text-sm hidden"></div>
-                <button
-                    type="submit"
-                    id="authSubmitBtn"
-                    class="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white py-3 rounded-lg hover:shadow-lg transform hover:scale-105 transition-all duration-300 font-medium"
-                >
-                    Login
-                </button>
-                <button
-                    type="button"
-                    id="toggleAuthModeBtn"
-                    class="w-full bg-gray-100 text-gray-700 py-3 rounded-lg hover:bg-gray-200 transition-all duration-300 font-medium"
-                >
-                    Switch to Register
-                </button>
-                <button
-                    type="button"
-                    id="guestLoginBtn"
-                    class="w-full bg-gray-100 text-gray-700 py-3 rounded-lg hover:bg-gray-200 transition-all duration-300 font-medium"
-                >
-                    Continue as Guest
-                </button>
-            </form>
-        </div>
-    </div>
 
     <script type="module">
-    // Firebase SDK imports
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import {
-        getAuth,
-        signInAnonymously,
-        signInWithCustomToken,
-        createUserWithEmailAndPassword,
-        signInWithEmailAndPassword,
-        onAuthStateChanged,
-        signOut
-    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import {
-        getFirestore,
-        collection,
-        doc,
-        addDoc,
-        setDoc,
-        updateDoc,
-        deleteDoc,
-        onSnapshot,
-        query,
-        where,
-        orderBy,
-        serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
     // Schedule Master JavaScript Application
-    // This class manages the entire application state, data, UI interactions, and Firebase integration.
+    // This class manages the entire application state, data, and UI interactions.
     class ScheduleMaster {
         constructor() {
-            this.app = null;
-            this.auth = null;
-            this.db = null;
-            this.userId = null;
-            this.tasks = []; // Array to store all tasks
+            this.tasks = []; // Array to store all tasks (data is session-only now)
             this.editingTaskId = null; // Stores the ID of the task being edited, null if adding new
             this.currentPriority = 'low'; // Default priority for new tasks
             this.currentRecurringType = 'none'; // Default recurring type
@@ -535,200 +482,64 @@
             this.categoryChart = null;
             this.recurringChart = null;
 
-            // UI elements
-            this.authModal = document.getElementById('authModal');
-            this.authForm = document.getElementById('authForm');
-            this.authModalTitle = document.getElementById('authModalTitle');
-            this.authEmailInput = document.getElementById('authEmail');
-            this.authPasswordInput = document.getElementById('authPassword');
-            this.authSubmitBtn = document.getElementById('authSubmitBtn');
-            this.toggleAuthModeBtn = document.getElementById('toggleAuthModeBtn');
-            this.guestLoginBtn = document.getElementById('guestLoginBtn');
-            this.authMessage = document.getElementById('authMessage');
-            this.loginRegisterBtn = document.getElementById('loginRegisterBtn'); // New: Reference to the main login/register button
-
-            this.isLoginMode = true; // State for auth modal: true for login, false for register
+            // No auth-related UI elements needed now
             this._globalListenersAttached = false; // Flag to ensure global listeners are attached only once
-            this._sessionListenersAttached = false; // Flag to ensure session-specific listeners are attached only once
 
             // Initialize the application when the class is instantiated
             this.init();
         }
 
         /**
-         * Initializes the application by setting up Firebase, authentication,
-         * event listeners, and data loading.
+         * Initializes the application by setting up event listeners
+         * and loading initial data.
          */
         async init() {
-            // Firebase setup
-            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-            const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-
-            if (Object.keys(firebaseConfig).length === 0) {
-                console.error("Firebase config not found. Please ensure __firebase_config is set.");
-                this.loginRegisterBtn.textContent = "Error"; // Indicate an error state on the button
-                this.loginRegisterBtn.title = "Firebase config missing";
-                return;
-            }
-
-            this.app = initializeApp(firebaseConfig);
-            this.auth = getAuth(this.app);
-            this.db = getFirestore(this.app);
-
             // Setup global listeners (once per app lifecycle)
             if (!this._globalListenersAttached) {
-                this.loginRegisterBtn.addEventListener('click', () => this.handleAuthButtonClick());
-                this.authForm.addEventListener('submit', (e) => this.handleAuthSubmit(e));
-                this.toggleAuthModeBtn.addEventListener('click', () => {
-                    this.isLoginMode = !this.isLoginMode;
-                    this.updateAuthModalUI();
-                });
-                this.guestLoginBtn.addEventListener('click', async () => {
-                    try {
-                        await signInAnonymously(this.auth);
-                        this.authModal.classList.add('hidden');
-                        this.displayAuthMessage("Signed in as guest.", "text-green-600");
-                    } catch (error) {
-                        console.error("Error signing in anonymously:", error);
-                        this.displayAuthMessage(error.message, "text-red-600");
-                    }
-                });
+                this.setupEventListeners(); // Setup view-specific event listeners
                 this._globalListenersAttached = true;
             }
 
-            // Set up Firebase Auth state listener
-            onAuthStateChanged(this.auth, async (user) => {
-                if (user) {
-                    this.userId = user.uid;
-                    this.loginRegisterBtn.textContent = 'Logout';
-                    this.loginRegisterBtn.title = `Logged in as: ${user.email || 'Guest'} (ID: ${user.uid.substring(0, 8)}...)`;
-                    this.authModal.classList.add('hidden'); // Hide modal on successful login
-                    this.setupRealtimeTasksListener(); // Start listening for tasks
-                    this.setupEventListeners(); // Setup view-specific event listeners
-                } else {
-                    this.userId = null;
-                    this.loginRegisterBtn.textContent = 'Login / Register';
-                    this.loginRegisterBtn.title = 'Click to Login or Register';
-                    this.showAuthModal(); // Show auth modal if not logged in
-                    this.tasks = []; // Clear tasks if user logs out
-                    this.renderTasks();
-                    this.updateProgress();
-                    // Clear chart data if user logs out
-                    if (this.weeklyChart) this.weeklyChart.destroy();
-                    if (this.priorityChart) this.priorityChart.destroy();
-                    if (this.categoryChart) this.categoryChart.destroy();
-                    if (this.recurringChart) this.recurringChart.destroy();
-                    this._sessionListenersAttached = false; // Reset for next login
-                }
-            });
-
-            // Attempt to sign in with custom token if provided (for Canvas environment)
-            const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-            if (initialAuthToken) {
-                try {
-                    await signInWithCustomToken(this.auth, initialAuthToken);
-                    console.log("Signed in with custom token.");
-                } catch (error) {
-                    console.error("Error signing in with custom token:", error);
-                    // Fallback to anonymous if custom token fails or is not available
-                    await signInAnonymously(this.auth);
-                    console.log("Signed in anonymously.");
-                }
-            } else {
-                // If no custom token, sign in anonymously or prompt for login
-                await signInAnonymously(this.auth);
-                console.log("Signed in anonymously.");
-            }
+            // Initial render of tasks and dashboard after setup
+            this.renderTasks();
+            this.updateProgress();
+            // Dashboard charts will be rendered when the tab is switched
+            this.switchTab('today'); // Ensure 'Today's Tasks' is active on load
         }
-
-        /**
-         * Handles the click event on the main Login/Register/Logout button.
-         */
-        async handleAuthButtonClick() {
-            if (this.auth.currentUser) {
-                // User is logged in, so log out
-                try {
-                    await signOut(this.auth);
-                    console.log("User logged out successfully.");
-                    // onAuthStateChanged will handle UI update
-                } catch (error) {
-                    console.error("Error logging out:", error);
-                    this.displayAuthMessage("Error logging out.", "text-red-600");
-                }
-            } else {
-                // User is not logged in, show auth modal
-                this.showAuthModal();
-            }
-        }
-
-        /**
-         * Shows the authentication modal (login/registration).
-         */
-        showAuthModal() {
-            this.authModal.classList.remove('hidden');
-            this.authMessage.classList.add('hidden'); // Hide any previous messages
-            this.updateAuthModalUI();
-        }
-
-        /**
-         * Updates the UI of the authentication modal based on login/registration mode.
-         */
-        updateAuthModalUI() {
-            this.authModalTitle.textContent = this.isLoginMode ? 'Login' : 'Register';
-            this.authSubmitBtn.textContent = this.isLoginMode ? 'Login' : 'Register';
-            this.toggleAuthModeBtn.textContent = this.isLoginMode ? 'Switch to Register' : 'Switch to Login';
-        }
-
-        /**
-         * Handles authentication form submission (login or registration).
-         * @param {Event} e - The submit event object.
-         */
-        async handleAuthSubmit(e) {
-            e.preventDefault();
-            this.authMessage.classList.add('hidden');
-            const email = this.authEmailInput.value;
-            const password = this.authPasswordInput.value;
-
-            if (!email || !password) {
-                this.displayAuthMessage("Please enter email and password.", "text-red-600");
-                return;
-            }
-
-            try {
-                if (this.isLoginMode) {
-                    await signInWithEmailAndPassword(this.auth, email, password);
-                } else {
-                    await createUserWithEmailAndPassword(this.auth, email, password);
-                }
-            } catch (error) {
-                console.error("Auth error:", error);
-                this.displayAuthMessage(error.message, "text-red-600");
-            }
-        }
-
-        /**
-         * Displays a message in the authentication modal.
-         * @param {string} message - The message to display.
-         * @param {string} typeClass - Tailwind CSS class for text color (e.g., 'text-red-600', 'text-green-600').
-         */
-        displayAuthMessage(message, typeClass) {
-            this.authMessage.textContent = message;
-            this.authMessage.className = `text-sm mt-2 ${typeClass}`;
-            this.authMessage.classList.remove('hidden');
-        }
-
 
         /**
          * Sets up all the necessary event listeners for UI elements.
-         * This method is called once after initial authentication.
          */
         setupEventListeners() {
-            // Ensure listeners are only added once per session/login to avoid duplicates
-            if (this._sessionListenersAttached) return;
+            // Hamburger menu toggle
+            document.getElementById('hamburgerBtn').addEventListener('click', () => {
+                document.getElementById('mobileMenu').classList.toggle('hidden');
+            });
 
-            // Tab navigation event listeners
-            document.getElementById('todayTab').addEventListener('click', () => this.switchTab('today'));
-            document.getElementById('dashboardTab').addEventListener('click', () => this.switchTab('dashboard'));
+            // Close mobile menu when clicking outside
+            document.addEventListener('click', (e) => {
+                const mobileMenu = document.getElementById('mobileMenu');
+                const hamburgerBtn = document.getElementById('hamburgerBtn');
+                if (!mobileMenu.contains(e.target) && !hamburgerBtn.contains(e.target) && !mobileMenu.classList.contains('hidden')) {
+                    mobileMenu.classList.add('hidden');
+                }
+            });
+
+            // Navigation buttons in the new header and mobile menu
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const tab = e.target.closest('.tab-btn').dataset.tab;
+                    this.switchTab(tab);
+                });
+            });
+            document.querySelectorAll('.mobile-nav-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const tab = e.target.closest('.mobile-nav-btn').dataset.tab;
+                    this.switchTab(tab);
+                    document.getElementById('mobileMenu').classList.add('hidden'); // Close menu after selection
+                });
+            });
+
 
             // Task form related event listeners
             document.getElementById('addTaskBtn').addEventListener('click', () => this.showTaskForm());
@@ -796,45 +607,6 @@
                     this.deleteTask(taskId);
                 }
             });
-
-            this._sessionListenersAttached = true; // Mark listeners as attached for this session
-        }
-
-        /**
-         * Sets up a real-time listener for tasks from Firestore for the current user.
-         * This listener updates `this.tasks` whenever data changes in the database.
-         */
-        setupRealtimeTasksListener() {
-            if (!this.userId || !this.db) {
-                console.warn("Cannot set up listener: User ID or DB not available.");
-                return;
-            }
-
-            // Define the collection path for the current user's private tasks
-            const tasksCollectionRef = collection(this.db, `artifacts/${__app_id}/users/${this.userId}/tasks`);
-            
-            // Create a query to order tasks by createdAt
-            const q = query(tasksCollectionRef, orderBy('createdAt', 'desc'));
-
-            // Set up the real-time snapshot listener
-            // This will trigger whenever there's a change in the 'tasks' collection for this user.
-            onSnapshot(q, (snapshot) => {
-                const updatedTasks = [];
-                snapshot.forEach(doc => {
-                    // Include Firestore document ID in the task object
-                    updatedTasks.push({ id: doc.id, ...doc.data() });
-                });
-                this.tasks = updatedTasks; // Update the local tasks array
-                this.renderTasks(); // Re-render the UI with the latest data
-                this.updateProgress(); // Update daily progress
-                if (document.getElementById('dashboardView').classList.contains('hidden') === false) {
-                    this.renderDashboard(); // Re-render dashboard if it's currently visible
-                }
-                console.log("Tasks updated from Firestore:", this.tasks);
-            }, (error) => {
-                console.error("Error listening to tasks:", error);
-                this.displayAuthMessage("Error loading tasks. Please try again.", "text-red-600");
-            });
         }
 
         /**
@@ -842,19 +614,32 @@
          * @param {string} tab - The tab to switch to ('today' or 'dashboard').
          */
         switchTab(tab) {
-            // Reset all tab buttons to default style
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.className = 'tab-btn flex items-center space-x-2 px-6 py-3 rounded-full transition-all duration-300 text-gray-600 hover:bg-gray-100';
+            // Update styles for the desktop navigation buttons
+            document.querySelectorAll('#navTodayTab, #navDashboardTab').forEach(btn => {
+                btn.classList.remove('bg-blue-500', 'text-white', 'font-semibold', 'bg-purple-500');
+                btn.classList.add('text-gray-600', 'hover:bg-gray-100');
             });
 
-            // Apply selected style to the active tab
+            // Update styles for mobile navigation buttons
+            document.querySelectorAll('.mobile-nav-btn').forEach(btn => {
+                btn.classList.remove('bg-blue-500', 'text-white', 'font-semibold', 'bg-purple-500');
+                btn.classList.add('text-gray-700', 'hover:bg-gray-100');
+            });
+
+            // Apply selected style to the active tab across all relevant navigation elements
             if (tab === 'today') {
-                document.getElementById('todayTab').className = 'tab-btn flex items-center space-x-2 px-6 py-3 rounded-full transition-all duration-300 bg-blue-500 text-white shadow-md transform scale-105';
+                // Apply to desktop/mobile menu nav buttons
+                document.getElementById('navTodayTab').classList.add('bg-blue-500', 'text-white', 'font-semibold');
+                document.querySelector('.mobile-nav-btn[data-tab="today"]').classList.add('bg-blue-500', 'text-white', 'font-semibold');
+
                 document.getElementById('todayView').classList.remove('hidden');
                 document.getElementById('dashboardView').classList.add('hidden');
                 this.renderTasks(); // Ensure today's tasks are rendered when switching back
             } else { // tab === 'dashboard'
-                document.getElementById('dashboardTab').className = 'tab-btn flex items-center space-x-2 px-6 py-3 rounded-full transition-all duration-300 bg-purple-500 text-white shadow-md transform scale-105';
+                // Apply to desktop/mobile menu nav buttons
+                document.getElementById('navDashboardTab').classList.add('bg-purple-500', 'text-white', 'font-semibold');
+                document.querySelector('.mobile-nav-btn[data-tab="dashboard"]').classList.add('bg-purple-500', 'text-white', 'font-semibold');
+
                 document.getElementById('todayView').classList.add('hidden');
                 document.getElementById('dashboardView').classList.remove('hidden');
                 this.renderDashboard(); // Render dashboard content only when it's visible
@@ -1052,17 +837,11 @@
 
         /**
          * Handles the submission of the task form, either adding a new task or updating an existing one.
-         * This function now interacts with Firestore.
+         * Data is now managed in the local `this.tasks` array.
          * @param {Event} e - The submit event object.
          */
         async handleTaskSubmit(e) {
             e.preventDefault(); // Prevent default form submission and page reload
-
-            if (!this.userId) {
-                console.error("User not authenticated. Cannot save task.");
-                this.displayAuthMessage("Please log in to save tasks.", "text-red-600");
-                return;
-            }
 
             // Gather task data from form fields
             const taskData = {
@@ -1074,7 +853,7 @@
                 dueTime: document.getElementById('taskDueTime').value,
                 category: document.getElementById('taskCategory').value,
                 priority: this.currentPriority,
-                subtasks: this.subtasks // Attach the current subtasks
+                subtasks: JSON.parse(JSON.stringify(this.subtasks)) // Deep copy subtasks
             };
 
             // Gather recurring pattern data
@@ -1100,63 +879,56 @@
                 return;
             }
 
-            try {
-                // If editingTaskId is set, update an existing task; otherwise, add a new one
-                if (this.editingTaskId) {
-                    await updateDoc(doc(this.db, `artifacts/${__app_id}/users/${this.userId}/tasks`, this.editingTaskId), {
+            // If editingTaskId is set, update an existing task; otherwise, add a new one
+            if (this.editingTaskId) {
+                const taskIndex = this.tasks.findIndex(t => t.id === this.editingTaskId);
+                if (taskIndex !== -1) {
+                    this.tasks[taskIndex] = {
+                        ...this.tasks[taskIndex], // Keep original id and completed status
                         ...taskData,
-                        updatedAt: serverTimestamp() // Update timestamp
-                    });
-                    console.log("Task updated successfully in Firestore!");
-                } else {
-                    await addDoc(collection(this.db, `artifacts/${__app_id}/users/${this.userId}/tasks`), {
-                        ...taskData,
-                        completed: false,
-                        createdAt: serverTimestamp() // Use server timestamp for consistency
-                    });
-                    console.log("Task added successfully to Firestore!");
+                        updatedAt: new Date()
+                    };
+                    console.log("Task updated successfully in local array!");
                 }
-                this.hideTaskForm(); // Hide the form after submission
-            } catch (error) {
-                console.error("Error saving task to Firestore:", error);
-                // Display user-friendly error message
+            } else {
+                this.tasks.push({
+                    id: Date.now().toString(), // Generate a unique ID
+                    ...taskData,
+                    completed: false,
+                    createdAt: new Date()
+                });
+                console.log("Task added successfully to local array!");
             }
+            this.hideTaskForm(); // Hide the form after submission
+            this.renderTasks(); // Re-render the UI
+            this.updateProgress(); // Update daily progress
+            // No need to re-render dashboard explicitly, it pulls from this.tasks when visible
         }
 
         /**
-         * Deletes a task from Firestore.
+         * Deletes a task from the local tasks array.
          * @param {string} taskId - The ID of the task to delete.
          */
-        async deleteTask(taskId) {
-            if (!this.userId) return; // User not authenticated
-
-            try {
-                await deleteDoc(doc(this.db, `artifacts/${__app_id}/users/${this.userId}/tasks`, taskId));
-                console.log("Task deleted successfully from Firestore!");
-            } catch (error) {
-                console.error("Error deleting task from Firestore:", error);
-            }
+        deleteTask(taskId) {
+            this.tasks = this.tasks.filter(task => task.id !== taskId);
+            console.log("Task deleted successfully from local array!");
+            this.renderTasks(); // Re-render the UI
+            this.updateProgress(); // Update daily progress
         }
 
         /**
-         * Toggles the completion status of a task in Firestore.
+         * Toggles the completion status of a task in the local tasks array.
          * @param {string} taskId - The ID of the task to toggle.
          */
-        async toggleComplete(taskId) {
-            if (!this.userId) return; // User not authenticated
-
+        toggleComplete(taskId) {
             const task = this.tasks.find(task => task.id === taskId);
             if (task) {
-                try {
-                    await updateDoc(doc(this.db, `artifacts/${__app_id}/users/${this.userId}/tasks`, taskId), {
-                        completed: !task.completed,
-                        completedAt: !task.completed ? serverTimestamp() : null, // Set/clear timestamp
-                        updatedAt: serverTimestamp()
-                    });
-                    console.log("Task completion status updated in Firestore!");
-                } catch (error) {
-                    console.error("Error toggling task completion in Firestore:", error);
-                }
+                task.completed = !task.completed;
+                task.completedAt = task.completed ? new Date() : null; // Set/clear timestamp
+                task.updatedAt = new Date();
+                console.log("Task completion status updated in local array!");
+                this.renderTasks(); // Re-render the UI
+                this.updateProgress(); // Update daily progress
             }
         }
 
@@ -1170,8 +942,8 @@
             today.setHours(0, 0, 0, 0);
 
             return this.tasks.filter(task => {
-                // Use task.createdAt.toDate() for Firestore Timestamp objects
-                const taskDate = task.createdAt?.toDate ? task.createdAt.toDate() : new Date(task.createdAt);
+                // `createdAt` is now a plain Date object
+                const taskDate = new Date(task.createdAt);
                 taskDate.setHours(0, 0, 0, 0); // Normalize task date
 
                 return taskDate.getTime() === today.getTime(); // Compare timestamps
@@ -1193,8 +965,8 @@
                 if (dateB) return 1;  // B has due date, A doesn't
                 
                 // Fallback to createdAt for tasks without due dates
-                const timeA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : new Date(a.createdAt).getTime();
-                const timeB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : new Date(b.createdAt).getTime();
+                const timeA = new Date(a.createdAt).getTime();
+                const timeB = new Date(b.createdAt).getTime();
                 return timeB - timeA; // Most recent first for tasks without due dates
             });
 
@@ -1490,8 +1262,8 @@
 
                 // Filter tasks for the current day in the loop
                 const dayTasks = this.tasks.filter(task => {
-                    // Handle Firestore Timestamp objects for createdAt
-                    const taskCreatedAt = task.createdAt?.toDate ? task.createdAt.toDate() : new Date(task.createdAt);
+                    // `createdAt` is now a plain Date object
+                    const taskCreatedAt = new Date(task.createdAt);
                     taskCreatedAt.setHours(0, 0, 0, 0); // Normalize task creation date
                     return taskCreatedAt.getTime() === date.getTime();
                 });
@@ -1777,7 +1549,7 @@
                 <div class="text-center p-4 bg-gray-50 rounded-lg">
                     <p class="font-medium text-gray-800">${day.day}</p>
                     <p class="text-2xl font-bold text-blue-600 mt-2">${day.completed}</p>
-                    <p class="text-sm text-gray-600">of ${day.total}</p>
+                    <p class="text-sm text-gray-600}>of ${day.total}</p>
                     <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
                         <div class="bg-blue-500 h-2 rounded-full transition-all duration-300" style="width: ${day.completion}%"></div>
                     </div>
@@ -1788,17 +1560,6 @@
 
     // Initialize the ScheduleMaster application when the DOM is fully loaded.
     document.addEventListener('DOMContentLoaded', () => {
-        // Expose __app_id, __firebase_config, __initial_auth_token to the global scope
-        // for testing purposes if not already defined in the environment.
-        if (typeof window.__app_id === 'undefined') {
-            window.__app_id = 'your-default-app-id'; // Replace with a default if needed for local dev
-        }
-        if (typeof window.__firebase_config === 'undefined') {
-            window.__firebase_config = '{}'; // Or a dummy config for local dev
-        }
-        if (typeof window.__initial_auth_token === 'undefined') {
-            window.__initial_auth_token = null; // Or a dummy token for local dev
-        }
         new ScheduleMaster();
     });
     </script>
