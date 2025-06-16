@@ -418,8 +418,71 @@
       });
     </script>
 
-    <!-- Login Form Interactivity Script -->
-    <script id="login-form-script">
+    <!-- Firebase SDKs -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+      import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, GithubAuthProvider, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+      import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+      // Directly use your Firebase configuration here
+      const firebaseConfig = {
+        apiKey: "AIzaSyCuvtre7aemdaOQJUYjabhkPybe_xR17sM",
+        authDomain: "schedulemaster03.firebaseapp.com",
+        projectId: "schedulemaster03",
+        storageBucket: "schedulemaster03.firebasestorage.app",
+        messagingSenderId: "732684603723",
+        appId: "1:732684603723:web:9a59ad6ffa06af091258ce"
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const db = getFirestore(app);
+      const appId = firebaseConfig.projectId; // Derived from projectId for consistency
+
+      // Function to show a temporary notification (re-defined here for modularity with Firebase)
+      function showNotification(message, bgColorClass, iconClass) {
+          const notification = document.createElement("div");
+          notification.className = `fixed bottom-4 right-4 ${bgColorClass} text-white px-4 py-2 rounded-lg shadow-lg transform translate-y-10 opacity-0 transition-all duration-500 z-[60]`;
+          notification.innerHTML = `
+            <div class="flex items-center">
+              <i class="${iconClass} mr-2"></i> ${message}
+            </div>
+          `;
+          document.body.appendChild(notification);
+
+          setTimeout(() => {
+            notification.classList.remove("translate-y-10", "opacity-0");
+          }, 100);
+
+          setTimeout(() => {
+            notification.classList.add("translate-y-10", "opacity-0");
+            setTimeout(() => {
+              notification.remove();
+            }, 500);
+          }, 3000);
+        }
+
+      // Authenticate with custom token or anonymously if not available (for Canvas environment)
+      onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+          try {
+            if (typeof __initial_auth_token !== 'undefined') {
+              await signInWithCustomToken(auth, __initial_auth_token);
+              console.log("Signed in with custom token for Canvas environment.");
+            } else {
+              await signInAnonymously(auth);
+              console.log("Signed in anonymously for Canvas environment.");
+            }
+          } catch (error) {
+            console.error("Firebase authentication error during Canvas startup:", error);
+            showNotification(`Canvas auth failed: ${error.message}`, "bg-red-500", "ri-error-warning-line");
+          }
+        } else {
+          console.log("User already authenticated in Canvas environment:", user.uid);
+        }
+      });
+
+
       document.addEventListener("DOMContentLoaded", function () {
         const loginForm = document.getElementById("login-form");
         const loginButton = document.getElementById("login-button");
@@ -459,49 +522,152 @@
         githubLoginButton.addEventListener("click", createRipple);
 
 
-        // Handle form submission
-        loginForm.addEventListener("submit", function (e) {
+        // Handle form submission for email/password login
+        loginForm.addEventListener("submit", async function (e) {
           e.preventDefault(); // Prevent default form submission
 
           const email = document.getElementById("email").value;
           const password = document.getElementById("password").value;
-          const rememberMe = document.querySelector(".custom-checkbox").checked;
+          const rememberMe = document.querySelector(".custom-checkbox").checked; // Though Firebase auth handles persistence, this can be for future use.
 
           console.log("Login attempt:", { email, password, rememberMe });
 
-          // Simulate API call and show success/error notification
-          showNotification(
-            "Logged in successfully!",
-            "bg-green-500",
-            "ri-check-line"
-          );
+          try {
+            // Sign in user with email and password
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            console.log("User logged in successfully:", userCredential.user);
 
-          // Clear form fields
+            // Fetch user's full name from Firestore (optional, but good for consistency)
+            const userId = userCredential.user.uid;
+            const userDocRef = doc(db, `artifacts/${appId}/users/${userId}/profile/data/user_data`);
+            const docSnap = await getDoc(userDocRef);
+            if (!docSnap.exists()) {
+                // If user data doesn't exist (e.g., old account, or directly created in Firebase), create it.
+                // This makes sure fullName is present for index.html's header.
+                await setDoc(userDocRef, {
+                    fullName: userCredential.user.displayName || userCredential.user.email,
+                    email: userCredential.user.email,
+                    createdAt: new Date().toISOString()
+                }, { merge: true });
+            }
+
+            showNotification(
+              "Logged in successfully!",
+              "bg-green-500",
+              "ri-check-line"
+            );
+
+            // Redirect to index.html after a short delay
+            setTimeout(() => {
+              window.location.href = "index.html"; // Redirect to index.html (dashboard)
+            }, 1500);
+
+          } catch (error) {
+            console.error("Firebase login error:", error.code, error.message);
+            let errorMessage = "An unknown error occurred during login.";
+            if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+                errorMessage = "Invalid email or password.";
+            } else if (error.code === 'auth/invalid-email') {
+                errorMessage = "Please enter a valid email address.";
+            } else {
+                errorMessage = error.message;
+            }
+            showNotification(
+              `Login failed: ${errorMessage}`,
+              "bg-red-500",
+              "ri-error-warning-line"
+            );
+          }
+          // Clear form fields (optional, usually kept if login fails, but cleared on success)
           loginForm.reset();
         });
 
-        // Function to show a temporary notification
-        function showNotification(message, bgColorClass, iconClass) {
-          const notification = document.createElement("div");
-          notification.className = `fixed bottom-4 right-4 ${bgColorClass} text-white px-4 py-2 rounded-lg shadow-lg transform translate-y-10 opacity-0 transition-all duration-500 z-[60]`; // Increased z-index
-          notification.innerHTML = `
-            <div class="flex items-center">
-              <i class="${iconClass} mr-2"></i> ${message}
-            </div>
-          `;
-          document.body.appendChild(notification);
+        // Handle Google social login
+        googleLoginButton.addEventListener("click", async function () {
+          try {
+            const provider = new GoogleAuthProvider();
+            const result = await signInWithPopup(auth, provider);
+            console.log("Google login successful:", result.user);
 
-          setTimeout(() => {
-            notification.classList.remove("translate-y-10", "opacity-0");
-          }, 100);
+            // Ensure user data is consistent in Firestore (important if user signed up via email/password then logs in with Google, or vice-versa)
+            const userId = result.user.uid;
+            const userDocRef = doc(db, `artifacts/${appId}/users/${userId}/profile/data/user_data`);
+            await setDoc(userDocRef, {
+              fullName: result.user.displayName,
+              email: result.user.email,
+              photoURL: result.user.photoURL,
+              lastLoginAt: new Date().toISOString() // Update last login time
+            }, { merge: true }); // Use merge: true to avoid overwriting existing data
 
-          setTimeout(() => {
-            notification.classList.add("translate-y-10", "opacity-0");
+            showNotification(
+              "Logged in with Google successfully!",
+              "bg-green-500",
+              "ri-check-line"
+            );
+            // Redirect to index.html
             setTimeout(() => {
-              notification.remove();
-            }, 500);
-          }, 3000);
-        }
+              window.location.href = "index.html";
+            }, 1500);
+
+          } catch (error) {
+            console.error("Google login error:", error.code, error.message);
+            let errorMessage = "Google login failed.";
+            if (error.code === 'auth/popup-closed-by-user') {
+                errorMessage = "Google login cancelled.";
+            } else {
+                errorMessage = error.message;
+            }
+            showNotification(
+              `${errorMessage}`,
+              "bg-red-500",
+              "ri-error-warning-line"
+            );
+          }
+        });
+
+        // Handle GitHub social login
+        githubLoginButton.addEventListener("click", async function () {
+          try {
+            const provider = new GithubAuthProvider();
+            const result = await signInWithPopup(auth, provider);
+            console.log("GitHub login successful:", result.user);
+
+            // Ensure user data is consistent in Firestore
+            const userId = result.user.uid;
+            const userDocRef = doc(db, `artifacts/${appId}/users/${userId}/profile/data/user_data`);
+            await setDoc(userDocRef, {
+              fullName: result.user.displayName,
+              email: result.user.email,
+              photoURL: result.user.photoURL,
+              lastLoginAt: new Date().toISOString() // Update last login time
+            }, { merge: true });
+
+            showNotification(
+              "Logged in with GitHub successfully!",
+              "bg-green-500",
+              "ri-check-line"
+            );
+            // Redirect to index.html
+            setTimeout(() => {
+              window.location.href = "index.html";
+            }, 1500);
+
+          } catch (error) {
+            console.error("GitHub login error:", error.code, error.message);
+            let errorMessage = "GitHub login failed.";
+            if (error.code === 'auth/popup-closed-by-user') {
+                errorMessage = "GitHub login cancelled.";
+            } else {
+                errorMessage = error.message;
+            }
+            showNotification(
+              `${errorMessage}`,
+              "bg-red-500",
+              "ri-error-warning-line"
+            );
+          }
+        });
+
 
         // Initial focus on email input when the page loads
         document.getElementById("email").focus();
