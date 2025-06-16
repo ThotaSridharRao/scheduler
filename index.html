@@ -1,1586 +1,990 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Schedule Master</title>
-    <meta name="description" content="Your personal productivity companion" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        /* Keyframe animation for fade-in effect */
-        @keyframes fade-in {
-            0% { opacity: 0; transform: translateY(10px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in { animation: fade-in 0.3s ease-out; }
-
-        /* Custom hover effect for navigation links */
-        .story-link {
-            position: relative;
-        }
-        .story-link::after {
-            content: '';
-            position: absolute;
-            width: 100%;
-            transform: scaleX(0);
-            height: 2px;
-            bottom: 0;
-            left: 0;
-            background-color: #3b82f6; /* Blue-500 equivalent */
-            transform-origin: bottom right;
-            transition: transform 0.3s ease-out;
-        }
-        .story-link:hover::after {
-            transform: scaleX(1);
-            transform-origin: bottom left;
-        }
-
-        /* Base styles for priority buttons */
-        .priority-btn {
-            @apply px-4 py-2 rounded-full border-2 transition-all duration-200;
-        }
-
-        /* Default (unselected) priority button styles */
-        .priority-btn.default {
-            @apply bg-white text-gray-600 border-gray-300 hover:bg-gray-50;
-        }
-
-        /* Selected priority button styles */
-        .priority-btn.selected {
-            /* These will be dynamically applied by JS based on priority */
-        }
-
-        /* Modal styling - kept for general modal use if needed, but auth modal is removed */
-        .modal {
-            @apply fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50;
-        }
-        .modal-content {
-            @apply bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4;
-        }
-    </style>
-</head>
-<body class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 font-sans">
-    <!-- Header Section - now full width, no outer padding here -->
-    <header class="w-full bg-white shadow-lg flex justify-center items-center relative z-10">
-        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="flex flex-col items-start">
-                <h1 class="text-3xl font-bold text-gray-800">
-                    Schedule Master
-                </h1>
-                <p class="text-md text-gray-600">
-                    Your personal productivity companion
-                </p>
-            </div>
-
-            <!-- Desktop Navigation -->
-            <nav class="hidden md:flex space-x-4 items-center">
-                <button
-                    id="navTodayTab"
-                    class="tab-btn text-gray-600 hover:bg-gray-100 transition-colors duration-200"
-                    data-tab="today"
-                >
-                    Today's Tasks
-                </button>
-                <button
-                    id="navDashboardTab"
-                    class="tab-btn text-gray-600 hover:bg-gray-100 transition-colors duration-200"
-                    data-tab="dashboard"
-                >
-                    Weekly Dashboard
-                </button>
-                <button class="bg-black hover:bg-gray-800 text-white px-4 py-2 rounded-full transition-colors duration-200" onclick="window.location.href='login.html'">
-                    Login
-                </button>
-                <button class="bg-black hover:bg-gray-800 text-white px-4 py-2 rounded-full transition-colors duration-200" onclick="window.location.href='signup.html'">
-                    Sign Up
-                </button>
-            </nav>
-
-            <!-- Mobile Hamburger Menu Icon -->
-            <button id="hamburgerBtn" class="md:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <i class="fas fa-bars text-xl"></i>
-            </button>
-
-            <!-- Mobile Floating Menu -->
-            <div id="mobileMenu" class="absolute top-full right-4 mt-2 w-48 bg-white rounded-lg shadow-xl p-4 hidden z-40 animate-fade-in">
-                <nav class="flex flex-col space-y-3">
-                    <button
-                        class="mobile-nav-btn text-left px-3 py-2 text-gray-700 hover:bg-gray-100 transition-colors duration-200"
-                        data-tab="today"
-                    >
-                        Today's Tasks
-                    </button>
-                    <button
-                        class="mobile-nav-btn text-left px-3 py-2 text-gray-700 hover:bg-gray-100 transition-colors duration-200"
-                        data-tab="dashboard"
-                    >
-                        Weekly Dashboard
-                    </button>
-                    <hr class="border-gray-200 my-2">
-                    <button class="text-left px-3 py-2 rounded-md bg-black text-white hover:bg-gray-800 transition-colors duration-200" onclick="window.location.href='login.html'">
-                        Login
-                    </button>
-                    <button class="text-left px-3 py-2 rounded-md bg-black text-white hover:bg-gray-800 transition-colors duration-200" onclick="window.location.href='signup.html'">
-                        Sign Up
-                    </button>
-                </nav>
-            </div>
-        </div>
-    </header>
-
-    <!-- Hero Section - NEW -->
-    <section class="bg-gradient-to-br from-blue-50 via-white to-purple-50 text-center py-16 px-4">
-        <div class="max-w-3xl mx-auto animate-fade-in">
-            <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 leading-tight">
-                Organize Your Life, Master Your Time
-            </h2>
-            <p class="text-lg md:text-xl text-gray-700 mb-8 max-w-2xl mx-auto">
-                Schedule Master helps you track tasks, set priorities, and visualize your progress with ease.
-            </p>
-            <a href="#addTaskBtn" class="inline-block bg-gradient-to-r from-blue-500 to-purple-500 text-white px-8 py-4 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 font-semibold text-lg">
-                Start Managing Tasks
-            </a>
-        </div>
-    </section>
-
-    <!-- Main Content Area Wrapper -->
-    <div class="container mx-auto px-4 py-6">
-        <main class="animate-fade-in">
-            <!-- Today's Tasks View -->
-            <section id="todayView" class="max-w-4xl mx-auto">
-                <!-- Progress Card -->
-                <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-2xl font-bold text-gray-800">Today's Progress</h2>
-                        <div class="text-right">
-                            <div id="completionRate" class="text-3xl font-bold text-blue-600">0%</div>
-                            <div id="completionText" class="text-sm text-gray-600">0 of 0 completed</div>
-                        </div>
-                    </div>
-                    <div class="w-full bg-gray-200 rounded-full h-3">
-                        <div id="progressBar" class="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full transition-all duration-500 ease-out" style="width: 0%"></div>
-                    </div>
-                </div>
-
-                <!-- Add Task Section -->
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xl font-semibold text-gray-800">Today's Tasks</h3>
-                    <button
-                        id="addTaskBtn"
-                        class="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-3 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 flex items-center space-x-2"
-                    >
-                        <i class="fas fa-plus"></i>
-                        <span>Add Task</span>
-                    </button>
-                </div>
-
-                <!-- Task Form -->
-                <div id="taskForm" class="mb-6 hidden">
-                    <div class="bg-white rounded-xl shadow-lg p-6 border">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-4">
-                            <span id="formTitle">Add New Task</span>
-                        </h3>
-                        
-                        <form id="taskFormElement" class="space-y-4">
-                            <div>
-                                <label for="taskTitle" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Task Title *
-                                </label>
-                                <input
-                                    type="text"
-                                    id="taskTitle"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                                    placeholder="Enter task title"
-                                    required
-                                />
-                            </div>
-
-                            <div>
-                                <label for="taskDescription" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Description
-                                </label>
-                                <textarea
-                                    id="taskDescription"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                                    placeholder="Enter task description"
-                                    rows="3"
-                                ></textarea>
-                            </div>
-
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label for="taskStartTime" class="block text-sm font-medium text-gray-700 mb-2">
-                                        <i class="fas fa-clock mr-1"></i>
-                                        Start Time
-                                    </label>
-                                    <input
-                                        type="time"
-                                        id="taskStartTime"
-                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label for="taskDuration" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Duration (minutes)
-                                    </label>
-                                    <input
-                                        type="number"
-                                        id="taskDuration"
-                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                                        min="15"
-                                        step="15"
-                                        value="60"
-                                    />
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label for="taskDueDate" class="block text-sm font-medium text-gray-700 mb-2">
-                                        <i class="fas fa-calendar-alt mr-1"></i>
-                                        Due Date
-                                    </label>
-                                    <input
-                                        type="date"
-                                        id="taskDueDate"
-                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                                    />
-                                </div>
-                                <div>
-                                    <label for="taskDueTime" class="block text-sm font-medium text-gray-700 mb-2">
-                                        <i class="fas fa-hourglass-half mr-1"></i>
-                                        Due Time
-                                    </label>
-                                    <input
-                                        type="time"
-                                        id="taskDueTime"
-                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                                    />
-                                </div>
-                            </div>
-
-                            <div>
-                                <label for="taskCategory" class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class="fas fa-tag mr-1"></i>
-                                    Category
-                                </label>
-                                <select
-                                    id="taskCategory"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                                >
-                                    <option value="none">None</option>
-                                    <option value="work">Work</option>
-                                    <option value="personal">Personal</option>
-                                    <option value="health">Health</option>
-                                    <option value="shopping">Shopping</option>
-                                    <option value="learning">Learning</option>
-                                    <option value="other">Other</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    Priority
-                                </label>
-                                <div class="flex space-x-3">
-                                    <button
-                                        type="button"
-                                        class="priority-btn default"
-                                        data-priority="low"
-                                    >
-                                        Low
-                                    </button>
-                                    <button
-                                        type="button"
-                                        class="priority-btn default"
-                                        data-priority="medium"
-                                    >
-                                        Medium
-                                    </button>
-                                    <button
-                                        type="button"
-                                        class="priority-btn default"
-                                        data-priority="high"
-                                    >
-                                        High
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Recurring Task Options -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class="fas fa-redo-alt mr-1"></i>
-                                    Recurring
-                                </label>
-                                <div class="flex flex-wrap gap-3">
-                                    <label class="inline-flex items-center">
-                                        <input type="radio" name="recurringType" value="none" checked class="form-radio text-blue-600" />
-                                        <span class="ml-2 text-gray-700">None</span>
-                                    </label>
-                                    <label class="inline-flex items-center">
-                                        <input type="radio" name="recurringType" value="daily" class="form-radio text-blue-600" />
-                                        <span class="ml-2 text-gray-700">Daily</span>
-                                    </label>
-                                    <label class="inline-flex items-center">
-                                        <input type="radio" name="recurringType" value="weekly" class="form-radio text-blue-600" />
-                                        <span class="ml-2 text-gray-700">Weekly</span>
-                                    </label>
-                                    <label class="inline-flex items-center">
-                                        <input type="radio" name="recurringType" value="monthly" class="form-radio text-blue-600" />
-                                        <span class="ml-2 text-gray-700">Monthly</span>
-                                    </label>
-                                </div>
-                                <div id="recurringOptions" class="mt-3 p-4 bg-gray-50 rounded-lg hidden">
-                                    <!-- Dynamic recurring options will be inserted here -->
-                                </div>
-                            </div>
-
-                            <!-- Subtasks Section -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class="fas fa-list-ul mr-1"></i>
-                                    Subtasks
-                                </label>
-                                <div class="flex mb-2">
-                                    <input
-                                        type="text"
-                                        id="subtaskInput"
-                                        class="flex-1 px-4 py-3 border border-gray-300 rounded-l-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                                        placeholder="Add a subtask"
-                                    />
-                                    <button
-                                        type="button"
-                                        id="addSubtaskBtn"
-                                        class="bg-blue-500 text-white px-4 py-3 rounded-r-lg hover:bg-blue-600 transition-all duration-200"
-                                    >
-                                        Add
-                                    </button>
-                                </div>
-                                <ul id="subtasksList" class="space-y-2">
-                                    <!-- Subtasks will be dynamically inserted here -->
-                                </ul>
-                            </div>
-
-                            <div class="flex space-x-3 pt-4">
-                                <button
-                                    type="submit"
-                                    class="flex-1 bg-gradient-to-r from-blue-500 to-purple-500 text-white py-3 rounded-lg hover:shadow-lg transform hover:scale-105 transition-all duration-300 font-medium"
-                                >
-                                    <span id="submitBtnText">Add Task</span>
-                                ></button>
-                                <button
-                                    type="button"
-                                    id="cancelBtn"
-                                    class="flex-1 bg-gray-100 text-gray-700 py-3 rounded-lg hover:bg-gray-200 transition-all duration-300 font-medium"
-                                >
-                                    Cancel
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Tasks List - Event delegation is applied here -->
-                <div id="tasksList" class="space-y-4">
-                    <!-- Tasks will be dynamically inserted here -->
-                </div>
-
-                <!-- Empty State Message -->
-                <div id="emptyState" class="text-center py-12">
-                    <div class="text-6xl mb-4">📅</div>
-                    <h3 class="text-xl font-semibold text-gray-600 mb-2">No tasks for today</h3>
-                    <p class="text-gray-500">Add your first task to get started!</p>
-                </div>
-            </section>
-
-            <!-- Dashboard View -->
-            <section id="dashboardView" class="max-w-6xl mx-auto space-y-6 hidden">
-                <!-- Summary Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl p-6 shadow-lg">
-                        <h3 class="text-sm font-medium opacity-90">Total Tasks</h3>
-                        <p id="totalTasks" class="text-3xl font-bold mt-2">0</p>
-                        <p class="text-sm opacity-80 mt-1">All time</p>
-                    </div>
-                    
-                    <div class="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-xl p-6 shadow-lg">
-                        <h3 class="text-sm font-medium opacity-90">Completed</h3>
-                        <p id="completedTasks" class="text-3xl font-bold mt-2">0</p>
-                        <p id="completionRateText" class="text-sm opacity-80 mt-1">0% completion rate</p>
-                    </div>
-                    
-                    <div class="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl p-6 shadow-lg">
-                        <h3 class="text-sm font-medium opacity-90">Time Spent</h3>
-                        <p id="timeSpentHours" class="text-3xl font-bold mt-2">0h</p>
-                        <p id="timeSpentMinutes" class="text-sm opacity-80 mt-1">0 minutes total</p>
-                    </div>
-                    
-                    <div class="bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-xl p-6 shadow-lg">
-                        <h3 class="text-sm font-medium opacity-90">Avg Task Time</h3>
-                        <p id="avgTaskTime" class="text-3xl font-bold mt-2">0min</p>
-                        <p class="text-sm opacity-80 mt-1">Per completed task</p>
-                    </div>
-                </div>
-
-                <!-- Charts Section -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <!-- Weekly Progress Chart -->
-                    <div class="bg-white rounded-xl shadow-lg p-6">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Weekly Progress</h3>
-                        <div class="h-64">
-                            <canvas id="weeklyChart"></canvas>
-                        </div>
-                    </div>
-
-                    <!-- Priority Distribution Chart -->
-                    <div class="bg-white rounded-xl shadow-lg p-6">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Completed Tasks by Priority</h3>
-                        <div class="h-64 flex items-center justify-center">
-                            <canvas id="priorityChart"></canvas>
-                        </div>
-                        <div id="priorityLegend" class="flex justify-center space-x-4 mt-4">
-                            <!-- Legend will be populated dynamically by JavaScript -->
-                        </div>
-                    </div>
-
-                    <!-- Category Distribution Chart -->
-                    <div class="bg-white rounded-xl shadow-lg p-6">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Tasks by Category</h3>
-                        <div class="h-64 flex items-center justify-center">
-                            <canvas id="categoryChart"></canvas>
-                        </div>
-                        <div id="categoryLegend" class="flex justify-center space-x-4 mt-4">
-                            <!-- Legend will be populated dynamically by JavaScript -->
-                        </div>
-                    </div>
-
-                     <!-- Recurring Task Distribution Chart -->
-                    <div class="bg-white rounded-xl shadow-lg p-6">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Recurring Task Overview</h3>
-                        <div class="h-64 flex items-center justify-center">
-                            <canvas id="recurringChart"></canvas>
-                        </div>
-                        <div id="recurringLegend" class="flex justify-center space-x-4 mt-4">
-                            <!-- Legend will be populated dynamically by JavaScript -->
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Weekly Summary Section -->
-                <div class="bg-white rounded-xl shadow-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Weekly Summary</h3>
-                    <div id="weeklySummary" class="grid grid-cols-1 md:grid-cols-7 gap-4">
-                        <!-- Weekly summary cards will be populated dynamically by JavaScript -->
-                    </div>
-                </div>
-            </section>
-        </main>
-    </div>
-
-
-    <script type="module">
-    // Schedule Master JavaScript Application
-    // This class manages the entire application state, data, and UI interactions.
-    class ScheduleMaster {
-        constructor() {
-            this.tasks = []; // Array to store all tasks (data is session-only now)
-            this.editingTaskId = null; // Stores the ID of the task being edited, null if adding new
-            this.currentPriority = 'low'; // Default priority for new tasks
-            this.currentRecurringType = 'none'; // Default recurring type
-            this.subtasks = []; // Temporary array for subtasks in the form
-
-            // Chart.js instances
-            this.weeklyChart = null;
-            this.priorityChart = null;
-            this.categoryChart = null;
-            this.recurringChart = null;
-
-            // No auth-related UI elements needed now
-            this._globalListenersAttached = false; // Flag to ensure global listeners are attached only once
-
-            // Initialize the application when the class is instantiated
-            this.init();
-        }
-
-        /**
-         * Initializes the application by setting up event listeners
-         * and loading initial data.
-         */
-        async init() {
-            // Setup global listeners (once per app lifecycle)
-            if (!this._globalListenersAttached) {
-                this.setupEventListeners(); // Setup view-specific event listeners
-                this._globalListenersAttached = true;
-            }
-
-            // Initial render of tasks and dashboard after setup
-            this.renderTasks();
-            this.updateProgress();
-            // Dashboard charts will be rendered when the tab is switched
-            this.switchTab('today'); // Ensure 'Today's Tasks' is active on load
-        }
-
-        /**
-         * Sets up all the necessary event listeners for UI elements.
-         */
-        setupEventListeners() {
-            // Hamburger menu toggle
-            document.getElementById('hamburgerBtn').addEventListener('click', () => {
-                document.getElementById('mobileMenu').classList.toggle('hidden');
-            });
-
-            // Close mobile menu when clicking outside
-            document.addEventListener('click', (e) => {
-                const mobileMenu = document.getElementById('mobileMenu');
-                const hamburgerBtn = document.getElementById('hamburgerBtn');
-                if (!mobileMenu.contains(e.target) && !hamburgerBtn.contains(e.target) && !mobileMenu.classList.contains('hidden')) {
-                    mobileMenu.classList.add('hidden');
-                }
-            });
-
-            // Navigation buttons in the new header and mobile menu
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const tab = e.target.closest('.tab-btn').dataset.tab;
-                    this.switchTab(tab);
-                });
-            });
-            document.querySelectorAll('.mobile-nav-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const tab = e.target.closest('.mobile-nav-btn').dataset.tab;
-                    this.switchTab(tab);
-                    document.getElementById('mobileMenu').classList.add('hidden'); // Close menu after selection
-                });
-            });
-
-
-            // Task form related event listeners
-            document.getElementById('addTaskBtn').addEventListener('click', () => this.showTaskForm());
-            document.getElementById('cancelBtn').addEventListener('click', () => this.hideTaskForm());
-            document.getElementById('taskFormElement').addEventListener('submit', (e) => this.handleTaskSubmit(e));
-
-            // Priority buttons event listeners
-            document.querySelectorAll('.priority-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => this.selectPriority(e.target.dataset.priority));
-            });
-
-            // Recurring type radio buttons event listeners
-            document.querySelectorAll('input[name="recurringType"]').forEach(radio => {
-                radio.addEventListener('change', (e) => this.handleRecurringTypeChange(e.target.value));
-            });
-
-            // Subtask input and add button listeners
-            document.getElementById('addSubtaskBtn').addEventListener('click', () => this.addSubtask());
-            document.getElementById('subtaskInput').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault(); // Prevent form submission
-                    this.addSubtask();
-                }
-            });
-
-            // Event delegation for subtasks list
-            document.getElementById('subtasksList').addEventListener('click', (e) => {
-                const target = e.target;
-                const subtaskItem = target.closest('.subtask-item');
-                if (!subtaskItem) return;
-
-                const subtaskId = subtaskItem.dataset.subtaskId;
-
-                if (target.type === 'checkbox' && target.id.startsWith('subtask-complete-')) {
-                    this.toggleSubtaskComplete(subtaskId);
-                } else if (target.closest('.delete-subtask-btn')) {
-                    this.deleteSubtask(subtaskId);
-                }
-            });
-
-            // Event delegation for tasksList: Handles clicks on dynamically added task elements
-            // This is more efficient than attaching listeners to each task individually.
-            document.getElementById('tasksList').addEventListener('click', (e) => {
-                const target = e.target;
-                // Find the closest ancestor element with 'data-task-id' to get the task ID
-                const taskItem = target.closest('.task-item');
-
-                if (!taskItem) return; // If click was not inside a task item, do nothing
-
-                const taskId = taskItem.dataset.taskId;
-
-                // Handle checkbox clicks (toggle completion)
-                if (target.type === 'checkbox' && target.id.startsWith('complete-')) {
-                    this.toggleComplete(taskId);
-                }
-                // Handle edit button clicks
-                else if (target.closest('.edit-btn')) { // Use closest for the button itself or its icon
-                    const task = this.tasks.find(t => t.id === taskId);
-                    if (task) {
-                        this.showTaskForm(task);
-                    }
-                }
-                // Handle delete button clicks
-                else if (target.closest('.delete-btn')) { // Use closest for the button itself or its icon
-                    this.deleteTask(taskId);
-                }
-            });
-        }
-
-        /**
-         * Switches between the "Today's Tasks" and "Weekly Dashboard" views.
-         * @param {string} tab - The tab to switch to ('today' or 'dashboard').
-         */
-        switchTab(tab) {
-            // Update styles for the desktop navigation buttons
-            document.querySelectorAll('#navTodayTab, #navDashboardTab').forEach(btn => {
-                btn.classList.remove('text-blue-600', 'font-bold', 'text-purple-600'); // Remove selected styles
-                btn.classList.add('text-gray-600', 'hover:bg-gray-100'); // Ensure default styles for unselected
-            });
-
-            // Update styles for mobile navigation buttons
-            document.querySelectorAll('.mobile-nav-btn').forEach(btn => {
-                btn.classList.remove('text-blue-600', 'font-bold', 'text-purple-600'); // Remove selected styles
-                btn.classList.add('text-gray-700', 'hover:bg-gray-100'); // Ensure default styles for unselected
-            });
-
-            // Apply selected style to the active tab across all relevant navigation elements
-            if (tab === 'today') {
-                // Apply a distinct text color and bold for the selected tab
-                document.getElementById('navTodayTab').classList.add('text-blue-600', 'font-bold');
-                document.querySelector('.mobile-nav-btn[data-tab="today"]').classList.add('text-blue-600', 'font-bold');
-
-                document.getElementById('todayView').classList.remove('hidden');
-                document.getElementById('dashboardView').classList.add('hidden');
-                this.renderTasks(); // Ensure today's tasks are rendered when switching back
-            } else { // tab === 'dashboard'
-                // Apply a distinct text color and bold for the selected tab
-                document.getElementById('navDashboardTab').classList.add('text-purple-600', 'font-bold');
-                document.querySelector('.mobile-nav-btn[data-tab="dashboard"]').classList.add('text-purple-600', 'font-bold');
-
-                document.getElementById('todayView').classList.add('hidden');
-                document.getElementById('dashboardView').classList.remove('hidden');
-                this.renderDashboard(); // Render dashboard content only when it's visible
-            }
-        }
-
-        /**
-         * Shows the task form, pre-filling it if a task object is provided for editing.
-         * @param {Object} [task=null] - The task object to pre-fill the form for editing.
-         */
-        showTaskForm(task = null) {
-            this.editingTaskId = task ? task.id : null; // Set editing ID if a task is provided
-            this.subtasks = []; // Reset subtasks for the form
-
-            // Update form title and submit button text based on whether it's an edit or add operation
-            if (task) {
-                document.getElementById('formTitle').textContent = 'Edit Task';
-                document.getElementById('submitBtnText').textContent = 'Update Task';
-                document.getElementById('taskTitle').value = task.title;
-                document.getElementById('taskDescription').value = task.description || '';
-                document.getElementById('taskStartTime').value = task.startTime || '';
-                document.getElementById('taskDuration').value = task.duration || 60;
-                document.getElementById('taskDueDate').value = task.dueDate || '';
-                document.getElementById('taskDueTime').value = task.dueTime || '';
-                document.getElementById('taskCategory').value = task.category || 'none';
-                this.selectPriority(task.priority || 'medium'); // Select the task's current priority
-
-                // Set recurring type and populate options
-                this.currentRecurringType = task.recurring?.type || 'none';
-                document.querySelector(`input[name="recurringType"][value="${this.currentRecurringType}"]`).checked = true;
-                this.handleRecurringTypeChange(this.currentRecurringType, task.recurring);
-
-                // Populate subtasks
-                this.subtasks = task.subtasks ? [...task.subtasks] : [];
-                this.renderSubtasks();
-
-            } else {
-                document.getElementById('formTitle').textContent = 'Add New Task';
-                document.getElementById('submitBtnText').textContent = 'Add Task';
-                document.getElementById('taskFormElement').reset(); // Clear form fields
-                document.getElementById('taskDuration').value = 60; // Reset duration to default
-                document.getElementById('taskCategory').value = 'none';
-                this.selectPriority('low'); // Set default priority to low
-                this.currentRecurringType = 'none';
-                document.querySelector('input[name="recurringType"][value="none"]').checked = true;
-                this.handleRecurringTypeChange('none');
-                this.renderSubtasks(); // Clear subtask list in UI
-            }
-
-            document.getElementById('taskForm').classList.remove('hidden'); // Show the form
-        }
-
-        /**
-         * Hides the task form and resets the editing state.
-         */
-        hideTaskForm() {
-            document.getElementById('taskForm').classList.add('hidden'); // Hide the form
-            this.editingTaskId = null; // Clear editing task ID
-            document.getElementById('taskFormElement').reset(); // Reset form fields
-            this.subtasks = []; // Clear subtasks in memory
-            this.renderSubtasks(); // Clear subtask list in UI
-        }
-
-        /**
-         * Updates the visual state of priority buttons and sets the current priority.
-         * @param {string} priority - The selected priority ('low', 'medium', 'high').
-         */
-        selectPriority(priority) {
-            this.currentPriority = priority; // Store the selected priority
-
-            const priorityColors = {
-                low: 'bg-green-100 text-green-800 border-green-300',
-                medium: 'bg-yellow-100 text-yellow-800 border-yellow-300',
-                high: 'bg-red-100 text-red-800 border-red-300'
-            };
-
-            // Reset all priority buttons to their default (unselected) state
-            document.querySelectorAll('.priority-btn').forEach(btn => {
-                // Split the classes string into individual class names
-                const classesToRemove = Object.values(priorityColors);
-                btn.classList.remove('selected', ...classesToRemove);
-                btn.classList.add('default'); // Add the default unselected class
-            });
-
-            // Apply selected styling to the clicked priority button
-            const selectedBtn = document.querySelector(`[data-priority="${priority}"]`);
-            if (selectedBtn) {
-                selectedBtn.classList.remove('default'); // Remove default class
-                selectedBtn.classList.add('selected', ...priorityColors[priority].split(' ')); // Apply individual classes
-            }
-        }
-
-        /**
-         * Handles the change in recurring task type selection.
-         * @param {string} type - The selected recurring type ('none', 'daily', 'weekly', 'monthly').
-         * @param {Object} [recurringData=null] - Existing recurring data for pre-filling.
-         */
-        handleRecurringTypeChange(type, recurringData = null) {
-            this.currentRecurringType = type;
-            const optionsContainer = document.getElementById('recurringOptions');
-            optionsContainer.innerHTML = '';
-
-            if (type === 'none') {
-                optionsContainer.classList.add('hidden');
-            } else {
-                optionsContainer.classList.remove('hidden');
-                if (type === 'daily') {
-                    optionsContainer.innerHTML = `
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Repeat every (days)</label>
-                        <input type="number" id="recurringInterval" value="${recurringData?.interval || 1}" min="1" class="w-full px-4 py-3 border border-gray-300 rounded-lg">
-                    `;
-                } else if (type === 'weekly') {
-                    const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-                    optionsContainer.innerHTML = `
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Repeat on</label>
-                        <div class="grid grid-cols-3 gap-2">
-                            ${daysOfWeek.map((day, index) => `
-                                <label class="inline-flex items-center">
-                                    <input type="checkbox" name="recurringDays" value="${index}"
-                                        ${recurringData?.days?.includes(index) ? 'checked' : ''}
-                                        class="form-checkbox text-blue-600">
-                                    <span class="ml-2 text-gray-700">${day}</span>
-                                </label>
-                            `).join('')}
-                        </div>
-                    `;
-                } else if (type === 'monthly') {
-                    optionsContainer.innerHTML = `
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Repeat on day of month</label>
-                        <input type="number" id="recurringDayOfMonth" value="${recurringData?.dayOfMonth || 1}" min="1" max="31" class="w-full px-4 py-3 border border-gray-300 rounded-lg">
-                    `;
-                }
-            }
-        }
-
-        /**
-         * Adds a new subtask to the temporary subtasks array and re-renders the list.
-         */
-        addSubtask() {
-            const input = document.getElementById('subtaskInput');
-            const text = input.value.trim();
-            if (text) {
-                this.subtasks.push({ id: Date.now().toString(), text, completed: false });
-                input.value = ''; // Clear input
-                this.renderSubtasks();
-            }
-        }
-
-        /**
-         * Toggles the completion status of a subtask.
-         * @param {string} subtaskId - The ID of the subtask to toggle.
-         */
-        toggleSubtaskComplete(subtaskId) {
-            const subtask = this.subtasks.find(s => s.id === subtaskId);
-            if (subtask) {
-                subtask.completed = !subtask.completed;
-                this.renderSubtasks(); // Re-render subtasks list
-            }
-        }
-
-        /**
-         * Deletes a subtask from the temporary subtasks array.
-         * @param {string} subtaskId - The ID of the subtask to delete.
-         */
-        deleteSubtask(subtaskId) {
-            this.subtasks = this.subtasks.filter(s => s.id !== subtaskId);
-            this.renderSubtasks(); // Re-render subtasks list
-        }
-
-        /**
-         * Renders the current list of subtasks in the form.
-         */
-        renderSubtasks() {
-            const listElement = document.getElementById('subtasksList');
-            if (!listElement) return; // Ensure element exists
-
-            listElement.innerHTML = this.subtasks.map(subtask => `
-                <li class="flex items-center justify-between p-2 bg-gray-50 rounded-lg subtask-item" data-subtask-id="${subtask.id}">
-                    <label class="inline-flex items-center flex-1">
-                        <input
-                            type="checkbox"
-                            id="subtask-complete-${subtask.id}"
-                            ${subtask.completed ? 'checked' : ''}
-                            class="form-checkbox text-blue-600 w-4 h-4"
-                        />
-                        <span class="ml-2 text-gray-800 ${subtask.completed ? 'line-through text-gray-500' : ''}">
-                            ${subtask.text}
-                        </span>
-                    </label>
-                    <button type="button" class="text-red-500 hover:text-red-700 delete-subtask-btn" >
-                        <i class="fas fa-trash-alt"></i>
-                    </button>
-                </li>
-            `).join('');
-        }
-
-
-        /**
-         * Handles the submission of the task form, either adding a new task or updating an existing one.
-         * Data is now managed in the local `this.tasks` array.
-         * @param {Event} e - The submit event object.
-         */
-        async handleTaskSubmit(e) {
-            e.preventDefault(); // Prevent default form submission and page reload
-
-            // Gather task data from form fields
-            const taskData = {
-                title: document.getElementById('taskTitle').value.trim(),
-                description: document.getElementById('taskDescription').value.trim(),
-                startTime: document.getElementById('taskStartTime').value,
-                duration: parseInt(document.getElementById('taskDuration').value) || 0,
-                dueDate: document.getElementById('taskDueDate').value,
-                dueTime: document.getElementById('taskDueTime').value,
-                category: document.getElementById('taskCategory').value,
-                priority: this.currentPriority,
-                subtasks: JSON.parse(JSON.stringify(this.subtasks)) // Deep copy subtasks
-            };
-
-            // Gather recurring pattern data
-            if (this.currentRecurringType !== 'none') {
-                taskData.recurring = { type: this.currentRecurringType };
-                if (this.currentRecurringType === 'daily') {
-                    taskData.recurring.interval = parseInt(document.getElementById('recurringInterval').value) || 1;
-                } else if (this.currentRecurringType === 'weekly') {
-                    const selectedDays = Array.from(document.querySelectorAll('input[name="recurringDays"]:checked'))
-                                             .map(cb => parseInt(cb.value));
-                    taskData.recurring.days = selectedDays;
-                } else if (this.currentRecurringType === 'monthly') {
-                    taskData.recurring.dayOfMonth = parseInt(document.getElementById('recurringDayOfMonth').value) || 1;
-                }
-            } else {
-                taskData.recurring = null; // No recurring pattern
-            }
-
-            // Basic validation for title
-            if (!taskData.title) {
-                console.error("Task title cannot be empty.");
-                // In a real app, show a user-friendly error message on the UI
-                return;
-            }
-
-            // If editingTaskId is set, update an existing task; otherwise, add a new one
-            if (this.editingTaskId) {
-                const taskIndex = this.tasks.findIndex(t => t.id === this.editingTaskId);
-                if (taskIndex !== -1) {
-                    this.tasks[taskIndex] = {
-                        ...this.tasks[taskIndex], // Keep original id and completed status
-                        ...taskData,
-                        updatedAt: new Date()
-                    };
-                    console.log("Task updated successfully in local array!");
-                }
-            } else {
-                this.tasks.push({
-                    id: Date.now().toString(), // Generate a unique ID
-                    ...taskData,
-                    completed: false,
-                    createdAt: new Date()
-                });
-                console.log("Task added successfully to local array!");
-            }
-            this.hideTaskForm(); // Hide the form after submission
-            this.renderTasks(); // Re-render the UI
-            this.updateProgress(); // Update daily progress
-            // No need to re-render dashboard explicitly, it pulls from this.tasks when visible
-        }
-
-        /**
-         * Deletes a task from the local tasks array.
-         * @param {string} taskId - The ID of the task to delete.
-         */
-        deleteTask(taskId) {
-            this.tasks = this.tasks.filter(task => task.id !== taskId);
-            console.log("Task deleted successfully from local array!");
-            this.renderTasks(); // Re-render the UI
-            this.updateProgress(); // Update daily progress
-        }
-
-        /**
-         * Toggles the completion status of a task in the local tasks array.
-         * @param {string} taskId - The ID of the task to toggle.
-         */
-        toggleComplete(taskId) {
-            const task = this.tasks.find(task => task.id === taskId);
-            if (task) {
-                task.completed = !task.completed;
-                task.completedAt = task.completed ? new Date() : null; // Set/clear timestamp
-                task.updatedAt = new Date();
-                console.log("Task completion status updated in local array!");
-                this.renderTasks(); // Re-render the UI
-                this.updateProgress(); // Update daily progress
-            }
-        }
-
-        /**
-         * Filters and returns tasks that were created today.
-         * @returns {Array<Object>} An array of tasks created on the current day.
-         */
-        getTodaysTasks() {
-            const today = new Date();
-            // Normalize today's date to remove time component for accurate comparison
-            today.setHours(0, 0, 0, 0);
-
-            return this.tasks.filter(task => {
-                // `createdAt` is now a plain Date object
-                const taskDate = new Date(task.createdAt);
-                taskDate.setHours(0, 0, 0, 0); // Normalize task date
-
-                return taskDate.getTime() === today.getTime(); // Compare timestamps
-            });
-        }
-
-        /**
-         * Renders (displays) today's tasks in the UI.
-         */
-        renderTasks() {
-            const todaysTasks = this.getTodaysTasks();
-            // Sort tasks by due date/time if available, otherwise by creation time
-            todaysTasks.sort((a, b) => {
-                const dateA = a.dueDate ? new Date(`${a.dueDate}T${a.dueTime || '00:00'}`) : null;
-                const dateB = b.dueDate ? new Date(`${b.dueDate}T${b.dueTime || '00:00'}`) : null;
-
-                if (dateA && dateB) return dateA.getTime() - dateB.getTime();
-                if (dateA) return -1; // A has due date, B doesn't
-                if (dateB) return 1;  // B has due date, A doesn't
-                
-                // Fallback to createdAt for tasks without due dates
-                const timeA = new Date(a.createdAt).getTime();
-                const timeB = new Date(b.createdAt).getTime();
-                return timeB - timeA; // Most recent first for tasks without due dates
-            });
-
-            const tasksList = document.getElementById('tasksList');
-            const emptyState = document.getElementById('emptyState');
-
-            if (todaysTasks.length === 0) {
-                tasksList.innerHTML = ''; // Clear tasks list
-                emptyState.classList.remove('hidden'); // Show empty state message
-            } else {
-                emptyState.classList.add('hidden'); // Hide empty state
-                // Generate HTML for each task and join them
-                tasksList.innerHTML = todaysTasks.map(task => this.createTaskHTML(task)).join('');
-                // Note: Event listeners for individual tasks are handled via delegation in setupEventListeners
-            }
-        }
-
-        /**
-         * Generates the HTML string for a single task item.
-         * @param {Object} task - The task object.
-         * @returns {string} The HTML string for the task.
-         */
-        createTaskHTML(task) {
-            // Define color classes for task priority borders and backgrounds
-            const priorityColors = {
-                low: 'border-green-400 bg-green-50',
-                medium: 'border-yellow-400 bg-yellow-50',
-                high: 'border-red-400 bg-red-50'
-            };
-
-            // Define color classes for priority badges
-            const priorityBadgeColors = {
-                low: 'bg-green-100 text-green-800',
-                medium: 'bg-yellow-100 text-yellow-800',
-                high: 'bg-red-100 text-red-800'
-            };
-
-            const categoryBadgeColors = {
-                work: 'bg-blue-100 text-blue-800',
-                personal: 'bg-purple-100 text-purple-800',
-                health: 'bg-red-100 text-red-800',
-                shopping: 'bg-green-100 text-green-800',
-                learning: 'bg-indigo-100 text-indigo-800',
-                other: 'bg-gray-100 text-gray-800',
-                none: 'bg-gray-100 text-gray-600'
-            };
-
-            /**
-             * Formats a time string (e.g., "14:30") into a more readable 12-hour format (e.g., "2:30 PM").
-             * @param {string} timeString - The time string in "HH:MM" format.
-             * @returns {string} Formatted time string or empty if input is null/empty.
-             */
-            const formatTime = (timeString) => {
-                if (!timeString) return '';
-                try {
-                    const [hours, minutes] = timeString.split(':');
-                    const date = new Date();
-                    date.setHours(parseInt(hours), parseInt(minutes));
-                    // Using Intl.DateTimeFormat for robust time formatting
-                    return new Intl.DateTimeFormat('en-US', {
-                        hour: 'numeric',
-                        minute: 'numeric',
-                        hour12: true
-                    }).format(date);
-                } catch (e) {
-                    console.error("Error formatting time:", e);
-                    return timeString; // Fallback to original string on error
-                }
-            };
-
-            /**
-             * Formats a date string (YYYY-MM-DD) into a readable format.
-             * @param {string} dateString - The date string in "YYYY-MM-DD" format.
-             * @returns {string} Formatted date string.
-             */
-            const formatDate = (dateString) => {
-                if (!dateString) return '';
-                try {
-                    const date = new Date(dateString + 'T00:00:00'); // Add time for correct parsing
-                    return new Intl.DateTimeFormat('en-US', {
-                        month: 'short',
-                        day: 'numeric'
-                    }).format(date);
-                } catch (e) {
-                    console.error("Error formatting date:", e);
-                    return dateString;
-                }
-            };
-
-            // Determine if task is overdue
-            const isOverdue = (task.dueDate && !task.completed) && (() => {
-                const now = new Date();
-                const dueDateTime = task.dueDate + (task.dueTime ? `T${task.dueTime}` : 'T23:59:59');
-                const dueDate = new Date(dueDateTime);
-                return dueDate < now;
-            })();
-
-            // Generate HTML for subtasks
-            const subtasksHtml = task.subtasks && task.subtasks.length > 0 ? `
-                <div class="mt-3">
-                    <h5 class="text-xs font-semibold text-gray-700 mb-1">Subtasks:</h5>
-                    <ul class="space-y-1 text-sm">
-                        ${task.subtasks.map(sub => `
-                            <li class="flex items-center ${sub.completed ? 'line-through text-gray-500' : 'text-gray-700'}">
-                                <i class="far ${sub.completed ? 'fa-check-square text-green-500' : 'fa-square text-gray-400'} mr-2"></i>
-                                <span>${sub.text}</span>
-                            </li>
-                        `).join('')}
-                    </ul>
-                </div>
-            ` : '';
-
-            // Generate HTML for recurring info
-            let recurringHtml = '';
-            if (task.recurring && task.recurring.type !== 'none') {
-                let recurringText = '';
-                switch (task.recurring.type) {
-                    case 'daily':
-                        recurringText = `Every ${task.recurring.interval} day(s)`;
-                        break;
-                    case 'weekly':
-                        const days = task.recurring.days?.map(d => ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d]).join(', ') || 'No days selected';
-                        recurringText = `Weekly on ${days}`;
-                        break;
-                    case 'monthly':
-                        recurringText = `Monthly on day ${task.recurring.dayOfMonth}`;
-                        break;
-                }
-                recurringHtml = `
-                    <div class="flex items-center text-sm text-blue-500 mt-3">
-                        <i class="fas fa-redo-alt mr-1"></i>
-                        <span>${recurringText}</span>
-                    </div>
-                `;
-            }
-
-            // Determine border color based on overdue status
-            const taskBorderColor = isOverdue ? 'border-red-600' : priorityColors[task.priority || 'medium'];
-
-
-            // Return the HTML structure for a single task.
-            // 'data-task-id' is crucial for event delegation.
-            // 'task-item' class helps in targeting the task container in event delegation.
-            return `
-                <div class="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border-l-4 ${taskBorderColor} ${task.completed ? 'opacity-75' : ''} task-item" data-task-id="${task.id}">
-                    <div class="p-6">
-                        <div class="flex items-start justify-between">
-                            <div class="flex items-start space-x-4 flex-1">
-                                <div class="flex-shrink-0 mt-1">
-                                    <input
-                                        type="checkbox"
-                                        id="complete-${task.id}"
-                                        ${task.completed ? 'checked' : ''}
-                                        class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 transition-all duration-200"
-                                    />
-                                </div>
-                                
-                                <div class="flex-1">
-                                    <h4 class="text-lg font-semibold ${task.completed ? 'line-through text-gray-500' : 'text-gray-800'}">
-                                        ${task.title}
-                                    </h4>
-                                    
-                                    ${task.description ? `
-                                        <p class="mt-2 text-sm ${task.completed ? 'text-gray-400' : 'text-gray-600'}">
-                                            ${task.description}
-                                        </p>
-                                    ` : ''}
-                                    
-                                    <div class="flex items-center flex-wrap gap-x-4 gap-y-2 mt-3">
-                                        ${task.startTime ? `
-                                            <div class="flex items-center text-sm text-gray-500">
-                                                <i class="fas fa-clock mr-1"></i>
-                                                ${formatTime(task.startTime)}
-                                            </div>
-                                        ` : ''}
-                                        
-                                        ${task.duration ? `
-                                            <div class="flex items-center text-sm text-gray-500">
-                                                <i class="fas fa-stopwatch mr-1"></i>
-                                                ${task.duration} min
-                                            </div>
-                                        ` : ''}
-
-                                        ${task.dueDate ? `
-                                            <div class="flex items-center text-sm ${isOverdue ? 'text-red-600 font-semibold' : 'text-gray-500'}">
-                                                <i class="fas fa-calendar-alt mr-1"></i>
-                                                ${formatDate(task.dueDate)} ${task.dueTime ? formatTime(task.dueTime) : ''}
-                                                ${isOverdue ? ' (Overdue)' : ''}
-                                            </div>
-                                        ` : ''}
-                                        
-                                        <span class="px-2 py-1 rounded-full text-xs font-medium ${priorityBadgeColors[task.priority || 'medium']}">
-                                            ${(task.priority || 'medium').charAt(0).toUpperCase() + (task.priority || 'medium').slice(1)} Priority
-                                        </span>
-
-                                        ${task.category && task.category !== 'none' ? `
-                                            <span class="px-2 py-1 rounded-full text-xs font-medium ${categoryBadgeColors[task.category]}">
-                                                ${(task.category).charAt(0).toUpperCase() + (task.category).slice(1)}
-                                            </span>
-                                        ` : ''}
-                                    </div>
-                                    ${recurringHtml}
-                                    ${subtasksHtml}
-                                </div>
-                            </div>
-                            
-                            <div class="flex items-center space-x-2">
-                                <button
-                                    class="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 edit-btn"
-                                    title="Edit task"
-                                >
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                
-                                <button
-                                    class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 delete-btn"
-                                    title="Delete task"
-                                >
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        /**
-         * Updates the daily progress display (completion rate and progress bar).
-         */
-        updateProgress() {
-            const todaysTasks = this.getTodaysTasks();
-            const completedTasks = todaysTasks.filter(task => task.completed).length;
-            const totalTasks = todaysTasks.length;
-            const completionRate = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
-
-            document.getElementById('completionRate').textContent = `${Math.round(completionRate)}%`;
-            document.getElementById('completionText').textContent = `${completedTasks} of ${totalTasks} completed`;
-            document.getElementById('progressBar').style.width = `${completionRate}%`;
-        }
-
-        /**
-         * Renders all components of the dashboard view.
-         */
-        renderDashboard() {
-            this.updateDashboardStats();
-            this.renderWeeklyChart();
-            this.renderPriorityChart();
-            this.renderCategoryChart();
-            this.renderRecurringChart();
-            this.renderWeeklySummary();
-        }
-
-        /**
-         * Updates the summary statistics displayed on the dashboard.
-         */
-        updateDashboardStats() {
-            const totalTasks = this.tasks.length;
-            const completedTasks = this.tasks.filter(task => task.completed).length;
-            const completionRate = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
-            
-            // Calculate total time spent on completed tasks
-            const totalTimeSpent = this.tasks
-                .filter(task => task.completed && task.duration)
-                .reduce((total, task) => total + (task.duration || 0), 0);
-            
-            // Calculate average time per completed task
-            const averageTaskTime = completedTasks > 0 ? totalTimeSpent / completedTasks : 0;
-
-            // Update DOM elements with calculated statistics
-            document.getElementById('totalTasks').textContent = totalTasks;
-            document.getElementById('completedTasks').textContent = completedTasks;
-            document.getElementById('completionRateText').textContent = `${Math.round(completionRate)}% completion rate`;
-            document.getElementById('timeSpentHours').textContent = `${Math.round(totalTimeSpent / 60)}h`;
-            document.getElementById('timeSpentMinutes').textContent = `${totalTimeSpent} minutes total`;
-            document.getElementById('avgTaskTime').textContent = `${Math.round(averageTaskTime)}min`;
-        }
-
-        /**
-         * Prepares and returns data for the weekly progress chart (last 7 days).
-         * @returns {Array<Object>} An array containing daily task statistics for the week.
-         */
-        getWeeklyData() {
-            const weekData = [];
-            const today = new Date();
-            today.setHours(0, 0, 0, 0); // Normalize today's date
-
-            // Loop through the last 7 days (including today)
-            for (let i = 6; i >= 0; i--) {
-                const date = new Date(today);
-                date.setDate(today.getDate() - i); // Set date to 'i' days ago
-                date.setHours(0, 0, 0, 0); // Normalize for comparison
-
-                // Filter tasks for the current day in the loop
-                const dayTasks = this.tasks.filter(task => {
-                    // `createdAt` is now a plain Date object
-                    const taskCreatedAt = new Date(task.createdAt);
-                    taskCreatedAt.setHours(0, 0, 0, 0); // Normalize task creation date
-                    return taskCreatedAt.getTime() === date.getTime();
-                });
-                
-                const completedTasks = dayTasks.filter(task => task.completed).length;
-                
-                weekData.push({
-                    day: date.toLocaleDateString('en-US', { weekday: 'short' }), // e.g., "Mon", "Tue"
-                    date: date.toDateString(), // Full date string for internal use
-                    total: dayTasks.length, // Total tasks for the day
-                    completed: completedTasks, // Completed tasks for the day
-                    completion: dayTasks.length > 0 ? (completedTasks / dayTasks.length) * 100 : 0 // Completion percentage
-                });
-            }
-            
-            return weekData;
-        }
-
-        /**
-         * Renders the weekly progress bar chart using Chart.js.
-         */
-        renderWeeklyChart() {
-            const ctx = document.getElementById('weeklyChart').getContext('2d');
-            const weeklyData = this.getWeeklyData();
-
-            // Destroy existing chart instance to prevent memory leaks and redraw cleanly
-            if (this.weeklyChart) {
-                this.weeklyChart.destroy();
-            }
-
-            this.weeklyChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: weeklyData.map(d => d.day), // Day names for X-axis
-                    datasets: [
-                        {
-                            label: 'Completed',
-                            data: weeklyData.map(d => d.completed), // Completed tasks data
-                            backgroundColor: '#3b82f6', // Blue-500
-                            borderRadius: 4,
-                        },
-                        {
-                            label: 'Total',
-                            data: weeklyData.map(d => d.total), // Total tasks data
-                            backgroundColor: '#e5e7eb', // Gray-200
-                            borderRadius: 4,
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false, // Allow chart to fill container
-                    plugins: {
-                        legend: {
-                            position: 'top', // Legend position
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true, // Start Y-axis at zero
-                            ticks: {
-                                stepSize: 1 // Ensure integer steps for task counts
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        /**
-         * Renders the doughnut chart showing completed tasks by priority.
-         */
-        renderPriorityChart() {
-            const ctx = document.getElementById('priorityChart').getContext('2d');
-            // Filter only completed tasks for priority distribution
-            const completedTasks = this.tasks.filter(task => task.completed);
-            
-            // Count completed tasks by priority level
-            const priorityCounts = {
-                high: completedTasks.filter(task => task.priority === 'high').length,
-                medium: completedTasks.filter(task => task.priority === 'medium').length,
-                low: completedTasks.filter(task => task.priority === 'low').length,
-            };
-
-            // Prepare data for Chart.js, filtering out priorities with no completed tasks
-            const priorityData = [
-                { name: 'High Priority', value: priorityCounts.high, color: '#ef4444' }, // Red-500
-                { name: 'Medium Priority', value: priorityCounts.medium, color: '#f59e0b' }, // Orange-500
-                { name: 'Low Priority', value: '#10b981', color: '#10b981' }, // Green-500
-            ].filter(item => item.value > 0); // Only include priorities with completed tasks
-
-            // Destroy existing chart instance if it exists
-            if (this.priorityChart) {
-                this.priorityChart.destroy();
-            }
-
-            // Only render chart if there is data to display
-            if (priorityData.length > 0) {
-                this.priorityChart = new Chart(ctx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: priorityData.map(d => d.name),
-                        datasets: [{
-                            data: priorityData.map(d => d.value),
-                            backgroundColor: priorityData.map(d => d.color),
-                            borderWidth: 2,
-                            borderColor: '#fff' // White border between segments
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: false
-                            }
-                        }
-                    }
-                });
-
-                // Dynamically update the custom legend below the chart
-                const legend = document.getElementById('priorityLegend');
-                legend.innerHTML = priorityData.map(entry => `
-                    <div class="flex items-center space-x-2">
-                        <div class="w-3 h-3 rounded-full" style="background-color: ${entry.color}"></div>
-                        <span class="text-sm text-gray-600">${entry.name}</span>
-                    </div>
-                `).join('');
-            } else {
-                // If no priority data, clear the chart canvas and legend
-                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-                document.getElementById('priorityLegend').innerHTML = '<p class="text-center text-gray-500 text-sm">No completed tasks to display by priority.</p>';
-            }
-        }
-
-        /**
-         * Renders the doughnut chart showing tasks by category.
-         */
-        renderCategoryChart() {
-            const ctx = document.getElementById('categoryChart').getContext('2d');
-            
-            const categoryCounts = this.tasks.reduce((acc, task) => {
-                const category = task.category || 'none';
-                acc[category] = (acc[category] || 0) + 1;
-                return acc;
-            }, {});
-
-            const categoryColors = {
-                work: '#3b82f6', // Blue
-                personal: '#8b5cf6', // Purple
-                health: '#ef4444', // Red
-                shopping: '#22c55e', // Green
-                learning: '#6366f1', // Indigo
-                other: '#6b7280', // Gray
-                none: '#d1d5db' // Light Gray
-            };
-
-            const categoryData = Object.keys(categoryCounts)
-                .map(cat => ({
-                    name: cat.charAt(0).toUpperCase() + cat.slice(1),
-                    value: categoryCounts[cat],
-                    color: categoryColors[cat] || categoryColors['other']
-                }))
-                .filter(item => item.value > 0);
-
-            if (this.categoryChart) {
-                this.categoryChart.destroy();
-            }
-
-            if (categoryData.length > 0) {
-                this.categoryChart = new Chart(ctx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: categoryData.map(d => d.name),
-                        datasets: [{
-                            data: categoryData.map(d => d.value),
-                            backgroundColor: categoryData.map(d => d.color),
-                            borderWidth: 2,
-                            borderColor: '#fff'
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: false
-                            }
-                        }
-                    }
-                });
-
-                const legend = document.getElementById('categoryLegend');
-                legend.innerHTML = categoryData.map(entry => `
-                    <div class="flex items-center space-x-2">
-                        <div class="w-3 h-3 rounded-full" style="background-color: ${entry.color}"></div>
-                        <span class="text-sm text-gray-600">${entry.name}</span>
-                    </div>
-                `).join('');
-            } else {
-                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-                document.getElementById('categoryLegend').innerHTML = '<p class="text-center text-gray-500 text-sm">No tasks to display by category.</p>';
-            }
-        }
-
-        /**
-         * Renders the doughnut chart showing recurring task overview.
-         */
-        renderRecurringChart() {
-            const ctx = document.getElementById('recurringChart').getContext('2d');
-            
-            const recurringCounts = this.tasks.reduce((acc, task) => {
-                const type = task.recurring?.type || 'none';
-                acc[type] = (acc[type] || 0) + 1;
-                return acc;
-            }, {});
-
-            const recurringColors = {
-                none: '#d1d5db', // Light Gray
-                daily: '#3b82f6', // Blue
-                weekly: '#8b5cf6', // Purple
-                monthly: '#ef4444' // Red
-            };
-
-            const recurringData = Object.keys(recurringCounts)
-                .map(type => ({
-                    name: type.charAt(0).toUpperCase() + type.slice(1),
-                    value: recurringCounts[type],
-                    color: recurringColors[type] || recurringColors['none']
-                }))
-                .filter(item => item.value > 0);
-
-            if (this.recurringChart) {
-                this.recurringChart.destroy();
-            }
-
-            if (recurringData.length > 0) {
-                this.recurringChart = new Chart(ctx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: recurringData.map(d => d.name),
-                        datasets: [{
-                            data: recurringData.map(d => d.value),
-                            backgroundColor: recurringData.map(d => d.color),
-                            borderWidth: 2,
-                            borderColor: '#fff'
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: false
-                            }
-                        }
-                    }
-                });
-
-                const legend = document.getElementById('recurringLegend');
-                legend.innerHTML = recurringData.map(entry => `
-                    <div class="flex items-center space-x-2">
-                        <div class="w-3 h-3 rounded-full" style="background-color: ${entry.color}"></div>
-                        <span class="text-sm text-gray-600">${entry.name}</span>
-                    </div>
-                `).join('');
-            } else {
-                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-                document.getElementById('recurringLegend').innerHTML = '<p class="text-center text-gray-500 text-sm">No tasks to display for recurring overview.</p>';
-            }
-        }
-
-
-        /**
-         * Renders the weekly summary cards, showing daily completion status.
-         */
-        renderWeeklySummary() {
-            const weeklyData = this.getWeeklyData();
-            const summary = document.getElementById('weeklySummary');
-            
-            // Generate HTML for each day's summary card
-            summary.innerHTML = weeklyData.map(day => `
-                <div class="text-center p-4 bg-gray-50 rounded-lg">
-                    <p class="font-medium text-gray-800">${day.day}</p>
-                    <p class="text-2xl font-bold text-blue-600 mt-2">${day.completed}</p>
-                    <p class="text-sm text-gray-600">of ${day.total}</p>
-                    <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
-                        <div class="bg-blue-500 h-2 rounded-full transition-all duration-300" style="width: ${day.completion}%"></div>
-                    </div>
-                </div>
-            `).join('');
-        }
-    }
-
-    // Initialize the ScheduleMaster application when the DOM is fully loaded.
-    document.addEventListener('DOMContentLoaded', () => {
-        new ScheduleMaster();
-    });
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: { primary: "#4F46E5", secondary: "#818CF8" },
+            borderRadius: {
+              none: "0px",
+              sm: "4px",
+              DEFAULT: "8px",
+              md: "12px",
+              lg: "16px",
+              xl: "20px",
+              "2xl": "24px",
+              "3xl": "32px",
+              full: "9999px",
+              button: "8px",
+            },
+          },
+        },
+      };
     </script>
-</body>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
+    />
+    <style>
+      :where([class^="ri-"])::before { content: "\f3c2"; }
+      .loading-spinner {
+      text-align: center;
+      }
+      .spinner {
+      width: 40px;
+      height: 40px;
+      margin: 0 auto;
+      border: 3px solid #e5e7eb;
+      border-top-color: #4F46E5;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+      to {
+      transform: rotate(360deg);
+      }
+      }
+      body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f8fafc;
+      }
+      .glass {
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+      }
+      .task-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .task-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      }
+      .progress-circle {
+      transform: rotate(-90deg);
+      }
+      .modal {
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      }
+      .modal-enter {
+      opacity: 0;
+      transform: scale(0.95);
+      }
+      .modal-enter-active {
+      opacity: 1;
+      transform: scale(1);
+      }
+      .add-button {
+      transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      }
+      .add-button:hover {
+      transform: rotate(90deg);
+      box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
+      }
+      .form-field {
+      transition: all 0.3s ease;
+      }
+      .form-field:focus-within label {
+      transform: translateY(-20px) scale(0.85);
+      color: #4F46E5;
+      }
+      .form-field label {
+      transition: transform 0.3s ease, color 0.3s ease;
+      transform-origin: left top;
+      }
+      .priority-indicator {
+      transition: all 0.3s ease;
+      }
+      .category-icon {
+      animation: float 3s ease-in-out infinite;
+      }
+      @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+      }
+      .pulse {
+      animation: pulse 2s infinite;
+      }
+      @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.4); }
+      70% { box-shadow: 0 0 0 10px rgba(79, 70, 229, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0); }
+      }
+      .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background-color: #4F46E5;
+      opacity: 0;
+      }
+      @keyframes confetti-fall {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100px) rotate(360deg); opacity: 0; }
+      }
+      .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.4);
+      transform: scale(0);
+      animation: ripple 0.6s linear;
+      }
+      @keyframes ripple {
+      to { transform: scale(2.5); opacity: 0; }
+      }
+      .progress-bar {
+      transition: width 0.3s ease;
+      }
+      input[type="number"]::-webkit-inner-spin-button,
+      input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+      }
+      .custom-checkbox {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid #d1d5db;
+      border-radius: 4px;
+      outline: none;
+      transition: all 0.2s ease;
+      position: relative;
+      cursor: pointer;
+      }
+      .custom-checkbox:checked {
+      background-color: #4F46E5;
+      border-color: #4F46E5;
+      }
+      .custom-checkbox:checked::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 6px;
+      width: 6px;
+      height: 10px;
+      border: solid white;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+      }
+      .custom-radio {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid #d1d5db;
+      border-radius: 50%;
+      outline: none;
+      transition: all 0.2s ease;
+      position: relative;
+      cursor: pointer;
+      }
+      .custom-radio:checked {
+      border-color: #4F46E5;
+      }
+      .custom-radio:checked::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: #4F46E5;
+      }
+      .custom-switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+      }
+      .custom-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+      }
+      .switch-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #e5e7eb;
+      transition: .4s;
+      border-radius: 34px;
+      }
+      .switch-slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+      }
+      input:checked + .switch-slider {
+      background-color: #4F46E5;
+      }
+      input:checked + .switch-slider:before {
+      transform: translateX(20px);
+      }
+      .range-slider {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 5px;
+      background: #e5e7eb;
+      outline: none;
+      }
+      .range-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #4F46E5;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      }
+      .range-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 0 6px rgba(79, 70, 229, 0.2);
+      }
+      .range-slider::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #4F46E5;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+      }
+      .range-slider::-moz-range-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 0 6px rgba(79, 70, 229, 0.2);
+      }
+    </style>
+  </head>
+  <body class="min-h-screen">
+    <div
+      id="loading-screen"
+      class="fixed inset-0 bg-white z-50 flex items-center justify-center"
+    >
+      <div class="loading-spinner">
+        <div class="spinner"></div>
+        <p class="mt-4 text-gray-600">Loading amazing things...</p>
+      </div>
+    </div>
+    <header class="bg-white shadow-sm py-4">
+      <div class="container mx-auto px-4 flex justify-between items-center">
+        <div class="flex items-center">
+          <h1 class="text-2xl font-['Pacifico'] text-gray-800 mr-2">logo</h1>
+          <p class="text-gray-600 text-sm hidden sm:block">
+            Your personal productivity companion
+          </p>
+        </div>
+        <nav class="hidden md:flex items-center space-x-6">
+          <a
+            href="#"
+            class="text-gray-600 hover:text-primary transition-colors duration-200 text-sm font-medium"
+            >Today's Tasks</a
+          >
+          <a
+            href="#"
+            class="text-gray-600 hover:text-primary transition-colors duration-200 text-sm font-medium"
+            >Weekly Dashboard</a
+          >
+          <button
+            class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-button text-sm font-medium transition-colors duration-200 whitespace-nowrap"
+          >
+            Login
+          </button>
+          <button
+            class="bg-primary hover:bg-indigo-600 text-white px-4 py-2 rounded-button text-sm font-medium transition-colors duration-200 whitespace-nowrap"
+          >
+            Sign Up
+          </button>
+        </nav>
+        <button
+          id="mobile-menu-button"
+          class="md:hidden w-10 h-10 flex items-center justify-center text-gray-500 hover:text-primary transition-colors duration-200"
+        >
+          <i class="ri-menu-line ri-lg"></i>
+        </button>
+      </div>
+      <div id="mobile-menu" class="hidden md:hidden">
+        <div class="container mx-auto px-4 py-4 bg-white border-t">
+          <nav class="flex flex-col space-y-4">
+            <a
+              href="#"
+              class="text-gray-600 hover:text-primary transition-colors duration-200 text-sm font-medium"
+              >Today's Tasks</a
+            >
+            <a
+              href="#"
+              class="text-gray-600 hover:text-primary transition-colors duration-200 text-sm font-medium"
+              >Weekly Dashboard</a
+            >
+            <div class="flex flex-col space-y-2">
+              <button
+                class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-button text-sm font-medium transition-colors duration-200 whitespace-nowrap w-full"
+              >
+                Login
+              </button>
+              <button
+                class="bg-primary hover:bg-indigo-600 text-white px-4 py-2 rounded-button text-sm font-medium transition-colors duration-200 whitespace-nowrap w-full"
+              >
+                Sign Up
+              </button>
+            </div>
+          </nav>
+        </div>
+      </div>
+    </header>
+    <section class="py-16 bg-gradient-to-br from-indigo-50 to-blue-50">
+      <div class="container mx-auto px-4 text-center">
+        <h2
+          class="text-4xl md:text-5xl font-bold text-gray-900 mb-4 animate-fade-in"
+        >
+          Organize Your Life, Master Your Time
+        </h2>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
+          Schedule Master helps you track tasks, set priorities, and visualize
+          your progress with ease.
+        </p>
+        <button
+          id="hero-cta"
+          class="bg-primary hover:bg-indigo-600 text-white px-8 py-3 rounded-button font-medium transition-all duration-300 transform hover:scale-105 hover:shadow-lg whitespace-nowrap"
+        >
+          Start Managing Tasks
+        </button>
+      </div>
+    </section>
+    <section class="py-12">
+      <div class="container mx-auto px-4">
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8 glass">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-semibold text-gray-800">
+              Today's Progress
+            </h3>
+            <div class="text-2xl font-bold text-primary">0%</div>
+          </div>
+          <div class="w-full bg-gray-200 rounded-full h-3 mb-1">
+            <div
+              class="bg-primary h-3 rounded-full progress-bar"
+              style="width: 0%"
+            ></div>
+          </div>
+          <div class="text-right text-sm text-gray-500">0 of 0 completed</div>
+        </div>
+        <div class="flex justify-between items-center mb-6">
+          <h3 class="text-2xl font-bold text-gray-800">Today's Tasks</h3>
+          <button
+            id="add-task-btn"
+            class="add-button bg-primary text-white w-10 h-10 rounded-full flex items-center justify-center shadow-lg hover:bg-indigo-600 transition-all duration-300 whitespace-nowrap"
+          >
+            <i class="ri-add-line ri-lg"></i>
+          </button>
+        </div>
+        <div
+          id="tasks-container"
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        >
+          <div
+            class="flex flex-col items-center justify-center text-center p-10 border border-dashed border-gray-300 rounded-lg bg-white"
+          >
+            <div
+              class="w-16 h-16 flex items-center justify-center bg-indigo-100 rounded-full mb-4"
+            >
+              <i class="ri-calendar-line ri-xl text-primary"></i>
+            </div>
+            <h4 class="text-lg font-medium text-gray-800 mb-2">
+              No tasks for today
+            </h4>
+            <p class="text-gray-500 mb-4">
+              Add your first task to get started!
+            </p>
+            <button
+              id="empty-add-task"
+              class="text-primary hover:text-indigo-700 font-medium flex items-center transition-colors duration-200 whitespace-nowrap"
+            >
+              <i class="ri-add-line ri-lg mr-1"></i> Add Task
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Task Modal -->
+    <div
+      id="task-modal"
+      class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden"
+    >
+      <div
+        class="modal modal-enter bg-white rounded-lg shadow-xl w-full max-w-md mx-4 overflow-hidden"
+      >
+        <div class="bg-primary py-4 px-6">
+          <h3 class="text-xl font-semibold text-white">Add New Task</h3>
+        </div>
+        <form id="task-form" class="p-6">
+          <div class="mb-4 form-field relative">
+            <label
+              for="task-name"
+              class="absolute left-3 top-3 text-gray-500 pointer-events-none"
+              >Task Name</label
+            >
+            <input
+              type="text"
+              id="task-name"
+              class="w-full px-3 pt-6 pb-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              required
+            />
+            <div class="text-xs text-gray-500 text-right mt-1">
+              <span id="name-counter">0</span>/50
+            </div>
+          </div>
+          <div class="mb-4 form-field relative">
+            <label
+              for="task-description"
+              class="absolute left-3 top-3 text-gray-500 pointer-events-none"
+              >Description (Optional)</label
+            >
+            <textarea
+              id="task-description"
+              class="w-full px-3 pt-6 pb-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
+              rows="3"
+            ></textarea>
+          </div>
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <div class="form-field relative">
+              <label
+                for="task-date"
+                class="absolute left-3 top-3 text-gray-500 pointer-events-none"
+                >Due Date</label
+              >
+              <input
+                type="date"
+                id="task-date"
+                class="w-full px-3 pt-6 pb-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                required
+              />
+            </div>
+            <div class="form-field relative">
+              <label
+                for="task-time"
+                class="absolute left-3 top-3 text-gray-500 pointer-events-none"
+                >Due Time</label
+              >
+              <input
+                type="time"
+                id="task-time"
+                class="w-full px-3 pt-6 pb-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                required
+              />
+            </div>
+          </div>
+          <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-medium mb-2"
+              >Priority</label
+            >
+            <div class="flex space-x-4">
+              <label class="flex items-center">
+                <input
+                  type="radio"
+                  name="priority"
+                  value="low"
+                  class="custom-radio"
+                  checked
+                />
+                <span class="ml-2 text-sm text-gray-600">Low</span>
+              </label>
+              <label class="flex items-center">
+                <input
+                  type="radio"
+                  name="priority"
+                  value="medium"
+                  class="custom-radio"
+                />
+                <span class="ml-2 text-sm text-gray-600">Medium</span>
+              </label>
+              <label class="flex items-center">
+                <input
+                  type="radio"
+                  name="priority"
+                  value="high"
+                  class="custom-radio"
+                />
+                <span class="ml-2 text-sm text-gray-600">High</span>
+              </label>
+            </div>
+          </div>
+          <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-medium mb-2"
+              >Category</label
+            >
+            <div class="relative">
+              <select
+                id="task-category"
+                class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent appearance-none pr-8"
+              >
+                <option value="work">Work</option>
+                <option value="personal">Personal</option>
+                <option value="health">Health</option>
+                <option value="education">Education</option>
+                <option value="finance">Finance</option>
+              </select>
+              <div
+                class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none"
+              >
+                <i class="ri-arrow-down-s-line text-gray-400"></i>
+              </div>
+            </div>
+          </div>
+          <div class="mb-6">
+            <label class="block text-gray-700 text-sm font-medium mb-2"
+              >Duration (minutes)</label
+            >
+            <div class="flex items-center">
+              <input
+                type="range"
+                id="task-duration-range"
+                min="5"
+                max="180"
+                step="5"
+                value="30"
+                class="range-slider flex-grow mr-4"
+              />
+              <input
+                type="number"
+                id="task-duration-number"
+                min="5"
+                max="180"
+                value="30"
+                class="w-16 px-2 py-1 border border-gray-300 rounded text-center"
+              />
+            </div>
+          </div>
+          <div class="flex justify-end space-x-3">
+            <button
+              type="button"
+              id="cancel-task"
+              class="px-4 py-2 border border-gray-300 rounded-button text-gray-700 hover:bg-gray-100 transition-colors duration-200 whitespace-nowrap"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              id="save-task"
+              class="px-4 py-2 bg-primary text-white rounded-button hover:bg-indigo-600 transition-colors duration-200 whitespace-nowrap"
+            >
+              <span class="flex items-center">
+                <i class="ri-save-line mr-1"></i> Save Task
+              </span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <script id="mobile-menu">
+      document.addEventListener("DOMContentLoaded", function () {
+        const mobileMenuButton = document.getElementById("mobile-menu-button");
+        const mobileMenu = document.getElementById("mobile-menu");
+        let isMenuOpen = false;
+        mobileMenuButton.addEventListener("click", () => {
+          isMenuOpen = !isMenuOpen;
+          mobileMenu.classList.toggle("hidden");
+          mobileMenuButton.innerHTML = isMenuOpen
+            ? '<i class="ri-close-line ri-lg"></i>'
+            : '<i class="ri-menu-line ri-lg"></i>';
+        });
+      });
+    </script>
+    <script id="loading-screen">
+      document.addEventListener("DOMContentLoaded", function () {
+        const loadingScreen = document.getElementById("loading-screen");
+        setTimeout(() => {
+          loadingScreen.style.opacity = "0";
+          loadingScreen.style.transition = "opacity 0.5s ease";
+          setTimeout(() => {
+            loadingScreen.style.display = "none";
+          }, 500);
+        }, 1500);
+      });
+    </script>
+    <script id="task-management">
+      document.addEventListener("DOMContentLoaded", function () {
+        const addTaskBtn = document.getElementById("add-task-btn");
+        const emptyAddTask = document.getElementById("empty-add-task");
+        const taskModal = document.getElementById("task-modal");
+        const cancelTask = document.getElementById("cancel-task");
+        const taskForm = document.getElementById("task-form");
+        const tasksContainer = document.getElementById("tasks-container");
+        const taskNameInput = document.getElementById("task-name");
+        const nameCounter = document.getElementById("name-counter");
+        const durationRange = document.getElementById("task-duration-range");
+        const durationNumber = document.getElementById("task-duration-number");
+        const heroCta = document.getElementById("hero-cta");
+        let tasks = [];
+        // Add ripple effect to buttons
+        function createRipple(event) {
+          const button = event.currentTarget;
+          const ripple = document.createElement("span");
+          const rect = button.getBoundingClientRect();
+          const size = Math.max(rect.width, rect.height);
+          const x = event.clientX - rect.left - size / 2;
+          const y = event.clientY - rect.top - size / 2;
+          ripple.style.width = ripple.style.height = `${size}px`;
+          ripple.style.left = `${x}px`;
+          ripple.style.top = `${y}px`;
+          ripple.classList.add("ripple");
+          button.appendChild(ripple);
+          setTimeout(() => {
+            ripple.remove();
+          }, 600);
+        }
+        // Open task modal
+        function openTaskModal() {
+          taskModal.classList.remove("hidden");
+          setTimeout(() => {
+            taskModal.querySelector(".modal").classList.remove("modal-enter");
+          }, 10);
+          taskNameInput.focus();
+        }
+        // Close task modal
+        function closeTaskModal() {
+          taskModal.querySelector(".modal").classList.add("modal-enter");
+          setTimeout(() => {
+            taskModal.classList.add("hidden");
+            taskForm.reset();
+            nameCounter.textContent = "0";
+          }, 300);
+        }
+        // Update tasks display
+        function updateTasksDisplay() {
+          const progressBar = document.querySelector(".progress-bar");
+          const progressText = document.querySelector(".text-primary");
+          const progressCount = document.querySelector(".text-right.text-sm");
+          if (tasks.length === 0) {
+            tasksContainer.innerHTML = `
+      <div class="flex flex-col items-center justify-center text-center p-10 border border-dashed border-gray-300 rounded-lg bg-white">
+      <div class="w-16 h-16 flex items-center justify-center bg-indigo-100 rounded-full mb-4">
+      <i class="ri-calendar-line ri-xl text-primary"></i>
+      </div>
+      <h4 class="text-lg font-medium text-gray-800 mb-2">No tasks for today</h4>
+      <p class="text-gray-500 mb-4">Add your first task to get started!</p>
+      <button id="empty-add-task" class="text-primary hover:text-indigo-700 font-medium flex items-center transition-colors duration-200 whitespace-nowrap">
+      <i class="ri-add-line ri-lg mr-1"></i> Add Task
+      </button>
+      </div>
+      `;
+            document
+              .getElementById("empty-add-task")
+              .addEventListener("click", openTaskModal);
+            progressBar.style.width = "0%";
+            progressText.textContent = "0%";
+            progressCount.textContent = "0 of 0 completed";
+            return;
+          }
+          const completedTasks = tasks.filter((task) => task.completed).length;
+          const progressPercentage = Math.round(
+            (completedTasks / tasks.length) * 100,
+          );
+          progressBar.style.width = `${progressPercentage}%`;
+          progressText.textContent = `${progressPercentage}%`;
+          progressCount.textContent = `${completedTasks} of ${tasks.length} completed`;
+          tasksContainer.innerHTML = "";
+          tasks.forEach((task, index) => {
+            const priorityColors = {
+              low: "bg-green-500",
+              medium: "bg-yellow-500",
+              high: "bg-red-500",
+            };
+            const categoryIcons = {
+              work: "ri-briefcase-line",
+              personal: "ri-user-line",
+              health: "ri-heart-line",
+              education: "ri-book-open-line",
+              finance: "ri-money-dollar-circle-line",
+            };
+            const statusClasses = {
+              "not-started": "bg-gray-200 text-gray-800",
+              "in-progress": "bg-blue-200 text-blue-800",
+              completed: "bg-green-200 text-green-800",
+            };
+            const statusText = task.completed
+              ? "Completed"
+              : task.inProgress
+                ? "In Progress"
+                : "Not Started";
+            const statusClass = task.completed
+              ? statusClasses["completed"]
+              : task.inProgress
+                ? statusClasses["in-progress"]
+                : statusClasses["not-started"];
+            const taskCard = document.createElement("div");
+            taskCard.className =
+              "task-card bg-white rounded-lg shadow-md overflow-hidden";
+            taskCard.innerHTML = `
+      <div class="flex">
+      <div class="w-2 ${priorityColors[task.priority]}"></div>
+      <div class="flex-1 p-4">
+      <div class="flex justify-between items-start mb-2">
+      <h4 class="font-medium text-gray-800 ${task.completed ? "line-through text-gray-500" : ""}">${task.name}</h4>
+      <div class="w-8 h-8 flex items-center justify-center category-icon bg-indigo-100 rounded-full">
+      <i class="${categoryIcons[task.category]} text-primary"></i>
+      </div>
+      </div>
+      ${task.description ? `<p class="text-gray-600 text-sm mb-3 ${task.completed ? "line-through text-gray-400" : ""}">${task.description}</p>` : ""}
+      <div class="flex justify-between items-center mb-3">
+      <div class="flex items-center text-sm text-gray-500">
+      <i class="ri-time-line mr-1"></i>
+      <span>${task.duration} min</span>
+      </div>
+      <div class="flex items-center text-sm text-gray-500">
+      <i class="ri-calendar-line mr-1"></i>
+      <span>${task.date}</span>
+      </div>
+      </div>
+      <div class="flex justify-between items-center">
+      <span class="text-xs px-2 py-1 rounded-full ${statusClass}">${statusText}</span>
+      ${
+        !task.completed
+          ? `
+      <button class="task-action ${task.inProgress ? "bg-yellow-500" : "bg-primary"} hover:${task.inProgress ? "bg-yellow-600" : "bg-indigo-600"} text-white px-3 py-1 rounded-button text-sm transition-colors duration-200 ${task.inProgress ? "pulse" : ""} whitespace-nowrap" data-index="${index}">
+      ${task.inProgress ? '<i class="ri-pause-line mr-1"></i> Pause' : '<i class="ri-play-line mr-1"></i> Start'}
+      </button>
+      `
+          : `
+      <div class="flex space-x-2">
+      <button class="delete-task text-gray-500 hover:text-red-500 transition-colors duration-200 whitespace-nowrap" data-index="${index}">
+      <i class="ri-delete-bin-line"></i>
+      </button>
+      </div>
+      `
+      }
+      </div>
+      </div>
+      </div>
+      `;
+            tasksContainer.appendChild(taskCard);
+          });
+          // Add event listeners to task action buttons
+          document.querySelectorAll(".task-action").forEach((button) => {
+            button.addEventListener("click", function () {
+              const index = parseInt(this.getAttribute("data-index"));
+              toggleTaskProgress(index);
+            });
+          });
+          // Add event listeners to delete buttons
+          document.querySelectorAll(".delete-task").forEach((button) => {
+            button.addEventListener("click", function () {
+              const index = parseInt(this.getAttribute("data-index"));
+              deleteTask(index);
+            });
+          });
+        }
+        // Toggle task progress
+        function toggleTaskProgress(index) {
+          const task = tasks[index];
+          if (!task.inProgress) {
+            // Start task
+            task.inProgress = true;
+            // Create confetti effect
+            createConfetti();
+          } else {
+            // Pause task
+            task.inProgress = false;
+          }
+          updateTasksDisplay();
+        }
+        // Complete task
+        function completeTask(index) {
+          tasks[index].completed = true;
+          tasks[index].inProgress = false;
+          // Create confetti effect
+          createConfetti();
+          updateTasksDisplay();
+        }
+        // Delete task
+        function deleteTask(index) {
+          tasks.splice(index, 1);
+          updateTasksDisplay();
+        }
+        // Create confetti effect
+        function createConfetti() {
+          const confettiContainer = document.createElement("div");
+          confettiContainer.style.position = "fixed";
+          confettiContainer.style.top = "0";
+          confettiContainer.style.left = "0";
+          confettiContainer.style.width = "100%";
+          confettiContainer.style.height = "100%";
+          confettiContainer.style.pointerEvents = "none";
+          confettiContainer.style.zIndex = "9999";
+          document.body.appendChild(confettiContainer);
+          const colors = ["#4F46E5", "#818CF8", "#60A5FA", "#34D399", "#FBBF24"];
+          for (let i = 0; i < 100; i++) {
+            const confetti = document.createElement("div");
+            confetti.className = "confetti";
+            confetti.style.left = Math.random() * 100 + "vw";
+            confetti.style.backgroundColor =
+              colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.width = Math.random() * 10 + 5 + "px";
+            confetti.style.height = Math.random() * 10 + 5 + "px";
+            confetti.style.opacity = "1";
+            confetti.style.animation =
+              "confetti-fall " + (Math.random() * 3 + 1) + "s linear";
+            confettiContainer.appendChild(confetti);
+          }
+          setTimeout(() => {
+            confettiContainer.remove();
+          }, 4000);
+        }
+        // Event listeners
+        addTaskBtn.addEventListener("click", function (e) {
+          createRipple(e);
+          openTaskModal();
+        });
+        emptyAddTask.addEventListener("click", openTaskModal);
+        heroCta.addEventListener("click", function (e) {
+          createRipple(e);
+          openTaskModal();
+        });
+        cancelTask.addEventListener("click", closeTaskModal);
+        taskModal.addEventListener("click", function (e) {
+          if (e.target === taskModal) {
+            closeTaskModal();
+          }
+        });
+        taskNameInput.addEventListener("input", function () {
+          nameCounter.textContent = this.value.length;
+          if (this.value.length > 50) {
+            this.value = this.value.substring(0, 50);
+            nameCounter.textContent = 50;
+          }
+        });
+        durationRange.addEventListener("input", function () {
+          durationNumber.value = this.value;
+        });
+        durationNumber.addEventListener("input", function () {
+          if (this.value < 5) this.value = 5;
+          if (this.value > 180) this.value = 180;
+          durationRange.value = this.value;
+        });
+        taskForm.addEventListener("submit", function (e) {
+          e.preventDefault();
+          const name = taskNameInput.value.trim();
+          const description = document
+            .getElementById("task-description")
+            .value.trim();
+          const date = document.getElementById("task-date").value;
+          const time = document.getElementById("task-time").value;
+          const priority = document.querySelector(
+            'input[name="priority"]:checked',
+          ).value;
+          const category = document.getElementById("task-category").value;
+          const duration = parseInt(durationNumber.value);
+          if (!name || !date || !time) {
+            return;
+          }
+          const newTask = {
+            name,
+            description,
+            date,
+            time,
+            priority,
+            category,
+            duration,
+            completed: false,
+            inProgress: false,
+          };
+          tasks.push(newTask);
+          updateTasksDisplay();
+          closeTaskModal();
+          // Show success notification
+          const notification = document.createElement("div");
+          notification.className =
+            "fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg transform translate-y-10 opacity-0 transition-all duration-500";
+          notification.innerHTML =
+            '<div class="flex items-center"><i class="ri-check-line mr-2"></i> Task added successfully!</div>';
+          document.body.appendChild(notification);
+          setTimeout(() => {
+            notification.classList.remove("translate-y-10", "opacity-0");
+          }, 100);
+          setTimeout(() => {
+            notification.classList.add("translate-y-10", "opacity-0");
+            setTimeout(() => {
+              notification.remove();
+            }, 500);
+          }, 3000);
+        });
+        // Initialize
+        updateTasksDisplay();
+      });
+    </script>
+    <script id="demo-tasks">
+      document.addEventListener("DOMContentLoaded", function () {
+        // Add demo tasks after a short delay
+        setTimeout(() => {
+          const addTaskEvent = new Event("submit");
+          // Set form values for demo task 1
+          document.getElementById("task-name").value =
+            "Review quarterly marketing report";
+          document.getElementById("task-description").value =
+            "Analyze performance metrics and prepare feedback for team meeting";
+          document.getElementById("task-date").valueAsDate = new Date();
+          document.getElementById("task-time").value = "11:30";
+          document.querySelector('input[name="priority"][value="high"]').checked =
+            true;
+          document.getElementById("task-category").value = "work";
+          document.getElementById("task-duration-range").value = 45;
+          document.getElementById("task-duration-number").value = 45;
+          // Submit form to create demo task 1
+          document.getElementById("task-form").dispatchEvent(addTaskEvent);
+          // Set form values for demo task 2
+          document.getElementById("task-name").value = "Gym workout session";
+          document.getElementById("task-description").value =
+            "Upper body strength training and 20 min cardio";
+          document.getElementById("task-date").valueAsDate = new Date();
+          document.getElementById("task-time").value = "17:00";
+          document.querySelector('input[name="priority"][value="medium"]').checked =
+            true;
+          document.getElementById("task-category").value = "health";
+          document.getElementById("task-duration-range").value = 60;
+          document.getElementById("task-duration-number").value = 60;
+          // Submit form to create demo task 2
+          document.getElementById("task-form").dispatchEvent(addTaskEvent);
+          // Set form values for demo task 3
+          document.getElementById("task-name").value = "Call financial advisor";
+          document.getElementById("task-description").value =
+            "Discuss investment portfolio adjustments and retirement planning";
+          document.getElementById("task-date").valueAsDate = new Date();
+          document.getElementById("task-time").value = "14:15";
+          document.querySelector('input[name="priority"][value="low"]').checked =
+            true;
+          document.getElementById("task-category").value = "finance";
+          document.getElementById("task-duration-range").value = 30;
+          document.getElementById("task-duration-number").value = 30;
+          // Submit form to create demo task 3
+          document.getElementById("task-form").dispatchEvent(addTaskEvent);
+        }, 500);
+      });
+    </script>
+  </body>
 </html>
