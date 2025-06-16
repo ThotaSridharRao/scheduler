@@ -5,26 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Schedule Master</title>
     <meta name="description" content="Your personal productivity companion" />
+    <!-- Tailwind CSS CDN for easy styling -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for dashboard graphs -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script type="module">
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-      import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
-
-      const firebaseConfig = {
-        apiKey: "AIzaSyBwP_Ok2MOzbpllIzC56ZJIV-2kIKUg6Ms",
-        authDomain: "timesaver-7fbe1.firebaseapp.com",
-        projectId: "timesaver-7fbe1",
-        storageBucket: "timesaver-7fbe1.firebasestorage.app",
-        messagingSenderId: "112094643461",
-        appId: "1:112094643461:web:7ebc8b5f493528edf7a36c",
-        measurementId: "G-LJX30ZGW3M"
-      };
-
-      const app = initializeApp(firebaseConfig);
-      const analytics = getAnalytics(app);
-    </script>
     <style>
         /* Keyframe animation for fade-in effect */
         @keyframes fade-in {
@@ -33,7 +19,7 @@
         }
         .animate-fade-in { animation: fade-in 0.3s ease-out; }
 
-        /* Custom hover effect for navigation links */
+        /* Custom hover effect for navigation links (if used, currently not for tabs) */
         .story-link {
             position: relative;
         }
@@ -64,9 +50,9 @@
             @apply bg-white text-gray-600 border-gray-300 hover:bg-gray-50;
         }
 
-        /* Selected priority button styles */
+        /* Selected priority button styles (colors are applied by JS) */
         .priority-btn.selected {
-            /* These will be dynamically applied by JS based on priority */
+            /* This class just marks it as selected, specific colors come from JS */
         }
 
         /* Modal styling */
@@ -506,7 +492,7 @@
     </div>
 
     <script type="module">
-    // Firebase SDK imports
+    // Firebase SDK imports (using consistent version 11.6.1)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import {
         getAuth,
@@ -578,17 +564,30 @@
          */
         async init() {
             // Firebase setup
-            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-            const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+            // Use the hardcoded firebaseConfig provided in the HTML for consistency,
+            // but log an error if it's not set.
+            const hardcodedFirebaseConfig = {
+                apiKey: "AIzaSyBwP_Ok2MOzbpllIzC56ZJIV-2kIKUg6Ms",
+                authDomain: "timesaver-7fbe1.firebaseapp.com",
+                projectId: "timesaver-7fbe1",
+                storageBucket: "timesaver-7fbe1.firebasestorage.app",
+                messagingSenderId: "112094643461",
+                appId: "1:112094643461:web:7ebc8b5f493528edf7a36c",
+                measurementId: "G-LJX30ZGW3M"
+            };
 
-            if (Object.keys(firebaseConfig).length === 0) {
-                console.error("Firebase config not found. Please ensure __firebase_config is set.");
+            if (Object.keys(hardcodedFirebaseConfig).length === 0 || !hardcodedFirebaseConfig.apiKey) {
+                console.error("Firebase config not found or invalid. Please ensure firebaseConfig is set.");
                 this.loginRegisterBtn.textContent = "Error"; // Indicate an error state on the button
                 this.loginRegisterBtn.title = "Firebase config missing";
                 return;
             }
 
-            this.app = initializeApp(firebaseConfig);
+            // Use projectId from the hardcoded config as the __app_id for Firestore paths.
+            // This ensures consistency between your app logic and Firebase rules.
+            this.appId = hardcodedFirebaseConfig.projectId;
+
+            this.app = initializeApp(hardcodedFirebaseConfig);
             this.auth = getAuth(this.app);
             this.db = getFirestore(this.app);
 
@@ -822,13 +821,14 @@
          * This listener updates `this.tasks` whenever data changes in the database.
          */
         setupRealtimeTasksListener() {
-            if (!this.userId || !this.db) {
-                console.warn("Cannot set up listener: User ID or DB not available.");
+            if (!this.userId || !this.db || !this.appId) {
+                console.warn("Cannot set up listener: User ID, DB, or App ID not available.");
                 return;
             }
 
             // Define the collection path for the current user's private tasks
-            const tasksCollectionRef = collection(this.db, `artifacts/${__app_id}/users/${this.userId}/tasks`);
+            // Using this.appId, which is derived from firebaseConfig.projectId
+            const tasksCollectionRef = collection(this.db, `artifacts/${this.appId}/users/${this.userId}/tasks`);
             
             // Create a query to order tasks by createdAt
             const q = query(tasksCollectionRef, orderBy('createdAt', 'desc'));
@@ -844,8 +844,9 @@
                 this.tasks = updatedTasks; // Update the local tasks array
                 this.renderTasks(); // Re-render the UI with the latest data
                 this.updateProgress(); // Update daily progress
+                // Only render dashboard if it's currently visible
                 if (document.getElementById('dashboardView').classList.contains('hidden') === false) {
-                    this.renderDashboard(); // Re-render dashboard if it's currently visible
+                    this.renderDashboard(); 
                 }
                 console.log("Tasks updated from Firestore:", this.tasks);
             }, (error) => {
@@ -1075,8 +1076,8 @@
         async handleTaskSubmit(e) {
             e.preventDefault(); // Prevent default form submission and page reload
 
-            if (!this.userId) {
-                console.error("User not authenticated. Cannot save task.");
+            if (!this.userId || !this.appId) {
+                console.error("User not authenticated or App ID not available. Cannot save task.");
                 this.displayAuthMessage("Please log in to save tasks.", "text-red-600");
                 return;
             }
@@ -1120,13 +1121,13 @@
             try {
                 // If editingTaskId is set, update an existing task; otherwise, add a new one
                 if (this.editingTaskId) {
-                    await updateDoc(doc(this.db, `artifacts/${__app_id}/users/${this.userId}/tasks`, this.editingTaskId), {
+                    await updateDoc(doc(this.db, `artifacts/${this.appId}/users/${this.userId}/tasks`, this.editingTaskId), {
                         ...taskData,
                         updatedAt: serverTimestamp() // Update timestamp
                     });
                     console.log("Task updated successfully in Firestore!");
                 } else {
-                    await addDoc(collection(this.db, `artifacts/${__app_id}/users/${this.userId}/tasks`), {
+                    await addDoc(collection(this.db, `artifacts/${this.appId}/users/${this.userId}/tasks`), {
                         ...taskData,
                         completed: false,
                         createdAt: serverTimestamp() // Use server timestamp for consistency
@@ -1145,10 +1146,10 @@
          * @param {string} taskId - The ID of the task to delete.
          */
         async deleteTask(taskId) {
-            if (!this.userId) return; // User not authenticated
+            if (!this.userId || !this.appId) return; // User not authenticated or App ID not available
 
             try {
-                await deleteDoc(doc(this.db, `artifacts/${__app_id}/users/${this.userId}/tasks`, taskId));
+                await deleteDoc(doc(this.db, `artifacts/${this.appId}/users/${this.userId}/tasks`, taskId));
                 console.log("Task deleted successfully from Firestore!");
             } catch (error) {
                 console.error("Error deleting task from Firestore:", error);
@@ -1160,12 +1161,12 @@
          * @param {string} taskId - The ID of the task to toggle.
          */
         async toggleComplete(taskId) {
-            if (!this.userId) return; // User not authenticated
+            if (!this.userId || !this.appId) return; // User not authenticated or App ID not available
 
             const task = this.tasks.find(task => task.id === taskId);
             if (task) {
                 try {
-                    await updateDoc(doc(this.db, `artifacts/${__app_id}/users/${this.userId}/tasks`, taskId), {
+                    await updateDoc(doc(this.db, `artifacts/${this.appId}/users/${this.userId}/tasks`, taskId), {
                         completed: !task.completed,
                         completedAt: !task.completed ? serverTimestamp() : null, // Set/clear timestamp
                         updatedAt: serverTimestamp()
@@ -1805,16 +1806,27 @@
 
     // Initialize the ScheduleMaster application when the DOM is fully loaded.
     document.addEventListener('DOMContentLoaded', () => {
-        // Expose __app_id, __firebase_config, __initial_auth_token to the global scope
-        // for testing purposes if not already defined in the environment.
+        // The __app_id, __firebase_config, __initial_auth_token are provided by the environment.
+        // We ensure they are defined for local development/testing if the environment doesn't provide them.
         if (typeof window.__app_id === 'undefined') {
-            window.__app_id = 'your-default-app-id'; // Replace with a default if needed for local dev
+            // For local testing outside the Canvas environment, you can set a default projectId here.
+            // This MUST match the projectId in your firebaseConfig.
+            window.__app_id = 'timesaver-7fbe1'; // Your Firebase Project ID
         }
         if (typeof window.__firebase_config === 'undefined') {
-            window.__firebase_config = '{}'; // Or a dummy config for local dev
+            // For local testing, you would put your actual Firebase config here if not provided by the environment.
+            window.__firebase_config = JSON.stringify({
+                apiKey: "AIzaSyBwP_Ok2MOzbpllIzC56ZJIV-2kIKUg6Ms",
+                authDomain: "timesaver-7fbe1.firebaseapp.com",
+                projectId: "timesaver-7fbe1",
+                storageBucket: "timesaver-7fbe1.firebasestorage.app",
+                messagingSenderId: "112094643461",
+                appId: "1:112094643461:web:7ebc8b5f493528edf7a36c",
+                measurementId: "G-LJX30ZGW3M"
+            });
         }
         if (typeof window.__initial_auth_token === 'undefined') {
-            window.__initial_auth_token = null; // Or a dummy token for local dev
+            window.__initial_auth_token = null;
         }
         new ScheduleMaster();
     });
