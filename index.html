@@ -301,7 +301,7 @@
             Your personal productivity companion
           </p>
         </div>
-        <nav class="hidden md:flex items-center space-x-6">
+        <nav class="hidden md:flex items-center space-x-6" id="desktop-nav">
           <a
             href="#"
             class="text-gray-600 hover:text-primary transition-colors duration-200 text-sm font-medium"
@@ -313,17 +313,29 @@
             >Weekly Dashboard</a
           >
           <a
+            id="login-link-desktop"
             class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-button text-sm font-medium transition-colors duration-200 whitespace-nowrap"
             href="login.html"
           >
             Login
           </a>
           <a
+            id="signup-link-desktop"
             class="bg-primary hover:bg-indigo-600 text-white px-4 py-2 rounded-button text-sm font-medium transition-colors duration-200 whitespace-nowrap"
             href="signup.html"
           >
             Sign Up
           </a>
+          <!-- User info and logout will be dynamically added here -->
+          <div id="user-info-desktop" class="hidden items-center space-x-2">
+            <span class="text-gray-700 font-medium"></span>
+            <button
+              id="logout-button-desktop"
+              class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-button text-sm font-medium transition-colors duration-200 whitespace-nowrap"
+            >
+              Logout
+            </button>
+          </div>
         </nav>
         <button
           id="mobile-menu-button"
@@ -345,19 +357,31 @@
               class="text-gray-600 hover:text-primary transition-colors duration-200 text-sm font-medium"
               >Weekly Dashboard</a
             >
-            <div class="flex flex-col space-y-2">
+            <div class="flex flex-col space-y-2" id="auth-links-mobile">
               <a
-                class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-button text-sm font-medium transition-colors duration-200 whitespace-nowrap w-full"
+                id="login-link-mobile"
+                class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-button text-sm font-medium transition-colors duration-200 whitespace-nowrap text-center"
                 href="login.html"
               >
                 Login
               </a>
               <a
+                id="signup-link-mobile"
                 class="bg-primary hover:bg-indigo-600 text-white px-4 py-2 rounded-button text-sm font-medium transition-colors duration-200 whitespace-nowrap w-full"
                 href="signup.html"
               >
                 Sign Up
               </a>
+            </div>
+            <!-- User info and logout for mobile -->
+            <div id="user-info-mobile" class="hidden flex-col space-y-2">
+              <span class="text-gray-700 font-medium text-center"></span>
+              <button
+                id="logout-button-mobile"
+                class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-button text-sm font-medium transition-colors duration-200 whitespace-nowrap w-full"
+              >
+                Logout
+              </button>
             </div>
           </nav>
         </div>
@@ -482,131 +506,131 @@
                 for="task-date"
                 class="absolute left-3 top-3 text-gray-500 pointer-events-none"
                 >Due Date</label
-              >
+            >
+            <input
+              type="date"
+              id="task-date"
+              class="w-full px-3 pt-6 pb-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              required
+            />
+          </div>
+          <div class="form-field relative">
+            <label
+              for="task-time"
+              class="absolute left-3 top-3 text-gray-500 pointer-events-none"
+              >Due Time</label
+            >
+            <input
+              type="time"
+              id="task-time"
+              class="w-full px-3 pt-6 pb-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              required
+            />
+          </div>
+        </div>
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-medium mb-2"
+            >Priority</label
+          >
+          <div class="flex space-x-4">
+            <label class="flex items-center">
               <input
-                type="date"
-                id="task-date"
-                class="w-full px-3 pt-6 pb-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                required
+                type="radio"
+                name="priority"
+                value="low"
+                class="custom-radio"
+                checked
               />
-            </div>
-            <div class="form-field relative">
-              <label
-                for="task-time"
-                class="absolute left-3 top-3 text-gray-500 pointer-events-none"
-                >Due Time</label
-              >
+              <span class="ml-2 text-sm text-gray-600">Low</span>
+            </label>
+            <label class="flex items-center">
               <input
-                type="time"
-                id="task-time"
-                class="w-full px-3 pt-6 pb-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                required
+                type="radio"
+                name="priority"
+                value="medium"
+                class="custom-radio"
               />
-            </div>
-          </div>
-          <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-medium mb-2"
-              >Priority</label
-            >
-            <div class="flex space-x-4">
-              <label class="flex items-center">
-                <input
-                  type="radio"
-                  name="priority"
-                  value="low"
-                  class="custom-radio"
-                  checked
-                />
-                <span class="ml-2 text-sm text-gray-600">Low</span>
-              </label>
-              <label class="flex items-center">
-                <input
-                  type="radio"
-                  name="priority"
-                  value="medium"
-                  class="custom-radio"
-                />
-                <span class="ml-2 text-sm text-gray-600">Medium</span>
-              </label>
-              <label class="flex items-center">
-                <input
-                  type="radio"
-                  name="priority"
-                  value="high"
-                  class="custom-radio"
-                />
-                <span class="ml-2 text-sm text-gray-600">High</span>
-              </label>
-            </div>
-          </div>
-          <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-medium mb-2"
-              >Category</label
-            >
-            <div class="relative">
-              <select
-                id="task-category"
-                class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent appearance-none pr-8"
-              >
-                <option value="work">Work</option>
-                <option value="personal">Personal</option>
-                <option value="health">Health</option>
-                <option value="education">Education</option>
-                <option value="finance">Finance</option>
-              </select>
-              <div
-                class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none"
-              >
-                <i class="ri-arrow-down-s-line text-gray-400"></i>
-              </div>
-            </div>
-          </div>
-          <div class="mb-6">
-            <label class="block text-gray-700 text-sm font-medium mb-2"
-              >Duration (minutes)</label
-            >
-            <div class="flex items-center">
+              <span class="ml-2 text-sm text-gray-600">Medium</span>
+            </label>
+            <label class="flex items-center">
               <input
-                type="range"
-                id="task-duration-range"
-                min="5"
-                max="180"
-                step="5"
-                value="30"
-                class="range-slider flex-grow mr-4"
+                type="radio"
+                name="priority"
+                value="high"
+                class="custom-radio"
               />
-              <input
-                type="number"
-                id="task-duration-number"
-                min="5"
-                max="180"
-                value="30"
-                class="w-16 px-2 py-1 border border-gray-300 rounded text-center"
-              />
+              <span class="ml-2 text-sm text-gray-600">High</span>
+            </label>
+          </div>
+        </div>
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-medium mb-2"
+            >Category</label
+          >
+          <div class="relative">
+            <select
+              id="task-category"
+              class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent appearance-none pr-8"
+            >
+              <option value="work">Work</option>
+              <option value="personal">Personal</option>
+              <option value="health">Health</option>
+              <option value="education">Education</option>
+              <option value="finance">Finance</option>
+            </select>
+            <div
+              class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none"
+            >
+              <i class="ri-arrow-down-s-line text-gray-400"></i>
             </div>
           </div>
-          <div class="flex justify-end space-x-3">
-            <button
-              type="button"
-              id="cancel-task"
-              class="px-4 py-2 border border-gray-300 rounded-button text-gray-700 hover:bg-gray-100 transition-colors duration-200 whitespace-nowrap"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              id="save-task"
-              class="px-4 py-2 bg-primary text-white rounded-button hover:bg-indigo-600 transition-colors duration-200 whitespace-nowrap"
-            >
-              <span class="flex items-center">
-                <i class="ri-save-line mr-1"></i> Save Task
-              </span>
-            </button>
+        </div>
+        <div class="mb-6">
+          <label class="block text-gray-700 text-sm font-medium mb-2"
+            >Duration (minutes)</label
+          >
+          <div class="flex items-center">
+            <input
+              type="range"
+              id="task-duration-range"
+              min="5"
+              max="180"
+              step="5"
+              value="30"
+              class="range-slider flex-grow mr-4"
+            />
+            <input
+              type="number"
+              id="task-duration-number"
+              min="5"
+              max="180"
+              value="30"
+              class="w-16 px-2 py-1 border border-gray-300 rounded text-center"
+            />
           </div>
-        </form>
-      </div>
+        </div>
+        <div class="flex justify-end space-x-3">
+          <button
+            type="button"
+            id="cancel-task"
+            class="px-4 py-2 border border-gray-300 rounded-button text-gray-700 hover:bg-gray-100 transition-colors duration-200 whitespace-nowrap"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            id="save-task"
+            class="px-4 py-2 bg-primary text-white rounded-button hover:bg-indigo-600 transition-colors duration-200 whitespace-nowrap"
+          >
+            <span class="flex items-center">
+              <i class="ri-save-line mr-1"></i> Save Task
+            </span>
+          </button>
+        </div>
+      </form>
     </div>
-    <script id="mobile-menu">
+    </div>
+    <script id="mobile-menu-script">
       document.addEventListener("DOMContentLoaded", function () {
         const mobileMenuButton = document.getElementById("mobile-menu-button");
         const mobileMenu = document.getElementById("mobile-menu");
@@ -631,6 +655,147 @@
           }, 500);
         }, 1500);
       });
+    </script>
+    <!-- Firebase SDKs -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+      import { getAuth, onAuthStateChanged, signOut, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+      import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+      // Initialize Firebase (using global __firebase_config provided by the environment)
+      const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const db = getFirestore(app);
+      const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+      // Get navigation elements
+      const desktopNav = document.getElementById('desktop-nav');
+      const mobileAuthLinks = document.getElementById('auth-links-mobile');
+      const loginLinkDesktop = document.getElementById('login-link-desktop');
+      const signupLinkDesktop = document.getElementById('signup-link-desktop');
+      const logoutButtonDesktop = document.getElementById('logout-button-desktop');
+      const userInfoDesktop = document.getElementById('user-info-desktop');
+      const desktopUserNameSpan = userInfoDesktop.querySelector('span');
+
+      const loginLinkMobile = document.getElementById('login-link-mobile');
+      const signupLinkMobile = document.getElementById('signup-link-mobile');
+      const logoutButtonMobile = document.getElementById('logout-button-mobile');
+      const userInfoMobile = document.getElementById('user-info-mobile');
+      const mobileUserNameSpan = userInfoMobile.querySelector('span');
+
+
+      // Function to update UI based on auth state
+      async function updateAuthUI(user) {
+        if (user) {
+          // User is signed in
+          loginLinkDesktop.classList.add('hidden');
+          signupLinkDesktop.classList.add('hidden');
+          userInfoDesktop.classList.remove('hidden');
+          userInfoDesktop.classList.add('flex'); // Show flex for desktop user info
+
+          loginLinkMobile.classList.add('hidden');
+          signupLinkMobile.classList.add('hidden');
+          mobileAuthLinks.classList.add('hidden'); // Hide the entire div for mobile auth links
+          userInfoMobile.classList.remove('hidden');
+          userInfoMobile.classList.add('flex'); // Show flex for mobile user info
+
+
+          // Fetch user's full name from Firestore
+          const userDocRef = doc(db, `artifacts/${appId}/users/${user.uid}/profile/data/user_data`);
+          try {
+            const docSnap = await getDoc(userDocRef);
+            if (docSnap.exists()) {
+              const userData = docSnap.data();
+              const userName = userData.fullName || userData.email || 'User'; // Fallback to email if no full name
+              desktopUserNameSpan.textContent = `Hi, ${userName}`;
+              mobileUserNameSpan.textContent = `Hi, ${userName}`;
+            } else {
+              desktopUserNameSpan.textContent = `Hi, ${user.email || 'User'}`;
+              mobileUserNameSpan.textContent = `Hi, ${user.email || 'User'}`;
+            }
+          } catch (error) {
+            console.error("Error fetching user data:", error);
+            desktopUserNameSpan.textContent = `Hi, ${user.email || 'User'}`;
+            mobileUserNameSpan.textContent = `Hi, ${user.email || 'User'}`;
+          }
+
+          logoutButtonDesktop.addEventListener('click', handleLogout);
+          logoutButtonMobile.addEventListener('click', handleLogout);
+
+        } else {
+          // User is signed out
+          loginLinkDesktop.classList.remove('hidden');
+          signupLinkDesktop.classList.remove('hidden');
+          userInfoDesktop.classList.add('hidden');
+          userInfoDesktop.classList.remove('flex');
+
+          loginLinkMobile.classList.remove('hidden');
+          signupLinkMobile.classList.remove('hidden');
+          mobileAuthLinks.classList.remove('hidden'); // Show the entire div for mobile auth links
+          userInfoMobile.classList.add('hidden');
+          userInfoMobile.classList.remove('flex');
+        }
+      }
+
+      // Handle logout
+      async function handleLogout() {
+        try {
+          await signOut(auth);
+          showNotification("Logged out successfully!", "bg-green-500", "ri-check-line");
+          // UI will update via onAuthStateChanged listener
+        } catch (error) {
+          console.error("Logout error:", error);
+          showNotification(`Logout failed: ${error.message}`, "bg-red-500", "ri-error-warning-line");
+        }
+      }
+
+      // Firebase Auth state listener for the Canvas environment
+      onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+          // If no user is authenticated, attempt anonymous sign-in with custom token
+          try {
+            if (typeof __initial_auth_token !== 'undefined') {
+              await signInWithCustomToken(auth, __initial_auth_token);
+              console.log("Signed in with custom token for Canvas environment (index.html).");
+            } else {
+              await signInAnonymously(auth);
+              console.log("Signed in anonymously for Canvas environment (index.html).");
+            }
+          } catch (error) {
+            console.error("Firebase authentication error during Canvas startup (index.html):", error);
+            // Even if anonymous auth fails, still update UI to show logged out state
+            updateAuthUI(null);
+            return; // Exit if initial auth fails
+          }
+        }
+        // Update UI based on the new user state (either logged in user or newly anonymously signed-in user)
+        updateAuthUI(user);
+      });
+
+      // Function to show a temporary notification (consistent across pages)
+      function showNotification(message, bgColorClass, iconClass) {
+          const notification = document.createElement("div");
+          notification.className = `fixed bottom-4 right-4 ${bgColorClass} text-white px-4 py-2 rounded-lg shadow-lg transform translate-y-10 opacity-0 transition-all duration-500 z-[60]`;
+          notification.innerHTML = `
+            <div class="flex items-center">
+              <i class="${iconClass} mr-2"></i> ${message}
+            </div>
+          `;
+          document.body.appendChild(notification);
+
+          setTimeout(() => {
+            notification.classList.remove("translate-y-10", "opacity-0");
+          }, 100);
+
+          setTimeout(() => {
+            notification.classList.add("translate-y-10", "opacity-0");
+            setTimeout(() => {
+              notification.remove();
+            }, 500);
+          }, 3000);
+        }
+
     </script>
     <script id="task-management">
       document.addEventListener("DOMContentLoaded", function () {
