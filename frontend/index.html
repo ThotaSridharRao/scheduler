@@ -1,89 +1,1806 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome to Firebase Hosting</title>
-
-    <!-- update the version number as needed -->
-    <script defer src="/__/firebase/11.9.1/firebase-app-compat.js"></script>
-    <!-- include only the Firebase features as you need -->
-    <script defer src="/__/firebase/11.9.1/firebase-auth-compat.js"></script>
-    <script defer src="/__/firebase/11.9.1/firebase-database-compat.js"></script>
-    <script defer src="/__/firebase/11.9.1/firebase-firestore-compat.js"></script>
-    <script defer src="/__/firebase/11.9.1/firebase-functions-compat.js"></script>
-    <script defer src="/__/firebase/11.9.1/firebase-messaging-compat.js"></script>
-    <script defer src="/__/firebase/11.9.1/firebase-storage-compat.js"></script>
-    <script defer src="/__/firebase/11.9.1/firebase-analytics-compat.js"></script>
-    <script defer src="/__/firebase/11.9.1/firebase-remote-config-compat.js"></script>
-    <script defer src="/__/firebase/11.9.1/firebase-performance-compat.js"></script>
-    <!-- 
-      initialize the SDK after all desired features are loaded, set useEmulator to false
-      to avoid connecting the SDK to running emulators.
-    -->
-    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
-
-    <style media="screen">
-      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
-      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
-      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
-      @media (max-width: 600px) {
-        body, #message { margin-top: 0; background: white; box-shadow: none; }
-        body { border-top: 16px solid #ffa100; }
-      }
-    </style>
-  </head>
-  <body>
-    <div id="message">
-      <h2>Welcome</h2>
-      <h1>Firebase Hosting Setup Complete</h1>
-      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
-      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
-    </div>
-    <p id="load">Firebase SDK Loading&hellip;</p>
-
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const loadEl = document.querySelector('#load');
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-        // // The Firebase SDK is initialized and available here!
-        //
-        // firebase.auth().onAuthStateChanged(user => { });
-        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
-        // firebase.firestore().doc('/foo/bar').get().then(() => { });
-        // firebase.functions().httpsCallable('yourFunction')().then(() => { });
-        // firebase.messaging().requestPermission().then(() => { });
-        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
-        // firebase.analytics(); // call to activate
-        // firebase.analytics().logEvent('tutorial_completed');
-        // firebase.performance(); // call to activate
-        //
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-
-        try {
-          let app = firebase.app();
-          let features = [
-            'auth', 
-            'database', 
-            'firestore',
-            'functions',
-            'messaging', 
-            'storage', 
-            'analytics', 
-            'remoteConfig',
-            'performance',
-          ].filter(feature => typeof app[feature] === 'function');
-          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
-        } catch (e) {
-          console.error(e);
-          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule Master</title>
+    <meta name="description" content="Your personal productivity companion" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Keyframe animation for fade-in effect */
+        @keyframes fade-in {
+            0% { opacity: 0; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
         }
-      });
+        .animate-fade-in { animation: fade-in 0.3s ease-out; }
+
+        /* Custom hover effect for navigation links */
+        .story-link {
+            position: relative;
+        }
+        .story-link::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            transform: scaleX(0);
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: #3b82f6; /* Blue-500 equivalent */
+            transform-origin: bottom right;
+            transition: transform 0.3s ease-out;
+        }
+        .story-link:hover::after {
+            transform: scaleX(1);
+            transform-origin: bottom left;
+        }
+
+        /* Base styles for priority buttons */
+        .priority-btn {
+            @apply px-4 py-2 rounded-full border-2 transition-all duration-200;
+        }
+
+        /* Default (unselected) priority button styles */
+        .priority-btn.default {
+            @apply bg-white text-gray-600 border-gray-300 hover:bg-gray-50;
+        }
+
+        /* Selected priority button styles */
+        .priority-btn.selected {
+            /* These will be dynamically applied by JS based on priority */
+        }
+
+        /* Modal styling */
+        .modal {
+            @apply fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50;
+        }
+        .modal-content {
+            @apply bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 font-sans">
+    <div class="container mx-auto px-4 py-6">
+        <!-- Header Section -->
+        <header class="mb-8 p-4 bg-white rounded-xl shadow-lg flex justify-between items-center animate-fade-in">
+            <div class="flex flex-col items-start">
+                <h1 class="text-3xl font-bold text-gray-800">
+                    Schedule Master
+                </h1>
+                <p class="text-md text-gray-600">
+                    Your personal productivity companion
+                </p>
+            </div>
+            <button
+                id="loginRegisterBtn"
+                class="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-3 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+                title="Click to Login or Register"
+            >
+                Login / Register
+            </button>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="flex justify-center mb-8">
+            <div class="bg-white rounded-full shadow-lg p-2 flex space-x-2">
+                <button
+                    id="todayTab"
+                    class="tab-btn flex items-center space-x-2 px-6 py-3 rounded-full transition-all duration-300 bg-blue-500 text-white shadow-md transform scale-105"
+                >
+                    <i class="fas fa-calendar-day"></i>
+                    <span class="font-medium">Today's Tasks</span>
+                </button>
+                <button
+                    id="dashboardTab"
+                    class="tab-btn flex items-center space-x-2 px-6 py-3 rounded-full transition-all duration-300 text-gray-600 hover:bg-gray-100"
+                >
+                    <i class="fas fa-chart-bar"></i>
+                    <span class="font-medium">Weekly Dashboard</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="animate-fade-in">
+            <!-- Today's Tasks View -->
+            <section id="todayView" class="max-w-4xl mx-auto">
+                <!-- Progress Card -->
+                <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-2xl font-bold text-gray-800">Today's Progress</h2>
+                        <div class="text-right">
+                            <div id="completionRate" class="text-3xl font-bold text-blue-600">0%</div>
+                            <div id="completionText" class="text-sm text-gray-600">0 of 0 completed</div>
+                        </div>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-3">
+                        <div id="progressBar" class="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full transition-all duration-500 ease-out" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Add Task Section -->
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-semibold text-gray-800">Today's Tasks</h3>
+                    <button
+                        id="addTaskBtn"
+                        class="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-3 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 flex items-center space-x-2"
+                    >
+                        <i class="fas fa-plus"></i>
+                        <span>Add Task</span>
+                    </button>
+                </div>
+
+                <!-- Task Form -->
+                <div id="taskForm" class="mb-6 hidden">
+                    <div class="bg-white rounded-xl shadow-lg p-6 border">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                            <span id="formTitle">Add New Task</span>
+                        </h3>
+                        
+                        <form id="taskFormElement" class="space-y-4">
+                            <div>
+                                <label for="taskTitle" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Task Title *
+                                </label>
+                                <input
+                                    type="text"
+                                    id="taskTitle"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                                    placeholder="Enter task title"
+                                    required
+                                />
+                            </div>
+
+                            <div>
+                                <label for="taskDescription" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Description
+                                </label>
+                                <textarea
+                                    id="taskDescription"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                                    placeholder="Enter task description"
+                                    rows="3"
+                                ></textarea>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="taskStartTime" class="block text-sm font-medium text-gray-700 mb-2">
+                                        <i class="fas fa-clock mr-1"></i>
+                                        Start Time
+                                    </label>
+                                    <input
+                                        type="time"
+                                        id="taskStartTime"
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label for="taskDuration" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Duration (minutes)
+                                    </label>
+                                    <input
+                                        type="number"
+                                        id="taskDuration"
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                                        min="15"
+                                        step="15"
+                                        value="60"
+                                    />
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="taskDueDate" class="block text-sm font-medium text-gray-700 mb-2">
+                                        <i class="fas fa-calendar-alt mr-1"></i>
+                                        Due Date
+                                    </label>
+                                    <input
+                                        type="date"
+                                        id="taskDueDate"
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                                    />
+                                </div>
+                                <div>
+                                    <label for="taskDueTime" class="block text-sm font-medium text-gray-700 mb-2">
+                                        <i class="fas fa-hourglass-half mr-1"></i>
+                                        Due Time
+                                    </label>
+                                    <input
+                                        type="time"
+                                        id="taskDueTime"
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label for="taskCategory" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-tag mr-1"></i>
+                                    Category
+                                </label>
+                                <select
+                                    id="taskCategory"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                                >
+                                    <option value="none">None</option>
+                                    <option value="work">Work</option>
+                                    <option value="personal">Personal</option>
+                                    <option value="health">Health</option>
+                                    <option value="shopping">Shopping</option>
+                                    <option value="learning">Learning</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Priority
+                                </label>
+                                <div class="flex space-x-3">
+                                    <button
+                                        type="button"
+                                        class="priority-btn default"
+                                        data-priority="low"
+                                    >
+                                        Low
+                                    </button>
+                                    <button
+                                        type="button"
+                                        class="priority-btn default"
+                                        data-priority="medium"
+                                    >
+                                        Medium
+                                    </button>
+                                    <button
+                                        type="button"
+                                        class="priority-btn default"
+                                        data-priority="high"
+                                    >
+                                        High
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Recurring Task Options -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-redo-alt mr-1"></i>
+                                    Recurring
+                                </label>
+                                <div class="flex flex-wrap gap-3">
+                                    <label class="inline-flex items-center">
+                                        <input type="radio" name="recurringType" value="none" checked class="form-radio text-blue-600" />
+                                        <span class="ml-2 text-gray-700">None</span>
+                                    </label>
+                                    <label class="inline-flex items-center">
+                                        <input type="radio" name="recurringType" value="daily" class="form-radio text-blue-600" />
+                                        <span class="ml-2 text-gray-700">Daily</span>
+                                    </label>
+                                    <label class="inline-flex items-center">
+                                        <input type="radio" name="recurringType" value="weekly" class="form-radio text-blue-600" />
+                                        <span class="ml-2 text-gray-700">Weekly</span>
+                                    </label>
+                                    <label class="inline-flex items-center">
+                                        <input type="radio" name="recurringType" value="monthly" class="form-radio text-blue-600" />
+                                        <span class="ml-2 text-gray-700">Monthly</span>
+                                    </label>
+                                </div>
+                                <div id="recurringOptions" class="mt-3 p-4 bg-gray-50 rounded-lg hidden">
+                                    <!-- Dynamic recurring options will be inserted here -->
+                                </div>
+                            </div>
+
+                            <!-- Subtasks Section -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-list-ul mr-1"></i>
+                                    Subtasks
+                                </label>
+                                <div class="flex mb-2">
+                                    <input
+                                        type="text"
+                                        id="subtaskInput"
+                                        class="flex-1 px-4 py-3 border border-gray-300 rounded-l-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                                        placeholder="Add a subtask"
+                                    />
+                                    <button
+                                        type="button"
+                                        id="addSubtaskBtn"
+                                        class="bg-blue-500 text-white px-4 py-3 rounded-r-lg hover:bg-blue-600 transition-all duration-200"
+                                    >
+                                        Add
+                                    </button>
+                                </div>
+                                <ul id="subtasksList" class="space-y-2">
+                                    <!-- Subtasks will be dynamically inserted here -->
+                                </ul>
+                            </div>
+
+                            <div class="flex space-x-3 pt-4">
+                                <button
+                                    type="submit"
+                                    class="flex-1 bg-gradient-to-r from-blue-500 to-purple-500 text-white py-3 rounded-lg hover:shadow-lg transform hover:scale-105 transition-all duration-300 font-medium"
+                                >
+                                    <span id="submitBtnText">Add Task</span>
+                                ></button>
+                                <button
+                                    type="button"
+                                    id="cancelBtn"
+                                    class="flex-1 bg-gray-100 text-gray-700 py-3 rounded-lg hover:bg-gray-200 transition-all duration-300 font-medium"
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Tasks List - Event delegation is applied here -->
+                <div id="tasksList" class="space-y-4">
+                    <!-- Tasks will be dynamically inserted here -->
+                </div>
+
+                <!-- Empty State Message -->
+                <div id="emptyState" class="text-center py-12">
+                    <div class="text-6xl mb-4">📅</div>
+                    <h3 class="text-xl font-semibold text-gray-600 mb-2">No tasks for today</h3>
+                    <p class="text-gray-500">Add your first task to get started!</p>
+                </div>
+            </section>
+
+            <!-- Dashboard View -->
+            <section id="dashboardView" class="max-w-6xl mx-auto space-y-6 hidden">
+                <!-- Summary Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl p-6 shadow-lg">
+                        <h3 class="text-sm font-medium opacity-90">Total Tasks</h3>
+                        <p id="totalTasks" class="text-3xl font-bold mt-2">0</p>
+                        <p class="text-sm opacity-80 mt-1">All time</p>
+                    </div>
+                    
+                    <div class="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-xl p-6 shadow-lg">
+                        <h3 class="text-sm font-medium opacity-90">Completed</h3>
+                        <p id="completedTasks" class="text-3xl font-bold mt-2">0</p>
+                        <p id="completionRateText" class="text-sm opacity-80 mt-1">0% completion rate</p>
+                    </div>
+                    
+                    <div class="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl p-6 shadow-lg">
+                        <h3 class="text-sm font-medium opacity-90">Time Spent</h3>
+                        <p id="timeSpentHours" class="text-3xl font-bold mt-2">0h</p>
+                        <p id="timeSpentMinutes" class="text-sm opacity-80 mt-1">0 minutes total</p>
+                    </div>
+                    
+                    <div class="bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-xl p-6 shadow-lg">
+                        <h3 class="text-sm font-medium opacity-90">Avg Task Time</h3>
+                        <p id="avgTaskTime" class="text-3xl font-bold mt-2">0min</p>
+                        <p class="text-sm opacity-80 mt-1">Per completed task</p>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Weekly Progress Chart -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Weekly Progress</h3>
+                        <div class="h-64">
+                            <canvas id="weeklyChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Priority Distribution Chart -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Completed Tasks by Priority</h3>
+                        <div class="h-64 flex items-center justify-center">
+                            <canvas id="priorityChart"></canvas>
+                        </div>
+                        <div id="priorityLegend" class="flex justify-center space-x-4 mt-4">
+                            <!-- Legend will be populated dynamically by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Category Distribution Chart -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Tasks by Category</h3>
+                        <div class="h-64 flex items-center justify-center">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                        <div id="categoryLegend" class="flex justify-center space-x-4 mt-4">
+                            <!-- Legend will be populated dynamically by JavaScript -->
+                        </div>
+                    </div>
+
+                     <!-- Recurring Task Distribution Chart -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Recurring Task Overview</h3>
+                        <div class="h-64 flex items-center justify-center">
+                            <canvas id="recurringChart"></canvas>
+                        </div>
+                        <div id="recurringLegend" class="flex justify-center space-x-4 mt-4">
+                            <!-- Legend will be populated dynamically by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Weekly Summary Section -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Weekly Summary</h3>
+                    <div id="weeklySummary" class="grid grid-cols-1 md:grid-cols-7 gap-4">
+                        <!-- Weekly summary cards will be populated dynamically by JavaScript -->
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Login/Registration Modal -->
+    <div id="authModal" class="modal hidden">
+        <div class="modal-content">
+            <h2 id="authModalTitle" class="text-2xl font-bold text-gray-800 mb-6 text-center">Login</h2>
+            <form id="authForm" class="space-y-4">
+                <div>
+                    <label for="authEmail" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                    <input
+                        type="email"
+                        id="authEmail"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                        placeholder="your@example.com"
+                        required
+                    />
+                </div>
+                <div>
+                    <label for="authPassword" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <input
+                        type="password"
+                        id="authPassword"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                        placeholder="********"
+                        required
+                    />
+                </div>
+                <div id="authMessage" class="text-red-600 text-sm hidden"></div>
+                <button
+                    type="submit"
+                    id="authSubmitBtn"
+                    class="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white py-3 rounded-lg hover:shadow-lg transform hover:scale-105 transition-all duration-300 font-medium"
+                >
+                    Login
+                </button>
+                <button
+                    type="button"
+                    id="toggleAuthModeBtn"
+                    class="w-full bg-gray-100 text-gray-700 py-3 rounded-lg hover:bg-gray-200 transition-all duration-300 font-medium"
+                >
+                    Switch to Register
+                </button>
+                <button
+                    type="button"
+                    id="guestLoginBtn"
+                    class="w-full bg-gray-100 text-gray-700 py-3 rounded-lg hover:bg-gray-200 transition-all duration-300 font-medium"
+                >
+                    Continue as Guest
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+    // Firebase SDK imports
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import {
+        getAuth,
+        signInAnonymously,
+        signInWithCustomToken,
+        createUserWithEmailAndPassword,
+        signInWithEmailAndPassword,
+        onAuthStateChanged,
+        signOut
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import {
+        getFirestore,
+        collection,
+        doc,
+        addDoc,
+        setDoc,
+        updateDoc,
+        deleteDoc,
+        onSnapshot,
+        query,
+        where,
+        orderBy,
+        serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // Schedule Master JavaScript Application
+    // This class manages the entire application state, data, UI interactions, and Firebase integration.
+    class ScheduleMaster {
+        constructor() {
+            this.app = null;
+            this.auth = null;
+            this.db = null;
+            this.userId = null;
+            this.tasks = []; // Array to store all tasks
+            this.editingTaskId = null; // Stores the ID of the task being edited, null if adding new
+            this.currentPriority = 'low'; // Default priority for new tasks
+            this.currentRecurringType = 'none'; // Default recurring type
+            this.subtasks = []; // Temporary array for subtasks in the form
+
+            // Chart.js instances
+            this.weeklyChart = null;
+            this.priorityChart = null;
+            this.categoryChart = null;
+            this.recurringChart = null;
+
+            // UI elements
+            this.authModal = document.getElementById('authModal');
+            this.authForm = document.getElementById('authForm');
+            this.authModalTitle = document.getElementById('authModalTitle');
+            this.authEmailInput = document.getElementById('authEmail');
+            this.authPasswordInput = document.getElementById('authPassword');
+            this.authSubmitBtn = document.getElementById('authSubmitBtn');
+            this.toggleAuthModeBtn = document.getElementById('toggleAuthModeBtn');
+            this.guestLoginBtn = document.getElementById('guestLoginBtn');
+            this.authMessage = document.getElementById('authMessage');
+            this.loginRegisterBtn = document.getElementById('loginRegisterBtn'); // New: Reference to the main login/register button
+
+            this.isLoginMode = true; // State for auth modal: true for login, false for register
+            this._globalListenersAttached = false; // Flag to ensure global listeners are attached only once
+            this._sessionListenersAttached = false; // Flag to ensure session-specific listeners are attached only once
+
+            // Initialize the application when the class is instantiated
+            this.init();
+        }
+
+        /**
+         * Initializes the application by setting up Firebase, authentication,
+         * event listeners, and data loading.
+         */
+        async init() {
+            // Firebase setup
+            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+            const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+
+            if (Object.keys(firebaseConfig).length === 0) {
+                console.error("Firebase config not found. Please ensure __firebase_config is set.");
+                this.loginRegisterBtn.textContent = "Error"; // Indicate an error state on the button
+                this.loginRegisterBtn.title = "Firebase config missing";
+                return;
+            }
+
+            this.app = initializeApp(firebaseConfig);
+            this.auth = getAuth(this.app);
+            this.db = getFirestore(this.app);
+
+            // Setup global listeners (once per app lifecycle)
+            if (!this._globalListenersAttached) {
+                this.loginRegisterBtn.addEventListener('click', () => this.handleAuthButtonClick());
+                this.authForm.addEventListener('submit', (e) => this.handleAuthSubmit(e));
+                this.toggleAuthModeBtn.addEventListener('click', () => {
+                    this.isLoginMode = !this.isLoginMode;
+                    this.updateAuthModalUI();
+                });
+                this.guestLoginBtn.addEventListener('click', async () => {
+                    try {
+                        await signInAnonymously(this.auth);
+                        this.authModal.classList.add('hidden');
+                        this.displayAuthMessage("Signed in as guest.", "text-green-600");
+                    } catch (error) {
+                        console.error("Error signing in anonymously:", error);
+                        this.displayAuthMessage(error.message, "text-red-600");
+                    }
+                });
+                this._globalListenersAttached = true;
+            }
+
+            // Set up Firebase Auth state listener
+            onAuthStateChanged(this.auth, async (user) => {
+                if (user) {
+                    this.userId = user.uid;
+                    this.loginRegisterBtn.textContent = 'Logout';
+                    this.loginRegisterBtn.title = `Logged in as: ${user.email || 'Guest'} (ID: ${user.uid.substring(0, 8)}...)`;
+                    this.authModal.classList.add('hidden'); // Hide modal on successful login
+                    this.setupRealtimeTasksListener(); // Start listening for tasks
+                    this.setupEventListeners(); // Setup view-specific event listeners
+                } else {
+                    this.userId = null;
+                    this.loginRegisterBtn.textContent = 'Login / Register';
+                    this.loginRegisterBtn.title = 'Click to Login or Register';
+                    this.showAuthModal(); // Show auth modal if not logged in
+                    this.tasks = []; // Clear tasks if user logs out
+                    this.renderTasks();
+                    this.updateProgress();
+                    // Clear chart data if user logs out
+                    if (this.weeklyChart) this.weeklyChart.destroy();
+                    if (this.priorityChart) this.priorityChart.destroy();
+                    if (this.categoryChart) this.categoryChart.destroy();
+                    if (this.recurringChart) this.recurringChart.destroy();
+                    this._sessionListenersAttached = false; // Reset for next login
+                }
+            });
+
+            // Attempt to sign in with custom token if provided (for Canvas environment)
+            const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+            if (initialAuthToken) {
+                try {
+                    await signInWithCustomToken(this.auth, initialAuthToken);
+                    console.log("Signed in with custom token.");
+                } catch (error) {
+                    console.error("Error signing in with custom token:", error);
+                    // Fallback to anonymous if custom token fails or is not available
+                    await signInAnonymously(this.auth);
+                    console.log("Signed in anonymously.");
+                }
+            } else {
+                // If no custom token, sign in anonymously or prompt for login
+                await signInAnonymously(this.auth);
+                console.log("Signed in anonymously.");
+            }
+        }
+
+        /**
+         * Handles the click event on the main Login/Register/Logout button.
+         */
+        async handleAuthButtonClick() {
+            if (this.auth.currentUser) {
+                // User is logged in, so log out
+                try {
+                    await signOut(this.auth);
+                    console.log("User logged out successfully.");
+                    // onAuthStateChanged will handle UI update
+                } catch (error) {
+                    console.error("Error logging out:", error);
+                    this.displayAuthMessage("Error logging out.", "text-red-600");
+                }
+            } else {
+                // User is not logged in, show auth modal
+                this.showAuthModal();
+            }
+        }
+
+        /**
+         * Shows the authentication modal (login/registration).
+         */
+        showAuthModal() {
+            this.authModal.classList.remove('hidden');
+            this.authMessage.classList.add('hidden'); // Hide any previous messages
+            this.updateAuthModalUI();
+        }
+
+        /**
+         * Updates the UI of the authentication modal based on login/registration mode.
+         */
+        updateAuthModalUI() {
+            this.authModalTitle.textContent = this.isLoginMode ? 'Login' : 'Register';
+            this.authSubmitBtn.textContent = this.isLoginMode ? 'Login' : 'Register';
+            this.toggleAuthModeBtn.textContent = this.isLoginMode ? 'Switch to Register' : 'Switch to Login';
+        }
+
+        /**
+         * Handles authentication form submission (login or registration).
+         * @param {Event} e - The submit event object.
+         */
+        async handleAuthSubmit(e) {
+            e.preventDefault();
+            this.authMessage.classList.add('hidden');
+            const email = this.authEmailInput.value;
+            const password = this.authPasswordInput.value;
+
+            if (!email || !password) {
+                this.displayAuthMessage("Please enter email and password.", "text-red-600");
+                return;
+            }
+
+            try {
+                if (this.isLoginMode) {
+                    await signInWithEmailAndPassword(this.auth, email, password);
+                } else {
+                    await createUserWithEmailAndPassword(this.auth, email, password);
+                }
+            } catch (error) {
+                console.error("Auth error:", error);
+                this.displayAuthMessage(error.message, "text-red-600");
+            }
+        }
+
+        /**
+         * Displays a message in the authentication modal.
+         * @param {string} message - The message to display.
+         * @param {string} typeClass - Tailwind CSS class for text color (e.g., 'text-red-600', 'text-green-600').
+         */
+        displayAuthMessage(message, typeClass) {
+            this.authMessage.textContent = message;
+            this.authMessage.className = `text-sm mt-2 ${typeClass}`;
+            this.authMessage.classList.remove('hidden');
+        }
+
+
+        /**
+         * Sets up all the necessary event listeners for UI elements.
+         * This method is called once after initial authentication.
+         */
+        setupEventListeners() {
+            // Ensure listeners are only added once per session/login to avoid duplicates
+            if (this._sessionListenersAttached) return;
+
+            // Tab navigation event listeners
+            document.getElementById('todayTab').addEventListener('click', () => this.switchTab('today'));
+            document.getElementById('dashboardTab').addEventListener('click', () => this.switchTab('dashboard'));
+
+            // Task form related event listeners
+            document.getElementById('addTaskBtn').addEventListener('click', () => this.showTaskForm());
+            document.getElementById('cancelBtn').addEventListener('click', () => this.hideTaskForm());
+            document.getElementById('taskFormElement').addEventListener('submit', (e) => this.handleTaskSubmit(e));
+
+            // Priority buttons event listeners
+            document.querySelectorAll('.priority-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => this.selectPriority(e.target.dataset.priority));
+            });
+
+            // Recurring type radio buttons event listeners
+            document.querySelectorAll('input[name="recurringType"]').forEach(radio => {
+                radio.addEventListener('change', (e) => this.handleRecurringTypeChange(e.target.value));
+            });
+
+            // Subtask input and add button listeners
+            document.getElementById('addSubtaskBtn').addEventListener('click', () => this.addSubtask());
+            document.getElementById('subtaskInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault(); // Prevent form submission
+                    this.addSubtask();
+                }
+            });
+
+            // Event delegation for subtasks list
+            document.getElementById('subtasksList').addEventListener('click', (e) => {
+                const target = e.target;
+                const subtaskItem = target.closest('.subtask-item');
+                if (!subtaskItem) return;
+
+                const subtaskId = subtaskItem.dataset.subtaskId;
+
+                if (target.type === 'checkbox' && target.id.startsWith('subtask-complete-')) {
+                    this.toggleSubtaskComplete(subtaskId);
+                } else if (target.closest('.delete-subtask-btn')) {
+                    this.deleteSubtask(subtaskId);
+                }
+            });
+
+            // Event delegation for tasksList: Handles clicks on dynamically added task elements
+            // This is more efficient than attaching listeners to each task individually.
+            document.getElementById('tasksList').addEventListener('click', (e) => {
+                const target = e.target;
+                // Find the closest ancestor element with 'data-task-id' to get the task ID
+                const taskItem = target.closest('.task-item');
+
+                if (!taskItem) return; // If click was not inside a task item, do nothing
+
+                const taskId = taskItem.dataset.taskId;
+
+                // Handle checkbox clicks (toggle completion)
+                if (target.type === 'checkbox' && target.id.startsWith('complete-')) {
+                    this.toggleComplete(taskId);
+                }
+                // Handle edit button clicks
+                else if (target.closest('.edit-btn')) { // Use closest for the button itself or its icon
+                    const task = this.tasks.find(t => t.id === taskId);
+                    if (task) {
+                        this.showTaskForm(task);
+                    }
+                }
+                // Handle delete button clicks
+                else if (target.closest('.delete-btn')) { // Use closest for the button itself or its icon
+                    this.deleteTask(taskId);
+                }
+            });
+
+            this._sessionListenersAttached = true; // Mark listeners as attached for this session
+        }
+
+        /**
+         * Sets up a real-time listener for tasks from Firestore for the current user.
+         * This listener updates `this.tasks` whenever data changes in the database.
+         */
+        setupRealtimeTasksListener() {
+            if (!this.userId || !this.db) {
+                console.warn("Cannot set up listener: User ID or DB not available.");
+                return;
+            }
+
+            // Define the collection path for the current user's private tasks
+            const tasksCollectionRef = collection(this.db, `artifacts/${__app_id}/users/${this.userId}/tasks`);
+            
+            // Create a query to order tasks by createdAt
+            const q = query(tasksCollectionRef, orderBy('createdAt', 'desc'));
+
+            // Set up the real-time snapshot listener
+            // This will trigger whenever there's a change in the 'tasks' collection for this user.
+            onSnapshot(q, (snapshot) => {
+                const updatedTasks = [];
+                snapshot.forEach(doc => {
+                    // Include Firestore document ID in the task object
+                    updatedTasks.push({ id: doc.id, ...doc.data() });
+                });
+                this.tasks = updatedTasks; // Update the local tasks array
+                this.renderTasks(); // Re-render the UI with the latest data
+                this.updateProgress(); // Update daily progress
+                if (document.getElementById('dashboardView').classList.contains('hidden') === false) {
+                    this.renderDashboard(); // Re-render dashboard if it's currently visible
+                }
+                console.log("Tasks updated from Firestore:", this.tasks);
+            }, (error) => {
+                console.error("Error listening to tasks:", error);
+                this.displayAuthMessage("Error loading tasks. Please try again.", "text-red-600");
+            });
+        }
+
+        /**
+         * Switches between the "Today's Tasks" and "Weekly Dashboard" views.
+         * @param {string} tab - The tab to switch to ('today' or 'dashboard').
+         */
+        switchTab(tab) {
+            // Reset all tab buttons to default style
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = 'tab-btn flex items-center space-x-2 px-6 py-3 rounded-full transition-all duration-300 text-gray-600 hover:bg-gray-100';
+            });
+
+            // Apply selected style to the active tab
+            if (tab === 'today') {
+                document.getElementById('todayTab').className = 'tab-btn flex items-center space-x-2 px-6 py-3 rounded-full transition-all duration-300 bg-blue-500 text-white shadow-md transform scale-105';
+                document.getElementById('todayView').classList.remove('hidden');
+                document.getElementById('dashboardView').classList.add('hidden');
+                this.renderTasks(); // Ensure today's tasks are rendered when switching back
+            } else { // tab === 'dashboard'
+                document.getElementById('dashboardTab').className = 'tab-btn flex items-center space-x-2 px-6 py-3 rounded-full transition-all duration-300 bg-purple-500 text-white shadow-md transform scale-105';
+                document.getElementById('todayView').classList.add('hidden');
+                document.getElementById('dashboardView').classList.remove('hidden');
+                this.renderDashboard(); // Render dashboard content only when it's visible
+            }
+        }
+
+        /**
+         * Shows the task form, pre-filling it if a task object is provided for editing.
+         * @param {Object} [task=null] - The task object to pre-fill the form for editing.
+         */
+        showTaskForm(task = null) {
+            this.editingTaskId = task ? task.id : null; // Set editing ID if a task is provided
+            this.subtasks = []; // Reset subtasks for the form
+
+            // Update form title and submit button text based on whether it's an edit or add operation
+            if (task) {
+                document.getElementById('formTitle').textContent = 'Edit Task';
+                document.getElementById('submitBtnText').textContent = 'Update Task';
+                document.getElementById('taskTitle').value = task.title;
+                document.getElementById('taskDescription').value = task.description || '';
+                document.getElementById('taskStartTime').value = task.startTime || '';
+                document.getElementById('taskDuration').value = task.duration || 60;
+                document.getElementById('taskDueDate').value = task.dueDate || '';
+                document.getElementById('taskDueTime').value = task.dueTime || '';
+                document.getElementById('taskCategory').value = task.category || 'none';
+                this.selectPriority(task.priority || 'medium'); // Select the task's current priority
+
+                // Set recurring type and populate options
+                this.currentRecurringType = task.recurring?.type || 'none';
+                document.querySelector(`input[name="recurringType"][value="${this.currentRecurringType}"]`).checked = true;
+                this.handleRecurringTypeChange(this.currentRecurringType, task.recurring);
+
+                // Populate subtasks
+                this.subtasks = task.subtasks ? [...task.subtasks] : [];
+                this.renderSubtasks();
+
+            } else {
+                document.getElementById('formTitle').textContent = 'Add New Task';
+                document.getElementById('submitBtnText').textContent = 'Add Task';
+                document.getElementById('taskFormElement').reset(); // Clear form fields
+                document.getElementById('taskDuration').value = 60; // Reset duration to default
+                document.getElementById('taskCategory').value = 'none';
+                this.selectPriority('low'); // Set default priority to low
+                this.currentRecurringType = 'none';
+                document.querySelector('input[name="recurringType"][value="none"]').checked = true;
+                this.handleRecurringTypeChange('none');
+                this.renderSubtasks(); // Clear subtask list in UI
+            }
+
+            document.getElementById('taskForm').classList.remove('hidden'); // Show the form
+        }
+
+        /**
+         * Hides the task form and resets the editing state.
+         */
+        hideTaskForm() {
+            document.getElementById('taskForm').classList.add('hidden'); // Hide the form
+            this.editingTaskId = null; // Clear editing task ID
+            document.getElementById('taskFormElement').reset(); // Reset form fields
+            this.subtasks = []; // Clear subtasks in memory
+            this.renderSubtasks(); // Clear subtask list in UI
+        }
+
+        /**
+         * Updates the visual state of priority buttons and sets the current priority.
+         * @param {string} priority - The selected priority ('low', 'medium', 'high').
+         */
+        selectPriority(priority) {
+            this.currentPriority = priority; // Store the selected priority
+
+            const priorityColors = {
+                low: 'bg-green-100 text-green-800 border-green-300',
+                medium: 'bg-yellow-100 text-yellow-800 border-yellow-300',
+                high: 'bg-red-100 text-red-800 border-red-300'
+            };
+
+            // Reset all priority buttons to their default (unselected) state
+            document.querySelectorAll('.priority-btn').forEach(btn => {
+                btn.classList.remove('selected', priorityColors.low, priorityColors.medium, priorityColors.high);
+                btn.classList.add('default'); // Add the default unselected class
+            });
+
+            // Apply selected styling to the clicked priority button
+            const selectedBtn = document.querySelector(`[data-priority="${priority}"]`);
+            if (selectedBtn) {
+                selectedBtn.classList.remove('default'); // Remove default class
+                selectedBtn.classList.add('selected', priorityColors[priority]); // Add selected and specific color classes
+            }
+        }
+
+        /**
+         * Handles the change in recurring task type selection.
+         * @param {string} type - The selected recurring type ('none', 'daily', 'weekly', 'monthly').
+         * @param {Object} [recurringData=null] - Existing recurring data for pre-filling.
+         */
+        handleRecurringTypeChange(type, recurringData = null) {
+            this.currentRecurringType = type;
+            const optionsContainer = document.getElementById('recurringOptions');
+            optionsContainer.innerHTML = '';
+
+            if (type === 'none') {
+                optionsContainer.classList.add('hidden');
+            } else {
+                optionsContainer.classList.remove('hidden');
+                if (type === 'daily') {
+                    optionsContainer.innerHTML = `
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Repeat every (days)</label>
+                        <input type="number" id="recurringInterval" value="${recurringData?.interval || 1}" min="1" class="w-full px-4 py-3 border border-gray-300 rounded-lg">
+                    `;
+                } else if (type === 'weekly') {
+                    const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                    optionsContainer.innerHTML = `
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Repeat on</label>
+                        <div class="grid grid-cols-3 gap-2">
+                            ${daysOfWeek.map((day, index) => `
+                                <label class="inline-flex items-center">
+                                    <input type="checkbox" name="recurringDays" value="${index}"
+                                        ${recurringData?.days?.includes(index) ? 'checked' : ''}
+                                        class="form-checkbox text-blue-600">
+                                    <span class="ml-2 text-gray-700">${day}</span>
+                                </label>
+                            `).join('')}
+                        </div>
+                    `;
+                } else if (type === 'monthly') {
+                    optionsContainer.innerHTML = `
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Repeat on day of month</label>
+                        <input type="number" id="recurringDayOfMonth" value="${recurringData?.dayOfMonth || 1}" min="1" max="31" class="w-full px-4 py-3 border border-gray-300 rounded-lg">
+                    `;
+                }
+            }
+        }
+
+        /**
+         * Adds a new subtask to the temporary subtasks array and re-renders the list.
+         */
+        addSubtask() {
+            const input = document.getElementById('subtaskInput');
+            const text = input.value.trim();
+            if (text) {
+                this.subtasks.push({ id: Date.now().toString(), text, completed: false });
+                input.value = ''; // Clear input
+                this.renderSubtasks();
+            }
+        }
+
+        /**
+         * Toggles the completion status of a subtask.
+         * @param {string} subtaskId - The ID of the subtask to toggle.
+         */
+        toggleSubtaskComplete(subtaskId) {
+            const subtask = this.subtasks.find(s => s.id === subtaskId);
+            if (subtask) {
+                subtask.completed = !subtask.completed;
+                this.renderSubtasks(); // Re-render subtasks list
+            }
+        }
+
+        /**
+         * Deletes a subtask from the temporary subtasks array.
+         * @param {string} subtaskId - The ID of the subtask to delete.
+         */
+        deleteSubtask(subtaskId) {
+            this.subtasks = this.subtasks.filter(s => s.id !== subtaskId);
+            this.renderSubtasks(); // Re-render subtasks list
+        }
+
+        /**
+         * Renders the current list of subtasks in the form.
+         */
+        renderSubtasks() {
+            const listElement = document.getElementById('subtasksList');
+            if (!listElement) return; // Ensure element exists
+
+            listElement.innerHTML = this.subtasks.map(subtask => `
+                <li class="flex items-center justify-between p-2 bg-gray-50 rounded-lg subtask-item" data-subtask-id="${subtask.id}">
+                    <label class="inline-flex items-center flex-1">
+                        <input
+                            type="checkbox"
+                            id="subtask-complete-${subtask.id}"
+                            ${subtask.completed ? 'checked' : ''}
+                            class="form-checkbox text-blue-600 w-4 h-4"
+                        />
+                        <span class="ml-2 text-gray-800 ${subtask.completed ? 'line-through text-gray-500' : ''}">
+                            ${subtask.text}
+                        </span>
+                    </label>
+                    <button type="button" class="text-red-500 hover:text-red-700 delete-subtask-btn" >
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </li>
+            `).join('');
+        }
+
+
+        /**
+         * Handles the submission of the task form, either adding a new task or updating an existing one.
+         * This function now interacts with Firestore.
+         * @param {Event} e - The submit event object.
+         */
+        async handleTaskSubmit(e) {
+            e.preventDefault(); // Prevent default form submission and page reload
+
+            if (!this.userId) {
+                console.error("User not authenticated. Cannot save task.");
+                this.displayAuthMessage("Please log in to save tasks.", "text-red-600");
+                return;
+            }
+
+            // Gather task data from form fields
+            const taskData = {
+                title: document.getElementById('taskTitle').value.trim(),
+                description: document.getElementById('taskDescription').value.trim(),
+                startTime: document.getElementById('taskStartTime').value,
+                duration: parseInt(document.getElementById('taskDuration').value) || 0,
+                dueDate: document.getElementById('taskDueDate').value,
+                dueTime: document.getElementById('taskDueTime').value,
+                category: document.getElementById('taskCategory').value,
+                priority: this.currentPriority,
+                subtasks: this.subtasks // Attach the current subtasks
+            };
+
+            // Gather recurring pattern data
+            if (this.currentRecurringType !== 'none') {
+                taskData.recurring = { type: this.currentRecurringType };
+                if (this.currentRecurringType === 'daily') {
+                    taskData.recurring.interval = parseInt(document.getElementById('recurringInterval').value) || 1;
+                } else if (this.currentRecurringType === 'weekly') {
+                    const selectedDays = Array.from(document.querySelectorAll('input[name="recurringDays"]:checked'))
+                                             .map(cb => parseInt(cb.value));
+                    taskData.recurring.days = selectedDays;
+                } else if (this.currentRecurringType === 'monthly') {
+                    taskData.recurring.dayOfMonth = parseInt(document.getElementById('recurringDayOfMonth').value) || 1;
+                }
+            } else {
+                taskData.recurring = null; // No recurring pattern
+            }
+
+            // Basic validation for title
+            if (!taskData.title) {
+                console.error("Task title cannot be empty.");
+                // In a real app, show a user-friendly error message on the UI
+                return;
+            }
+
+            try {
+                // If editingTaskId is set, update an existing task; otherwise, add a new one
+                if (this.editingTaskId) {
+                    await updateDoc(doc(this.db, `artifacts/${__app_id}/users/${this.userId}/tasks`, this.editingTaskId), {
+                        ...taskData,
+                        updatedAt: serverTimestamp() // Update timestamp
+                    });
+                    console.log("Task updated successfully in Firestore!");
+                } else {
+                    await addDoc(collection(this.db, `artifacts/${__app_id}/users/${this.userId}/tasks`), {
+                        ...taskData,
+                        completed: false,
+                        createdAt: serverTimestamp() // Use server timestamp for consistency
+                    });
+                    console.log("Task added successfully to Firestore!");
+                }
+                this.hideTaskForm(); // Hide the form after submission
+            } catch (error) {
+                console.error("Error saving task to Firestore:", error);
+                // Display user-friendly error message
+            }
+        }
+
+        /**
+         * Deletes a task from Firestore.
+         * @param {string} taskId - The ID of the task to delete.
+         */
+        async deleteTask(taskId) {
+            if (!this.userId) return; // User not authenticated
+
+            try {
+                await deleteDoc(doc(this.db, `artifacts/${__app_id}/users/${this.userId}/tasks`, taskId));
+                console.log("Task deleted successfully from Firestore!");
+            } catch (error) {
+                console.error("Error deleting task from Firestore:", error);
+            }
+        }
+
+        /**
+         * Toggles the completion status of a task in Firestore.
+         * @param {string} taskId - The ID of the task to toggle.
+         */
+        async toggleComplete(taskId) {
+            if (!this.userId) return; // User not authenticated
+
+            const task = this.tasks.find(task => task.id === taskId);
+            if (task) {
+                try {
+                    await updateDoc(doc(this.db, `artifacts/${__app_id}/users/${this.userId}/tasks`, taskId), {
+                        completed: !task.completed,
+                        completedAt: !task.completed ? serverTimestamp() : null, // Set/clear timestamp
+                        updatedAt: serverTimestamp()
+                    });
+                    console.log("Task completion status updated in Firestore!");
+                } catch (error) {
+                    console.error("Error toggling task completion in Firestore:", error);
+                }
+            }
+        }
+
+        /**
+         * Filters and returns tasks that were created today.
+         * @returns {Array<Object>} An array of tasks created on the current day.
+         */
+        getTodaysTasks() {
+            const today = new Date();
+            // Normalize today's date to remove time component for accurate comparison
+            today.setHours(0, 0, 0, 0);
+
+            return this.tasks.filter(task => {
+                // Use task.createdAt.toDate() for Firestore Timestamp objects
+                const taskDate = task.createdAt?.toDate ? task.createdAt.toDate() : new Date(task.createdAt);
+                taskDate.setHours(0, 0, 0, 0); // Normalize task date
+
+                return taskDate.getTime() === today.getTime(); // Compare timestamps
+            });
+        }
+
+        /**
+         * Renders (displays) today's tasks in the UI.
+         */
+        renderTasks() {
+            const todaysTasks = this.getTodaysTasks();
+            // Sort tasks by due date/time if available, otherwise by creation time
+            todaysTasks.sort((a, b) => {
+                const dateA = a.dueDate ? new Date(`${a.dueDate}T${a.dueTime || '00:00'}`) : null;
+                const dateB = b.dueDate ? new Date(`${b.dueDate}T${b.dueTime || '00:00'}`) : null;
+
+                if (dateA && dateB) return dateA.getTime() - dateB.getTime();
+                if (dateA) return -1; // A has due date, B doesn't
+                if (dateB) return 1;  // B has due date, A doesn't
+                
+                // Fallback to createdAt for tasks without due dates
+                const timeA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : new Date(a.createdAt).getTime();
+                const timeB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : new Date(b.createdAt).getTime();
+                return timeB - timeA; // Most recent first for tasks without due dates
+            });
+
+            const tasksList = document.getElementById('tasksList');
+            const emptyState = document.getElementById('emptyState');
+
+            if (todaysTasks.length === 0) {
+                tasksList.innerHTML = ''; // Clear tasks list
+                emptyState.classList.remove('hidden'); // Show empty state message
+            } else {
+                emptyState.classList.add('hidden'); // Hide empty state
+                // Generate HTML for each task and join them
+                tasksList.innerHTML = todaysTasks.map(task => this.createTaskHTML(task)).join('');
+                // Note: Event listeners for individual tasks are handled via delegation in setupEventListeners
+            }
+        }
+
+        /**
+         * Generates the HTML string for a single task item.
+         * @param {Object} task - The task object.
+         * @returns {string} The HTML string for the task.
+         */
+        createTaskHTML(task) {
+            // Define color classes for task priority borders and backgrounds
+            const priorityColors = {
+                low: 'border-green-400 bg-green-50',
+                medium: 'border-yellow-400 bg-yellow-50',
+                high: 'border-red-400 bg-red-50'
+            };
+
+            // Define color classes for priority badges
+            const priorityBadgeColors = {
+                low: 'bg-green-100 text-green-800',
+                medium: 'bg-yellow-100 text-yellow-800',
+                high: 'bg-red-100 text-red-800'
+            };
+
+            const categoryBadgeColors = {
+                work: 'bg-blue-100 text-blue-800',
+                personal: 'bg-purple-100 text-purple-800',
+                health: 'bg-red-100 text-red-800',
+                shopping: 'bg-green-100 text-green-800',
+                learning: 'bg-indigo-100 text-indigo-800',
+                other: 'bg-gray-100 text-gray-800',
+                none: 'bg-gray-100 text-gray-600'
+            };
+
+            /**
+             * Formats a time string (e.g., "14:30") into a more readable 12-hour format (e.g., "2:30 PM").
+             * @param {string} timeString - The time string in "HH:MM" format.
+             * @returns {string} Formatted time string or empty if input is null/empty.
+             */
+            const formatTime = (timeString) => {
+                if (!timeString) return '';
+                try {
+                    const [hours, minutes] = timeString.split(':');
+                    const date = new Date();
+                    date.setHours(parseInt(hours), parseInt(minutes));
+                    // Using Intl.DateTimeFormat for robust time formatting
+                    return new Intl.DateTimeFormat('en-US', {
+                        hour: 'numeric',
+                        minute: 'numeric',
+                        hour12: true
+                    }).format(date);
+                } catch (e) {
+                    console.error("Error formatting time:", e);
+                    return timeString; // Fallback to original string on error
+                }
+            };
+
+            /**
+             * Formats a date string (YYYY-MM-DD) into a readable format.
+             * @param {string} dateString - The date string in "YYYY-MM-DD" format.
+             * @returns {string} Formatted date string.
+             */
+            const formatDate = (dateString) => {
+                if (!dateString) return '';
+                try {
+                    const date = new Date(dateString + 'T00:00:00'); // Add time for correct parsing
+                    return new Intl.DateTimeFormat('en-US', {
+                        month: 'short',
+                        day: 'numeric'
+                    }).format(date);
+                } catch (e) {
+                    console.error("Error formatting date:", e);
+                    return dateString;
+                }
+            };
+
+            // Determine if task is overdue
+            const isOverdue = (task.dueDate && !task.completed) && (() => {
+                const now = new Date();
+                const dueDateTime = task.dueDate + (task.dueTime ? `T${task.dueTime}` : 'T23:59:59');
+                const dueDate = new Date(dueDateTime);
+                return dueDate < now;
+            })();
+
+            // Generate HTML for subtasks
+            const subtasksHtml = task.subtasks && task.subtasks.length > 0 ? `
+                <div class="mt-3">
+                    <h5 class="text-xs font-semibold text-gray-700 mb-1">Subtasks:</h5>
+                    <ul class="space-y-1 text-sm">
+                        ${task.subtasks.map(sub => `
+                            <li class="flex items-center ${sub.completed ? 'line-through text-gray-500' : 'text-gray-700'}">
+                                <i class="far ${sub.completed ? 'fa-check-square text-green-500' : 'fa-square text-gray-400'} mr-2"></i>
+                                <span>${sub.text}</span>
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+            ` : '';
+
+            // Generate HTML for recurring info
+            let recurringHtml = '';
+            if (task.recurring && task.recurring.type !== 'none') {
+                let recurringText = '';
+                switch (task.recurring.type) {
+                    case 'daily':
+                        recurringText = `Every ${task.recurring.interval} day(s)`;
+                        break;
+                    case 'weekly':
+                        const days = task.recurring.days?.map(d => ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d]).join(', ') || 'No days selected';
+                        recurringText = `Weekly on ${days}`;
+                        break;
+                    case 'monthly':
+                        recurringText = `Monthly on day ${task.recurring.dayOfMonth}`;
+                        break;
+                }
+                recurringHtml = `
+                    <div class="flex items-center text-sm text-blue-500 mt-3">
+                        <i class="fas fa-redo-alt mr-1"></i>
+                        <span>${recurringText}</span>
+                    </div>
+                `;
+            }
+
+            // Determine border color based on overdue status
+            const taskBorderColor = isOverdue ? 'border-red-600' : priorityColors[task.priority || 'medium'];
+
+
+            // Return the HTML structure for a single task.
+            // 'data-task-id' is crucial for event delegation.
+            // 'task-item' class helps in targeting the task container in event delegation.
+            return `
+                <div class="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border-l-4 ${taskBorderColor} ${task.completed ? 'opacity-75' : ''} task-item" data-task-id="${task.id}">
+                    <div class="p-6">
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-start space-x-4 flex-1">
+                                <div class="flex-shrink-0 mt-1">
+                                    <input
+                                        type="checkbox"
+                                        id="complete-${task.id}"
+                                        ${task.completed ? 'checked' : ''}
+                                        class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 transition-all duration-200"
+                                    />
+                                </div>
+                                
+                                <div class="flex-1">
+                                    <h4 class="text-lg font-semibold ${task.completed ? 'line-through text-gray-500' : 'text-gray-800'}">
+                                        ${task.title}
+                                    </h4>
+                                    
+                                    ${task.description ? `
+                                        <p class="mt-2 text-sm ${task.completed ? 'text-gray-400' : 'text-gray-600'}">
+                                            ${task.description}
+                                        </p>
+                                    ` : ''}
+                                    
+                                    <div class="flex items-center flex-wrap gap-x-4 gap-y-2 mt-3">
+                                        ${task.startTime ? `
+                                            <div class="flex items-center text-sm text-gray-500">
+                                                <i class="fas fa-clock mr-1"></i>
+                                                ${formatTime(task.startTime)}
+                                            </div>
+                                        ` : ''}
+                                        
+                                        ${task.duration ? `
+                                            <div class="flex items-center text-sm text-gray-500">
+                                                <i class="fas fa-stopwatch mr-1"></i>
+                                                ${task.duration} min
+                                            </div>
+                                        ` : ''}
+
+                                        ${task.dueDate ? `
+                                            <div class="flex items-center text-sm ${isOverdue ? 'text-red-600 font-semibold' : 'text-gray-500'}">
+                                                <i class="fas fa-calendar-alt mr-1"></i>
+                                                ${formatDate(task.dueDate)} ${task.dueTime ? formatTime(task.dueTime) : ''}
+                                                ${isOverdue ? ' (Overdue)' : ''}
+                                            </div>
+                                        ` : ''}
+                                        
+                                        <span class="px-2 py-1 rounded-full text-xs font-medium ${priorityBadgeColors[task.priority || 'medium']}">
+                                            ${(task.priority || 'medium').charAt(0).toUpperCase() + (task.priority || 'medium').slice(1)} Priority
+                                        </span>
+
+                                        ${task.category && task.category !== 'none' ? `
+                                            <span class="px-2 py-1 rounded-full text-xs font-medium ${categoryBadgeColors[task.category]}">
+                                                ${(task.category).charAt(0).toUpperCase() + (task.category).slice(1)}
+                                            </span>
+                                        ` : ''}
+                                    </div>
+                                    ${recurringHtml}
+                                    ${subtasksHtml}
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center space-x-2">
+                                <button
+                                    class="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 edit-btn"
+                                    title="Edit task"
+                                >
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                
+                                <button
+                                    class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 delete-btn"
+                                    title="Delete task"
+                                >
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        /**
+         * Updates the daily progress display (completion rate and progress bar).
+         */
+        updateProgress() {
+            const todaysTasks = this.getTodaysTasks();
+            const completedTasks = todaysTasks.filter(task => task.completed).length;
+            const totalTasks = todaysTasks.length;
+            const completionRate = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
+
+            document.getElementById('completionRate').textContent = `${Math.round(completionRate)}%`;
+            document.getElementById('completionText').textContent = `${completedTasks} of ${totalTasks} completed`;
+            document.getElementById('progressBar').style.width = `${completionRate}%`;
+        }
+
+        /**
+         * Renders all components of the dashboard view.
+         */
+        renderDashboard() {
+            this.updateDashboardStats();
+            this.renderWeeklyChart();
+            this.renderPriorityChart();
+            this.renderCategoryChart();
+            this.renderRecurringChart();
+            this.renderWeeklySummary();
+        }
+
+        /**
+         * Updates the summary statistics displayed on the dashboard.
+         */
+        updateDashboardStats() {
+            const totalTasks = this.tasks.length;
+            const completedTasks = this.tasks.filter(task => task.completed).length;
+            const completionRate = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
+            
+            // Calculate total time spent on completed tasks
+            const totalTimeSpent = this.tasks
+                .filter(task => task.completed && task.duration)
+                .reduce((total, task) => total + (task.duration || 0), 0);
+            
+            // Calculate average time per completed task
+            const averageTaskTime = completedTasks > 0 ? totalTimeSpent / completedTasks : 0;
+
+            // Update DOM elements with calculated statistics
+            document.getElementById('totalTasks').textContent = totalTasks;
+            document.getElementById('completedTasks').textContent = completedTasks;
+            document.getElementById('completionRateText').textContent = `${Math.round(completionRate)}% completion rate`;
+            document.getElementById('timeSpentHours').textContent = `${Math.round(totalTimeSpent / 60)}h`;
+            document.getElementById('timeSpentMinutes').textContent = `${totalTimeSpent} minutes total`;
+            document.getElementById('avgTaskTime').textContent = `${Math.round(averageTaskTime)}min`;
+        }
+
+        /**
+         * Prepares and returns data for the weekly progress chart (last 7 days).
+         * @returns {Array<Object>} An array containing daily task statistics for the week.
+         */
+        getWeeklyData() {
+            const weekData = [];
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Normalize today's date
+
+            // Loop through the last 7 days (including today)
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(today.getDate() - i); // Set date to 'i' days ago
+                date.setHours(0, 0, 0, 0); // Normalize for comparison
+
+                // Filter tasks for the current day in the loop
+                const dayTasks = this.tasks.filter(task => {
+                    // Handle Firestore Timestamp objects for createdAt
+                    const taskCreatedAt = task.createdAt?.toDate ? task.createdAt.toDate() : new Date(task.createdAt);
+                    taskCreatedAt.setHours(0, 0, 0, 0); // Normalize task creation date
+                    return taskCreatedAt.getTime() === date.getTime();
+                });
+                
+                const completedTasks = dayTasks.filter(task => task.completed).length;
+                
+                weekData.push({
+                    day: date.toLocaleDateString('en-US', { weekday: 'short' }), // e.g., "Mon", "Tue"
+                    date: date.toDateString(), // Full date string for internal use
+                    total: dayTasks.length, // Total tasks for the day
+                    completed: completedTasks, // Completed tasks for the day
+                    completion: dayTasks.length > 0 ? (completedTasks / dayTasks.length) * 100 : 0 // Completion percentage
+                });
+            }
+            
+            return weekData;
+        }
+
+        /**
+         * Renders the weekly progress bar chart using Chart.js.
+         */
+        renderWeeklyChart() {
+            const ctx = document.getElementById('weeklyChart').getContext('2d');
+            const weeklyData = this.getWeeklyData();
+
+            // Destroy existing chart instance to prevent memory leaks and redraw cleanly
+            if (this.weeklyChart) {
+                this.weeklyChart.destroy();
+            }
+
+            this.weeklyChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: weeklyData.map(d => d.day), // Day names for X-axis
+                    datasets: [
+                        {
+                            label: 'Completed',
+                            data: weeklyData.map(d => d.completed), // Completed tasks data
+                            backgroundColor: '#3b82f6', // Blue-500
+                            borderRadius: 4,
+                        },
+                        {
+                            label: 'Total',
+                            data: weeklyData.map(d => d.total), // Total tasks data
+                            backgroundColor: '#e5e7eb', // Gray-200
+                            borderRadius: 4,
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false, // Allow chart to fill container
+                    plugins: {
+                        legend: {
+                            position: 'top', // Legend position
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true, // Start Y-axis at zero
+                            ticks: {
+                                stepSize: 1 // Ensure integer steps for task counts
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        /**
+         * Renders the doughnut chart showing completed tasks by priority.
+         */
+        renderPriorityChart() {
+            const ctx = document.getElementById('priorityChart').getContext('2d');
+            // Filter only completed tasks for priority distribution
+            const completedTasks = this.tasks.filter(task => task.completed);
+            
+            // Count completed tasks by priority level
+            const priorityCounts = {
+                high: completedTasks.filter(task => task.priority === 'high').length,
+                medium: completedTasks.filter(task => task.priority === 'medium').length,
+                low: completedTasks.filter(task => task.priority === 'low').length,
+            };
+
+            // Prepare data for Chart.js, filtering out priorities with no completed tasks
+            const priorityData = [
+                { name: 'High Priority', value: priorityCounts.high, color: '#ef4444' }, // Red-500
+                { name: 'Medium Priority', value: priorityCounts.medium, color: '#f59e0b' }, // Orange-500
+                { name: 'Low Priority', value: priorityCounts.low, color: '#10b981' }, // Green-500
+            ].filter(item => item.value > 0); // Only include priorities with completed tasks
+
+            // Destroy existing chart instance if it exists
+            if (this.priorityChart) {
+                this.priorityChart.destroy();
+            }
+
+            // Only render chart if there is data to display
+            if (priorityData.length > 0) {
+                this.priorityChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: priorityData.map(d => d.name),
+                        datasets: [{
+                            data: priorityData.map(d => d.value),
+                            backgroundColor: priorityData.map(d => d.color),
+                            borderWidth: 2,
+                            borderColor: '#fff' // White border between segments
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false // Hide default legend, we'll create a custom one
+                            }
+                        }
+                    }
+                });
+
+                // Dynamically update the custom legend below the chart
+                const legend = document.getElementById('priorityLegend');
+                legend.innerHTML = priorityData.map(entry => `
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 rounded-full" style="background-color: ${entry.color}"></div>
+                        <span class="text-sm text-gray-600">${entry.name}</span>
+                    </div>
+                `).join('');
+            } else {
+                // If no priority data, clear the chart canvas and legend
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                document.getElementById('priorityLegend').innerHTML = '<p class="text-center text-gray-500 text-sm">No completed tasks to display by priority.</p>';
+            }
+        }
+
+        /**
+         * Renders the doughnut chart showing tasks by category.
+         */
+        renderCategoryChart() {
+            const ctx = document.getElementById('categoryChart').getContext('2d');
+            
+            const categoryCounts = this.tasks.reduce((acc, task) => {
+                const category = task.category || 'none';
+                acc[category] = (acc[category] || 0) + 1;
+                return acc;
+            }, {});
+
+            const categoryColors = {
+                work: '#3b82f6', // Blue
+                personal: '#8b5cf6', // Purple
+                health: '#ef4444', // Red
+                shopping: '#22c55e', // Green
+                learning: '#6366f1', // Indigo
+                other: '#6b7280', // Gray
+                none: '#d1d5db' // Light Gray
+            };
+
+            const categoryData = Object.keys(categoryCounts)
+                .map(cat => ({
+                    name: cat.charAt(0).toUpperCase() + cat.slice(1),
+                    value: categoryCounts[cat],
+                    color: categoryColors[cat] || categoryColors['other']
+                }))
+                .filter(item => item.value > 0);
+
+            if (this.categoryChart) {
+                this.categoryChart.destroy();
+            }
+
+            if (categoryData.length > 0) {
+                this.categoryChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: categoryData.map(d => d.name),
+                        datasets: [{
+                            data: categoryData.map(d => d.value),
+                            backgroundColor: categoryData.map(d => d.color),
+                            borderWidth: 2,
+                            borderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+
+                const legend = document.getElementById('categoryLegend');
+                legend.innerHTML = categoryData.map(entry => `
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 rounded-full" style="background-color: ${entry.color}"></div>
+                        <span class="text-sm text-gray-600">${entry.name}</span>
+                    </div>
+                `).join('');
+            } else {
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                document.getElementById('categoryLegend').innerHTML = '<p class="text-center text-gray-500 text-sm">No tasks to display by category.</p>';
+            }
+        }
+
+        /**
+         * Renders the doughnut chart showing recurring task overview.
+         */
+        renderRecurringChart() {
+            const ctx = document.getElementById('recurringChart').getContext('2d');
+            
+            const recurringCounts = this.tasks.reduce((acc, task) => {
+                const type = task.recurring?.type || 'none';
+                acc[type] = (acc[type] || 0) + 1;
+                return acc;
+            }, {});
+
+            const recurringColors = {
+                none: '#d1d5db', // Light Gray
+                daily: '#3b82f6', // Blue
+                weekly: '#8b5cf6', // Purple
+                monthly: '#ef4444' // Red
+            };
+
+            const recurringData = Object.keys(recurringCounts)
+                .map(type => ({
+                    name: type.charAt(0).toUpperCase() + type.slice(1),
+                    value: recurringCounts[type],
+                    color: recurringColors[type] || recurringColors['none']
+                }))
+                .filter(item => item.value > 0);
+
+            if (this.recurringChart) {
+                this.recurringChart.destroy();
+            }
+
+            if (recurringData.length > 0) {
+                this.recurringChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: recurringData.map(d => d.name),
+                        datasets: [{
+                            data: recurringData.map(d => d.value),
+                            backgroundColor: recurringData.map(d => d.color),
+                            borderWidth: 2,
+                            borderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+
+                const legend = document.getElementById('recurringLegend');
+                legend.innerHTML = recurringData.map(entry => `
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 rounded-full" style="background-color: ${entry.color}"></div>
+                        <span class="text-sm text-gray-600">${entry.name}</span>
+                    </div>
+                `).join('');
+            } else {
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                document.getElementById('recurringLegend').innerHTML = '<p class="text-center text-gray-500 text-sm">No tasks to display for recurring overview.</p>';
+            }
+        }
+
+
+        /**
+         * Renders the weekly summary cards, showing daily completion status.
+         */
+        renderWeeklySummary() {
+            const weeklyData = this.getWeeklyData();
+            const summary = document.getElementById('weeklySummary');
+            
+            // Generate HTML for each day's summary card
+            summary.innerHTML = weeklyData.map(day => `
+                <div class="text-center p-4 bg-gray-50 rounded-lg">
+                    <p class="font-medium text-gray-800">${day.day}</p>
+                    <p class="text-2xl font-bold text-blue-600 mt-2">${day.completed}</p>
+                    <p class="text-sm text-gray-600">of ${day.total}</p>
+                    <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                        <div class="bg-blue-500 h-2 rounded-full transition-all duration-300" style="width: ${day.completion}%"></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+
+    // Initialize the ScheduleMaster application when the DOM is fully loaded.
+    document.addEventListener('DOMContentLoaded', () => {
+        // Expose __app_id, __firebase_config, __initial_auth_token to the global scope
+        // for testing purposes if not already defined in the environment.
+        if (typeof window.__app_id === 'undefined') {
+            window.__app_id = 'your-default-app-id'; // Replace with a default if needed for local dev
+        }
+        if (typeof window.__firebase_config === 'undefined') {
+            window.__firebase_config = '{}'; // Or a dummy config for local dev
+        }
+        if (typeof window.__initial_auth_token === 'undefined') {
+            window.__initial_auth_token = null; // Or a dummy token for local dev
+        }
+        new ScheduleMaster();
+    });
     </script>
-  </body>
+</body>
 </html>
