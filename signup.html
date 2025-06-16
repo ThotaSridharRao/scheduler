@@ -425,22 +425,6 @@
       </div>
     </main>
 
-    <!-- Mobile Menu Script (copied from original) -->
-    <script id="mobile-menu-script">
-      document.addEventListener("DOMContentLoaded", function () {
-        const mobileMenuButton = document.getElementById("mobile-menu-button");
-        const mobileMenu = document.getElementById("mobile-menu");
-        let isMenuOpen = false;
-        mobileMenuButton.addEventListener("click", () => {
-          isMenuOpen = !isMenuOpen;
-          mobileMenu.classList.toggle("hidden");
-          mobileMenuButton.innerHTML = isMenuOpen
-            ? '<i class="ri-close-line ri-lg"></i>'
-            : '<i class="ri-menu-line ri-lg"></i>';
-        });
-      });
-    </script>
-
     <!-- Loading Screen Script (copied from original) -->
     <script id="loading-screen-script">
       document.addEventListener("DOMContentLoaded", function () {
@@ -455,8 +439,64 @@
       });
     </script>
 
-    <!-- Sign Up Form Interactivity Script -->
-    <script id="signup-form-script">
+    <!-- Firebase SDKs -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+      import { getAuth, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, GithubAuthProvider, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+      import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+
+      // Initialize Firebase using the global __firebase_config provided by the environment
+      const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const db = getFirestore(app);
+      const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id'; // Get the app ID for Firestore paths
+
+      // Function to show a temporary notification (re-defined here for modularity with Firebase)
+      function showNotification(message, bgColorClass, iconClass) {
+          const notification = document.createElement("div");
+          notification.className = `fixed bottom-4 right-4 ${bgColorClass} text-white px-4 py-2 rounded-lg shadow-lg transform translate-y-10 opacity-0 transition-all duration-500 z-[60]`;
+          notification.innerHTML = `
+            <div class="flex items-center">
+              <i class="${iconClass} mr-2"></i> ${message}
+            </div>
+          `;
+          document.body.appendChild(notification);
+
+          setTimeout(() => {
+            notification.classList.remove("translate-y-10", "opacity-0");
+          }, 100);
+
+          setTimeout(() => {
+            notification.classList.add("translate-y-10", "opacity-0");
+            setTimeout(() => {
+              notification.remove();
+            }, 500);
+          }, 3000);
+        }
+
+      // Authenticate with custom token or anonymously if not available
+      onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+          try {
+            if (typeof __initial_auth_token !== 'undefined') {
+              await signInWithCustomToken(auth, __initial_auth_token);
+              console.log("Signed in with custom token for Canvas environment.");
+            } else {
+              await signInAnonymously(auth);
+              console.log("Signed in anonymously for Canvas environment.");
+            }
+          } catch (error) {
+            console.error("Firebase authentication error during Canvas startup:", error);
+            showNotification(`Canvas auth failed: ${error.message}`, "bg-red-500", "ri-error-warning-line");
+          }
+        } else {
+          console.log("User already authenticated in Canvas environment:", user.uid);
+        }
+      });
+
+
       document.addEventListener("DOMContentLoaded", function () {
         const signupForm = document.getElementById("signup-form");
         const signupButton = document.getElementById("signup-button");
@@ -498,31 +538,8 @@
         googleSignupButton.addEventListener("click", createRipple);
         githubSignupButton.addEventListener("click", createRipple);
 
-        // Function to show a temporary notification
-        function showNotification(message, bgColorClass, iconClass) {
-          const notification = document.createElement("div");
-          notification.className = `fixed bottom-4 right-4 ${bgColorClass} text-white px-4 py-2 rounded-lg shadow-lg transform translate-y-10 opacity-0 transition-all duration-500 z-[60]`; // Increased z-index
-          notification.innerHTML = `
-            <div class="flex items-center">
-              <i class="${iconClass} mr-2"></i> ${message}
-            </div>
-          `;
-          document.body.appendChild(notification);
-
-          setTimeout(() => {
-            notification.classList.remove("translate-y-10", "opacity-0");
-          }, 100);
-
-          setTimeout(() => {
-            notification.classList.add("translate-y-10", "opacity-0");
-            setTimeout(() => {
-              notification.remove();
-            }, 500);
-          }, 3000);
-        }
-
-        // Handle form submission
-        signupForm.addEventListener("submit", function (e) {
+        // Handle form submission for email/password signup
+        signupForm.addEventListener("submit", async function (e) {
           e.preventDefault(); // Prevent default form submission
 
           const username = document.getElementById("username").value;
@@ -540,6 +557,16 @@
             return;
           }
 
+          if (password.length < 6) { // Firebase requires at least 6 characters for password
+            showNotification(
+              "Password should be at least 6 characters.",
+              "bg-red-500",
+              "ri-error-warning-line"
+            );
+            passwordInput.focus();
+            return;
+          }
+
           if (!termsCheckbox.checked) {
             showNotification(
               "Please accept the Terms & Conditions.",
@@ -551,21 +578,143 @@
 
           console.log("Sign Up attempt:", { username, email, password });
 
-          // Simulate API call and show success notification
-          showNotification(
-            "Account created successfully!",
-            "bg-green-500",
-            "ri-check-line"
-          );
+          try {
+            // Create user with email and password
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            console.log("User signed up successfully:", userCredential.user);
 
-          // Optionally redirect after a short delay
-          setTimeout(() => {
-            window.location.href = "login.html"; // Redirect to login page
-          }, 1500);
+            // Store user's full name in Firestore
+            // Path: artifacts/{appId}/users/{userId}/profile/data/user_data
+            const userId = userCredential.user.uid;
+            const userDocRef = doc(db, `artifacts/${appId}/users/${userId}/profile/data/user_data`);
+            await setDoc(userDocRef, {
+              fullName: username,
+              email: email,
+              createdAt: new Date().toISOString()
+            });
+            console.log("User profile saved to Firestore.");
 
+            showNotification(
+              "Account created successfully!",
+              "bg-green-500",
+              "ri-check-line"
+            );
+
+            // Optionally redirect after a short delay
+            setTimeout(() => {
+              window.location.href = "login.html"; // Redirect to login page
+            }, 1500);
+
+          } catch (error) {
+            console.error("Firebase signup error:", error.code, error.message);
+            let errorMessage = "An unknown error occurred during signup.";
+            if (error.code === 'auth/email-already-in-use') {
+                errorMessage = "Email address is already in use.";
+            } else if (error.code === 'auth/invalid-email') {
+                errorMessage = "Please enter a valid email address.";
+            } else if (error.code === 'auth/weak-password') {
+                errorMessage = "Password is too weak. Please choose a stronger one.";
+            } else {
+                errorMessage = error.message;
+            }
+            showNotification(
+              `Sign up failed: ${errorMessage}`,
+              "bg-red-500",
+              "ri-error-warning-line"
+            );
+          }
           // Clear form fields
           signupForm.reset();
         });
+
+        // Handle Google social signup
+        googleSignupButton.addEventListener("click", async function () {
+          try {
+            const provider = new GoogleAuthProvider();
+            const result = await signInWithPopup(auth, provider);
+            console.log("Google signup successful:", result.user);
+
+            // Store user data in Firestore
+            const userId = result.user.uid;
+            const userDocRef = doc(db, `artifacts/${appId}/users/${userId}/profile/data/user_data`);
+            await setDoc(userDocRef, {
+              fullName: result.user.displayName,
+              email: result.user.email,
+              photoURL: result.user.photoURL,
+              createdAt: new Date().toISOString()
+            }, { merge: true }); // Use merge: true to avoid overwriting if user already existed
+            console.log("User profile from Google saved to Firestore.");
+
+            showNotification(
+              "Account created with Google successfully!",
+              "bg-green-500",
+              "ri-check-line"
+            );
+            // Redirect after a short delay
+            setTimeout(() => {
+              window.location.href = "login.html";
+            }, 1500);
+
+          } catch (error) {
+            console.error("Google signup error:", error.code, error.message);
+            let errorMessage = "Google signup failed.";
+            if (error.code === 'auth/popup-closed-by-user') {
+                errorMessage = "Google signup cancelled.";
+            } else {
+                errorMessage = error.message;
+            }
+            showNotification(
+              `${errorMessage}`,
+              "bg-red-500",
+              "ri-error-warning-line"
+            );
+          }
+        });
+
+        // Handle GitHub social signup
+        githubSignupButton.addEventListener("click", async function () {
+          try {
+            const provider = new GithubAuthProvider();
+            const result = await signInWithPopup(auth, provider);
+            console.log("GitHub signup successful:", result.user);
+
+            // Store user data in Firestore
+            const userId = result.user.uid;
+            const userDocRef = doc(db, `artifacts/${appId}/users/${userId}/profile/data/user_data`);
+            await setDoc(userDocRef, {
+              fullName: result.user.displayName, // GitHub display name might be null, handle gracefully
+              email: result.user.email,
+              photoURL: result.user.photoURL,
+              createdAt: new Date().toISOString()
+            }, { merge: true });
+            console.log("User profile from GitHub saved to Firestore.");
+
+            showNotification(
+              "Account created with GitHub successfully!",
+              "bg-green-500",
+              "ri-check-line"
+            );
+            // Redirect after a short delay
+            setTimeout(() => {
+              window.location.href = "login.html";
+            }, 1500);
+
+          } catch (error) {
+            console.error("GitHub signup error:", error.code, error.message);
+            let errorMessage = "GitHub signup failed.";
+            if (error.code === 'auth/popup-closed-by-user') {
+                errorMessage = "GitHub signup cancelled.";
+            } else {
+                errorMessage = error.message;
+            }
+            showNotification(
+              `${errorMessage}`,
+              "bg-red-500",
+              "ri-error-warning-line"
+            );
+          }
+        });
+
 
         // Initial focus on username input when the page loads
         document.getElementById("username").focus();
