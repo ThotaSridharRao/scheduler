@@ -1,945 +1,1926 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Schedule Master</title>
-    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
-    <script>
-      // Tailwind CSS configuration (unchanged)
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: { primary: "#4F46E5", secondary: "#818CF8" },
-            borderRadius: {
-              none: "0px",
-              sm: "4px",
-              DEFAULT: "8px",
-              md: "12px",
-              lg: "16px",
-              xl: "20px",
-              "2xl": "24px",
-              "3xl": "32px",
-              full: "9999px",
-              button: "8px",
-            },
-          },
-        },
-      };
-    </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css"
-      rel="stylesheet"
-    />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TimeFlow - Own Your Time. Master Your Day.</title>
+    <!-- Tailwind CSS CDN for rapid prototyping and responsiveness -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter (for body) and Manrope (for headings/accents) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons (minimal setup) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Remix Icon for old HTML's select arrows (can be removed if replaced by Font Awesome) -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
     <style>
-      body {
-        font-family: "Inter", sans-serif;
-      }
-      .font-pacifico {
-        font-family: "Pacifico", cursive;
-      }
-      /* Custom scrollbar styles */
-      .custom-scrollbar::-webkit-scrollbar {
-        width: 8px; /* Width for vertical scrollbar */
-        height: 8px; /* Height for horizontal scrollbar */
-      }
-      .custom-scrollbar::-webkit-scrollbar-track {
-        background: #f1f1f1; /* Light grey track */
-        border-radius: 10px;
-      }
-      .custom-scrollbar::-webkit-scrollbar-thumb {
-        background: #888; /* Darker grey thumb */
-        border-radius: 10px;
-      }
-      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-        background: #555; /* Even darker grey on hover */
-      }
-      .notification {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        padding: 1rem 2rem;
-        border-radius: 0.5rem;
-        color: white;
-        font-weight: 500;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        z-index: 1000;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        transform: translateY(-100px);
-        opacity: 0;
-        transition: transform 0.5s ease-out, opacity 0.5s ease-out;
-      }
-      .notification.show {
-        transform: translateY(0);
-        opacity: 1;
-      }
+        /* Base styles using CSS variables for time-adaptive theme */
+        :root {
+            /* Light Theme (Default) */
+            --color-primary: #F0F4F8; /* Light background */
+            --color-secondary: #FFFFFF; /* Card/element background */
+            --color-text: #2C3E50; /* Dark text */
+            --color-accent: #6C63FF; /* Vibrant purple */
+            --color-gradient-start: #FFCBA4; /* Dawn peach */
+            --color-gradient-end: #A0C4FF; /* Sky blue */
+            --glass-background: rgba(255, 255, 255, 0.15);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.18);
+            --neumorphism-light: #FFFFFF;
+            --neumorphism-dark: #D1D9E6;
+            --button-ripple-color: rgba(255, 255, 255, 0.7);
+
+            /* Typography */
+            --font-family-body: 'Inter', sans-serif;
+            --font-family-heading: 'Manrope', sans-serif;
+            --letter-spacing-heading: 0.02em;
+            --letter-spacing-body: 0.01em;
+
+            /* Shadows */
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.15);
+
+            /* Transitions */
+            --transition-medium: 0.3s ease-in-out;
+        }
+
+        /* Dark Theme */
+        body[data-theme="dark"] {
+            --color-primary: #1A202C; /* Dark charcoal */
+            --color-secondary: #2D3748; /* Dark grey-blue */
+            --color-text: #E2E8F0; /* Light grey-blue */
+            --color-accent: #BB86FC; /* Soft purple */
+            --color-gradient-start: #5A005A; /* Deep purple */
+            --color-gradient-end: #000033; /* Midnight blue */
+            --glass-background: rgba(0, 0, 0, 0.2);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.05);
+            --neumorphism-light: #3A4750;
+            --neumorphism-dark: #1F2C33;
+            --button-ripple-color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* High Contrast Mode */
+        body.high-contrast {
+            --color-primary: #000000;
+            --color-secondary: #000000;
+            --color-text: #FFFF00; /* Bright yellow for text */
+            --color-accent: #00FFFF; /* Cyan accent */
+            --color-gradient-start: #000000;
+            --color-gradient-end: #000000;
+            --glass-background: rgba(0, 0, 0, 0.9);
+            --glass-border: 1px solid #FFFF00;
+            --neumorphism-light: #000000;
+            --neumorphism-dark: #000000;
+            --button-ripple-color: rgba(255, 255, 0, 0.8);
+            border: 2px solid #FFFF00; /* General border for contrast */
+        }
+
+
+        body {
+            font-family: var(--font-family-body);
+            color: var(--color-text);
+            background: linear-gradient(135deg, var(--color-gradient-start), var(--color-gradient-end));
+            background-size: 200% 200%;
+            animation: gradientShift 10s ease infinite alternate;
+            transition: background-color var(--transition-medium), color var(--transition-medium);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 100% 100%; }
+        }
+
+        /* Custom Styles for Components */
+
+        /* Button Animations */
+        .btn {
+            position: relative;
+            overflow: hidden;
+            transition: all var(--transition-medium);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px); /* Lift effect */
+            background: var(--glass-background); /* Glassmorphism background */
+            backdrop-filter: var(--glass-backdrop-filter);
+            -webkit-backdrop-filter: var(--glass-backdrop-filter); /* Safari support */
+            border: var(--glass-border);
+        }
+
+        .btn.glow-pulse::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, var(--color-accent) 0%, transparent 70%);
+            transform: translate(-50%, -50%) scale(0);
+            opacity: 0;
+            border-radius: 50%;
+            animation: glowPulse 2s infinite ease-out;
+            pointer-events: none; /* Allow clicks to pass through */
+        }
+
+        .btn .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background-color: var(--button-ripple-color);
+            transform: scale(0);
+            opacity: 1;
+            animation: ripple 0.6s linear forwards;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        @keyframes glowPulse {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0.7; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+        }
+
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* Neumorphism Cards & Inputs */
+        .neumorphic-card {
+            border-radius: 1rem;
+            background: var(--color-secondary);
+            box-shadow: 8px 8px 16px var(--neumorphism-dark),
+                       -8px -8px 16px var(--neumorphism-light);
+            transition: all var(--transition-medium);
+        }
+
+        .neumorphic-input-group {
+            position: relative;
+        }
+
+        .neumorphic-input {
+            width: 100%;
+            padding: 1rem 1rem 0.5rem 1rem; /* Adjust padding for floating label */
+            background: var(--color-secondary);
+            border: none;
+            border-radius: 0.5rem;
+            box-shadow: inset 4px 4px 8px var(--neumorphism-dark),
+                        inset -4px -4px 8px var(--neumorphism-light);
+            transition: all var(--transition-medium);
+            outline: none;
+        }
+
+        .neumorphic-input:focus {
+            box-shadow: inset 2px 2px 4px var(--neumorphism-dark),
+                        inset -2px -2px 4px var(--neumorphism-light),
+                        0 0 0 2px var(--color-accent); /* Focus ring */
+        }
+
+        .neumorphic-input-label {
+            position: absolute;
+            left: 1rem;
+            top: 1rem;
+            color: var(--color-text);
+            opacity: 0.6;
+            pointer-events: none;
+            transition: all var(--transition-medium);
+        }
+
+        /* Adjust labels for date/time/select inputs to be always "floating" */
+        .neumorphic-input[type="date"] + .neumorphic-input-label,
+        .neumorphic-input[type="time"] + .neumorphic-input-label,
+        .neumorphic-input[type="number"] + .neumorphic-input-label,
+        select.neumorphic-input + .neumorphic-input-label {
+            top: 0.25rem;
+            font-size: 0.75rem;
+            opacity: 1;
+            color: var(--color-accent);
+        }
+
+
+        .neumorphic-input:focus + .neumorphic-input-label,
+        .neumorphic-input:not(:placeholder-shown) + .neumorphic-input-label {
+            top: 0.25rem;
+            font-size: 0.75rem;
+            opacity: 1;
+            color: var(--color-accent);
+        }
+
+        /* Smart Repeat Toggle */
+        .smart-toggle {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .smart-toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .smart-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--neumorphism-dark);
+            transition: all var(--transition-medium);
+            border-radius: 34px;
+            box-shadow: inset 2px 2px 5px var(--neumorphism-dark),
+                        inset -2px -2px 5px var(--neumorphism-light);
+        }
+
+        .smart-slider::before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: var(--color-secondary);
+            transition: all var(--transition-medium);
+            border-radius: 50%;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .smart-toggle input:checked + .smart-slider {
+            background-color: var(--color-accent);
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2),
+                        inset -2px -2px 5px var(--color-accent),
+                        0 0 10px rgba(108, 99, 255, 0.5); /* Shine effect */
+        }
+
+        .smart-toggle input:checked + .smart-slider::before {
+            transform: translateX(26px);
+        }
+
+        /* Status Labels */
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px; /* Full pill shape */
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            background-size: 200% auto;
+            animation: gradientShift 3s linear infinite alternate;
+            transition: all var(--transition-medium);
+        }
+
+        .status-in-progress { background-image: linear-gradient(to right, #FFD700 0%, #FFA500 50%, #FFD700 100%); color: #333; }
+        .status-upcoming { background-image: linear-gradient(to right, #87CEEB 0%, #4682B4 50%, #87CEEB 100%); color: #fff; }
+        .status-completed { background-image: linear-gradient(to right, #90EE90 0%, #3CB371 50%, #90EE90 100%); color: #fff; }
+        .status-overdue { background-image: linear-gradient(to right, #FF6347 0%, #DC143C 50%, #FF6347 100%); color: #fff; }
+        .status-pending { background-image: linear-gradient(to right, #FFD700 0%, #FFA500 50%, #FFD700 100%); color: #333; } /* Matching in-progress for pending */
+
+
+        /* Notification Bell */
+        .bell-icon {
+            animation-duration: 0.8s;
+            animation-timing-function: ease-in-out;
+            animation-iteration-count: 1;
+            transform-origin: top center;
+        }
+
+        @keyframes bellRing {
+            0% { transform: rotate(0); }
+            15% { transform: rotate(15deg); }
+            30% { transform: rotate(-15deg); }
+            45% { transform: rotate(10deg); }
+            60% { transform: rotate(-10deg); }
+            75% { transform: rotate(5deg); }
+            90% { transform: rotate(-5deg); }
+            100% { transform: rotate(0); }
+        }
+
+        .notification-dropdown {
+            background: var(--glass-background);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: var(--glass-border);
+            box-shadow: var(--shadow-lg);
+            transition: all var(--transition-medium);
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, var(--color-gradient-start), var(--color-gradient-end));
+            background-size: 200% 200%;
+            animation: gradientShift 10s ease infinite alternate;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 1;
+            transition: opacity 1s ease-out;
+        }
+
+        .loading-overlay.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .clock-svg {
+            width: 150px;
+            height: 150px;
+        }
+        .clock-svg .hour-hand {
+            transform-origin: center;
+            animation: hourRotate 12s linear infinite;
+        }
+        .clock-svg .minute-hand {
+            transform-origin: center;
+            animation: minuteRotate 2s linear infinite;
+        }
+        @keyframes hourRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes minuteRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .progress-ring {
+            position: relative;
+            width: 100px;
+            height: 100px;
+        }
+        .progress-ring-svg {
+            transform: rotate(-90deg); /* Start at 12 o'clock */
+        }
+        .progress-ring-circle {
+            transition: stroke-dashoffset 0.35s;
+            transform: rotate(0deg);
+            transform-origin: 50% 50%;
+        }
+
+        /* Parallax effect on main content (simulated with mousemove) */
+        .parallax-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%236C63FF' fill-opacity='0.1' fill-rule='evenodd'%3E%3Cpath d='M0 0h30v30H0V0zm30 30h30v30H30V30z'/%3E%3C/g%3E%3C/svg%3E"); /* Simple geometric pattern */
+            background-size: 60px 60px;
+            opacity: 0.1;
+            z-index: -1;
+            transition: transform 0.1s ease-out; /* Smooth movement */
+        }
+
+        /* Focus vs Fun Mode */
+        body.focus-mode .confetti-animation {
+            display: none; /* Hide confetti */
+        }
+        body.focus-mode .animated-background,
+        body.focus-mode .btn.glow-pulse::after,
+        body.focus-mode .smart-toggle input:checked + .smart-slider {
+            animation: none !important; /* Disable animations */
+            box-shadow: none !important;
+            transition: none !important;
+        }
+
+        /* Text shadow/glow for headings */
+        .heading-glow {
+            text-shadow: 0 0 8px rgba(108, 99, 255, 0.4); /* Adjust based on theme */
+        }
+        body[data-theme="dark"] .heading-glow {
+            text-shadow: 0 0 8px rgba(187, 134, 252, 0.4);
+        }
+
+        /* Responsive Masonry-like grid for tasks on mobile */
+        @media (max-width: 767px) {
+            .task-grid {
+                column-count: 1; /* Single column on mobile */
+                column-gap: 1.5rem;
+            }
+            .task-card {
+                break-inside: avoid;
+                margin-bottom: 1.5rem;
+            }
+        }
+        @media (min-width: 768px) and (max-width: 1023px) {
+            .task-grid {
+                column-count: 2; /* Two columns on tablet */
+            }
+        }
+        @media (min-width: 1024px) {
+            .task-grid {
+                column-count: 3; /* Three columns on desktop */
+            }
+        }
+
+        /* General element transitions for page-like effects */
+        .page-transition-element {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInSlideUp 0.6s ease-out forwards;
+        }
+        @keyframes fadeInSlideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Custom scrollbar for task list (from old code) */
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 8px; /* Width for vertical scrollbar */
+          height: 8px; /* Height for horizontal scrollbar */
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: var(--color-primary); /* Light grey track */
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: var(--color-accent); /* Darker grey thumb */
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: var(--color-accent); /* Even darker grey on hover */
+        }
+
+        /* Notification message styling (from old code, adapted to new colors) */
+        .notification-message-overlay { /* Renamed to avoid conflict with bell dropdown */
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            color: white;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transform: translateY(-100px);
+            opacity: 0;
+            transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+        }
+        .notification-message-overlay.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        /* Specific colors for messages (adapted from old code) */
+        .notification-message-overlay.bg-green-500 { background-color: #10B981; } /* Tailwind green-500 */
+        .notification-message-overlay.bg-red-500 { background-color: #EF4444; }   /* Tailwind red-500 */
+        .notification-message-overlay.bg-blue-500 { background-color: #3B82F6; } /* Tailwind blue-500 */
+
+
     </style>
-  </head>
-  <body class="bg-gradient-to-br from-primary to-secondary min-h-screen text-gray-800">
+</head>
+<body class="flex flex-col min-h-screen font-inter">
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <svg class="clock-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="45" stroke="var(--color-text)" stroke-width="2" opacity="0.2"/>
+            <!-- Hour Hand -->
+            <line class="hour-hand" x1="50" y1="50" x2="50" y2="30" stroke="var(--color-accent)" stroke-width="3" stroke-linecap="round"/>
+            <!-- Minute Hand -->
+            <line class="minute-hand" x1="50" y1="50" x2="50" y2="20" stroke="var(--color-accent)" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="50" cy="50" r="3" fill="var(--color-accent)"/>
+        </svg>
+        <p id="quote-of-day" class="text-xl md:text-2xl mt-8 mb-4 text-center px-4 font-manrope font-semibold tracking-wide" style="min-height: 3rem;">
+            <!-- Quote appears here -->
+        </p>
+        <div class="progress-ring w-24 h-24 mt-6">
+            <svg class="progress-ring-svg" width="100" height="100">
+                <circle class="progress-ring-circle" stroke="var(--color-accent)" stroke-width="4" fill="transparent" r="45" cx="50" cy="50" />
+            </svg>
+        </div>
+    </div>
+
+    <!-- Parallax Background Layer (Subtle SVG particle mesh/pattern) -->
+    <div id="parallax-bg" class="parallax-bg"></div>
+
+    <!-- Global Notification Container (for success/error messages from old code) -->
     <div id="notification-container"></div>
 
-    <div class="container mx-auto p-4">
-      <header
-        class="bg-white rounded-lg shadow-lg p-6 mb-8 flex flex-col md:flex-row justify-between items-center"
-      >
-        <h1 class="text-4xl font-pacifico text-primary mb-4 md:mb-0">
-          Schedule Master
-        </h1>
-        <div class="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4">
-          <button
-            id="logout-button"
-            class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-6 rounded-button transition duration-300 ease-in-out shadow-md"
-          >
-            Logout
-          </button>
-          <a
-            href="login.html"
-            id="login-link"
-            class="hidden bg-primary hover:bg-indigo-700 text-white font-semibold py-2 px-6 rounded-button transition duration-300 ease-in-out shadow-md text-center"
-          >
-            Login
-          </a>
-          <a
-            href="signup.html"
-            id="signup-link"
-            class="hidden bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-6 rounded-button transition duration-300 ease-in-out shadow-md text-center"
-          >
-            Sign Up
-          </a>
+    <!-- Sticky Navigation Bar -->
+    <nav class="fixed top-0 left-0 right-0 z-50 p-4 lg:px-8 bg-gradient-to-r from-glass-background to-transparent backdrop-filter backdrop-blur-lg border-b border-glass-border flex justify-between items-center shadow-md">
+        <div class="flex items-center space-x-4 lg:space-x-8">
+            <a href="#" class="flex items-center text-xl font-manrope font-extrabold text-var(--color-text) hover:text-var(--color-accent) transition-colors duration-300">
+                <i class="fas fa-hourglass-start mr-2 text-var(--color-accent)"></i> TimeFlow
+            </a>
+            <!-- Desktop Navigation Links -->
+            <div class="hidden md:flex space-x-6">
+                <div class="group relative flex items-center">
+                    <a href="#" class="p-2 text-var(--color-text) hover:text-var(--color-accent) rounded-full transition-colors duration-300 flex items-center justify-center">
+                        <i class="fas fa-calendar-alt text-lg"></i>
+                    </a>
+                    <span class="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-1 bg-var(--color-secondary) text-xs text-var(--color-text) rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap shadow-sm">Dashboard</span>
+                </div>
+                <div class="group relative flex items-center">
+                    <a href="#" class="p-2 text-var(--color-text) hover:text-var(--color-accent) rounded-full transition-colors duration-300 flex items-center justify-center">
+                        <i class="fas fa-plus-circle text-lg"></i>
+                    </a>
+                    <span class="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-1 bg-var(--color-secondary) text-xs text-var(--color-text) rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap shadow-sm">Add Task</span>
+                </div>
+                <div class="group relative flex items-center">
+                    <a href="#" class="p-2 text-var(--color-text) hover:text-var(--color-accent) rounded-full transition-colors duration-300 flex items-center justify-center">
+                        <i class="fas fa-chart-line text-lg"></i>
+                    </a>
+                    <span class="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-1 bg-var(--color-secondary) text-xs text-var(--color-text) rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap shadow-sm">Analytics</span>
+                </div>
+            </div>
         </div>
-      </header>
 
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <section class="lg:col-span-1 bg-white rounded-lg shadow-lg p-6">
-          <h2 class="text-2xl font-bold text-gray-700 mb-6">Add New Task</h2>
-          <form id="task-form" class="space-y-4">
-            <div>
-              <label for="task-name" class="block text-sm font-medium text-gray-700"
-                >Task Name</label
-              >
-              <input
-                type="text"
-                id="task-name"
-                name="task-name"
-                required
-                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-primary focus:border-primary"
-              />
+        <!-- Notification Bell & User Icon / Auth Buttons -->
+        <div class="flex items-center space-x-4">
+            <div class="relative">
+                <button id="notification-bell" class="relative p-2 text-var(--color-text) hover:text-var(--color-accent) rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-var(--color-accent) bell-icon">
+                    <i class="fas fa-bell text-lg"></i>
+                    <span id="notification-dot" class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse hidden"></span>
+                </button>
+                <div id="notification-dropdown" class="absolute right-0 mt-2 w-72 rounded-lg notification-dropdown p-4 shadow-lg hidden">
+                    <h3 class="text-md font-bold mb-3 text-var(--color-accent)">Upcoming Tasks</h3>
+                    <ul class="space-y-2">
+                        <!-- Upcoming notifications will be dynamically loaded here -->
+                        <li class="flex items-center text-sm">
+                            <span class="w-2 h-2 bg-blue-400 rounded-full mr-2"></span>
+                            <span>09:00 AM - Daily Standup</span>
+                        </li>
+                        <li class="flex items-center text-sm">
+                            <span class="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
+                            <span>11:00 AM - Design Review</span>
+                        </li>
+                    </ul>
+                </div>
             </div>
-            <div>
-              <label
-                for="task-description"
-                class="block text-sm font-medium text-gray-700"
-                >Description (Optional)</label
-              >
-              <textarea
-                id="task-description"
-                name="task-description"
-                rows="3"
-                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-primary focus:border-primary"
-              ></textarea>
+            <!-- User/Auth Section -->
+            <div class="relative group">
+                <button class="p-2 text-var(--color-text) hover:text-var(--color-accent) rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-var(--color-accent)" aria-label="User menu">
+                    <i class="fas fa-user-circle text-lg"></i>
+                </button>
+                <div class="absolute right-0 mt-2 w-48 rounded-lg notification-dropdown p-2 shadow-lg hidden group-hover:block">
+                    <button id="logout-button" class="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-red-500 hover:text-white rounded-md transition-colors duration-200 hidden">
+                        <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                    </button>
+                    <a href="login.html" id="login-link" class="w-full text-left px-4 py-2 text-sm text-var(--color-text) hover:bg-var(--color-primary) rounded-md transition-colors duration-200 hidden">
+                        <i class="fas fa-sign-in-alt mr-2"></i> Login
+                    </a>
+                    <a href="signup.html" id="signup-link" class="w-full text-left px-4 py-2 text-sm text-var(--color-text) hover:bg-var(--color-primary) rounded-md transition-colors duration-200 hidden">
+                        <i class="fas fa-user-plus mr-2"></i> Sign Up
+                    </a>
+                </div>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label
-                  for="task-date"
-                  class="block text-sm font-medium text-gray-700"
-                  >Due Date</label
-                >
-                <input
-                  type="date"
-                  id="task-date"
-                  name="task-date"
-                  required
-                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-primary focus:border-primary"
-                />
-              </div>
-              <div>
-                <label
-                  for="task-time"
-                  class="block text-sm font-medium text-gray-700"
-                  >Due Time</label
-                >
-                <input
-                  type="time"
-                  id="task-time"
-                  name="task-time"
-                  required
-                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-primary focus:border-primary"
-                />
-              </div>
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700"
-                >Priority</label
-              >
-              <div class="mt-2 flex space-x-4">
-                <label class="inline-flex items-center">
-                  <input
-                    type="radio"
-                    name="priority"
-                    value="low"
-                    class="form-radio text-primary focus:ring-primary"
-                  />
-                  <span class="ml-2">Low</span>
-                </label>
-                <label class="inline-flex items-center">
-                  <input
-                    type="radio"
-                    name="priority"
-                    value="medium"
-                    checked
-                    class="form-radio text-primary focus:ring-primary"
-                  />
-                  <span class="ml-2">Medium</span>
-                </label>
-                <label class="inline-flex items-center">
-                  <input
-                    type="radio"
-                    name="priority"
-                    value="high"
-                    class="form-radio text-primary focus:ring-primary"
-                  />
-                  <span class="ml-2">High</span>
-                </label>
-              </div>
-            </div>
-            <div>
-              <label
-                for="task-category"
-                class="block text-sm font-medium text-gray-700"
-                >Category</label
-              >
-              <select
-                id="task-category"
-                name="task-category"
-                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-primary focus:border-primary"
-              >
-                <option value="work">Work</option>
-                <option value="personal">Personal</option>
-                <option value="health">Health</option>
-                <option value="finance">Finance</option>
-                <option value="home">Home</option>
-                <option value="social">Social</option>
-                <option value="education">Education</option>
-                <option value="general">General</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700"
-                >Duration (minutes)</label
-              >
-              <div class="flex items-center space-x-4">
-                <input
-                  type="range"
-                  id="task-duration-range"
-                  name="task-duration-range"
-                  min="5"
-                  max="240"
-                  step="5"
-                  value="30"
-                  class="flex-grow accent-primary"
-                />
-                <input
-                  type="number"
-                  id="task-duration-number"
-                  name="task-duration-number"
-                  min="5"
-                  max="240"
-                  step="5"
-                  value="30"
-                  class="w-20 border border-gray-300 rounded-md shadow-sm p-2 text-center focus:ring-primary focus:border-primary"
-                />
-              </div>
-            </div>
-            <button
-              type="submit"
-              class="w-full bg-primary hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-button transition duration-300 ease-in-out shadow-lg"
-            >
-              Add Task
+            <!-- Mobile Hamburger Menu -->
+            <button id="mobile-menu-button" class="md:hidden p-2 text-var(--color-text) hover:text-var(--color-accent) rounded-full focus:outline-none focus:ring-2 focus:ring-var(--color-accent)">
+                <i class="fas fa-bars text-lg"></i>
             </button>
-          </form>
-        </section>
+        </div>
+    </nav>
 
-        <section class="lg:col-span-2 bg-white rounded-lg shadow-lg p-6">
-          <h2 class="text-2xl font-bold text-gray-700 mb-6">Your Tasks</h2>
-          <div class="mb-4 flex flex-wrap gap-4 items-center">
-            <div class="relative flex-grow min-w-[150px]">
-              <select
-                id="filter-category"
-                class="block w-full border border-gray-300 rounded-md shadow-sm p-2 pr-10 focus:ring-primary focus:border-primary appearance-none"
-              >
-                <option value="all">All Categories</option>
-                <option value="work">Work</option>
-                <option value="personal">Personal</option>
-                <option value="health">Health</option>
-                <option value="finance">Finance</option>
-                <option value="home">Home</option>
-                <option value="social">Social</option>
-                <option value="education">Education</option>
-                <option value="general">General</option>
-              </select>
-              <div
-                class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700"
-              >
-                <i class="ri-arrow-down-s-line"></i>
-              </div>
-            </div>
-            <div class="relative flex-grow min-w-[150px]">
-              <select
-                id="filter-status"
-                class="block w-full border border-gray-300 rounded-md shadow-sm p-2 pr-10 focus:ring-primary focus:border-primary appearance-none"
-              >
-                <option value="all">All Statuses</option>
-                <option value="pending">Pending</option>
-                <option value="completed">Completed</option>
-              </select>
-              <div
-                class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700"
-              >
-                <i class="ri-arrow-down-s-line"></i>
-              </div>
-            </div>
-            <div class="relative flex-grow min-w-[150px]">
-              <select
-                id="sort-by"
-                class="block w-full border border-gray-300 rounded-md shadow-sm p-2 pr-10 focus:ring-primary focus:border-primary appearance-none"
-              >
-                <option value="dueDate">Sort by Due Date</option>
-                <option value="priority">Sort by Priority</option>
-                <option value="name">Sort by Name</option>
-              </select>
-              <div
-                class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700"
-              >
-                <i class="ri-arrow-down-s-line"></i>
-              </div>
-            </div>
-          </div>
-          <div
-            id="task-list"
-            class="space-y-4 custom-scrollbar max-h-[600px] overflow-y-auto pr-2"
-          >
-            <p class="text-center text-gray-500" id="no-tasks-message">
-              No tasks to display. Add a new task above!
-            </p>
-          </div>
-        </section>
-      </div>
-    </div>
-
-    <div
-      id="edit-task-modal"
-      class="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 hidden p-4"
-    >
-      <div
-        class="bg-white rounded-lg shadow-xl p-8 w-full max-w-lg relative max-h-[90vh] overflow-y-auto custom-scrollbar"
-      >
-        <button
-          class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl"
-          id="close-edit-modal"
-        >
-          <i class="ri-close-line"></i>
+    <!-- Mobile Navigation Drawer -->
+    <div id="mobile-nav-drawer" class="fixed top-0 right-0 h-full w-64 bg-var(--color-primary) shadow-xl z-50 transform translate-x-full transition-transform duration-300 ease-out py-16 px-6 md:hidden">
+        <button id="close-drawer-button" class="absolute top-4 right-4 text-var(--color-text) hover:text-var(--color-accent) text-2xl">
+            <i class="fas fa-times"></i>
         </button>
-        <h2 class="text-2xl font-bold text-gray-700 mb-6">Edit Task</h2>
-        <form id="edit-task-form" class="space-y-4">
-          <input type="hidden" id="edit-task-id" />
-          <div>
-            <label for="edit-task-name" class="block text-sm font-medium text-gray-700"
-              >Task Name</label
-            >
-            <input
-              type="text"
-              id="edit-task-name"
-              name="task-name"
-              required
-              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-primary focus:border-primary"
-            />
-          </div>
-          <div>
-            <label
-              for="edit-task-description"
-              class="block text-sm font-medium text-gray-700"
-              >Description (Optional)</label
-            >
-            <textarea
-              id="edit-task-description"
-              name="task-description"
-              rows="3"
-              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-primary focus:border-primary"
-            ></textarea>
-          </div>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label
-                for="edit-task-date"
-                class="block text-sm font-medium text-gray-700"
-                >Due Date</label
-              >
-              <input
-                type="date"
-                id="edit-task-date"
-                name="task-date"
-                required
-                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-primary focus:border-primary"
-              />
+        <nav class="flex flex-col space-y-6 pt-10">
+            <a href="#" class="flex items-center text-lg text-var(--color-text) hover:text-var(--color-accent) transition-colors duration-300"><i class="fas fa-calendar-alt mr-3"></i> Dashboard</a>
+            <a href="#" class="flex items-center text-lg text-var(--color-text) hover:text-var(--color-accent) transition-colors duration-300"><i class="fas fa-plus-circle mr-3"></i> Add Task</a>
+            <a href="#" class="flex items-center text-lg text-var(--color-text) hover:text-var(--color-accent) transition-colors duration-300"><i class="fas fa-chart-line mr-3"></i> Analytics</a>
+            <div class="mt-8 pt-4 border-t border-var(--glass-border)">
+                <button id="logout-button-mobile" class="w-full text-left px-4 py-2 text-red-400 hover:bg-red-500 hover:text-white rounded-md transition-colors duration-200 hidden text-lg">
+                    <i class="fas fa-sign-out-alt mr-3"></i> Logout
+                </button>
+                <a href="login.html" id="login-link-mobile" class="w-full text-left px-4 py-2 text-var(--color-text) hover:bg-var(--color-secondary) rounded-md transition-colors duration-200 hidden text-lg">
+                    <i class="fas fa-sign-in-alt mr-3"></i> Login
+                </a>
+                <a href="signup.html" id="signup-link-mobile" class="w-full text-left px-4 py-2 text-var(--color-text) hover:bg-var(--color-secondary) rounded-md transition-colors duration-200 hidden text-lg">
+                    <i class="fas fa-user-plus mr-3"></i> Sign Up
+                </a>
             </div>
-            <div>
-              <label
-                for="edit-task-time"
-                class="block text-sm font-medium text-gray-700"
-                >Due Time</label
-              >
-              <input
-                type="time"
-                id="edit-task-time"
-                name="task-time"
-                required
-                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-primary focus:border-primary"
-              />
-            </div>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700"
-              >Priority</label
-            >
-            <div class="mt-2 flex space-x-4">
-              <label class="inline-flex items-center">
-                <input
-                  type="radio"
-                  name="edit-priority"
-                  value="low"
-                  class="form-radio text-primary focus:ring-primary"
-                />
-                <span class="ml-2">Low</span>
-              </label>
-              <label class="inline-flex items-center">
-                <input
-                  type="radio"
-                  name="edit-priority"
-                  value="medium"
-                  class="form-radio text-primary focus:ring-primary"
-                />
-                <span class="ml-2">Medium</span>
-              </label>
-              <label class="inline-flex items-center">
-                <input
-                  type="radio"
-                  name="edit-priority"
-                  value="high"
-                  class="form-radio text-primary focus:ring-primary"
-                />
-                <span class="ml-2">High</span>
-              </label>
-            </div>
-          </div>
-          <div>
-            <label
-              for="edit-task-category"
-              class="block text-sm font-medium text-gray-700"
-              >Category</label
-            >
-            <select
-              id="edit-task-category"
-              name="task-category"
-              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-primary focus:border-primary"
-            >
-              <option value="work">Work</option>
-              <option value="personal">Personal</option>
-              <option value="health">Health</option>
-              <option value="finance">Finance</option>
-              <option value="home">Home</option>
-              <option value="social">Social</option>
-              <option value="education">Education</option>
-              <option value="general">General</option>
-            </select>
-          </div>
-          <div>
-            <label for="edit-task-status" class="block text-sm font-medium text-gray-700"
-              >Status</label
-            >
-            <select
-              id="edit-task-status"
-              name="task-status"
-              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-primary focus:border-primary"
-            >
-              <option value="pending">Pending</option>
-              <option value="completed">Completed</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700"
-              >Duration (minutes)</label
-            >
-            <div class="flex items-center space-x-4">
-              <input
-                type="range"
-                id="edit-task-duration-range"
-                name="task-duration-range"
-                min="5"
-                max="240"
-                step="5"
-                value="30"
-                class="flex-grow accent-primary"
-              />
-              <input
-                type="number"
-                id="edit-task-duration-number"
-                name="task-duration-number"
-                min="5"
-                max="240"
-                step="5"
-                value="30"
-                class="w-20 border border-gray-300 rounded-md shadow-sm p-2 text-center focus:ring-primary focus:border-primary"
-              />
-            </div>
-          </div>
-          <button
-            type="submit"
-            class="w-full bg-primary hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-button transition duration-300 ease-in-out shadow-lg"
-          >
-            Update Task
-          </button>
-        </form>
-      </div>
+        </nav>
     </div>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow pt-24 pb-16 px-4 md:px-8 lg:px-16 relative z-10">
+
+        <!-- Hero Section -->
+        <section id="hero-section" class="relative text-center py-16 md:py-24 overflow-hidden rounded-3xl neumorphic-card page-transition-element">
+            <div id="hero-bg-animation" class="absolute inset-0 z-0 opacity-20" style="overflow: hidden; border-radius: 1.5rem;">
+                <!-- Dynamic SVG Animation: Moiré pattern/grid morphing -->
+                <svg viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid slice" style="width: 100%; height: 100%;">
+                    <defs>
+                        <linearGradient id="gradient-hero" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="var(--color-accent)" stop-opacity="0.5"/>
+                            <stop offset="100%" stop-color="var(--color-gradient-end)" stop-opacity="0.5"/>
+                        </linearGradient>
+                    </defs>
+                    <g fill="none" stroke="url(#gradient-hero)" stroke-width="1.5">
+                        <!-- Animated lines morphing -->
+                        <path id="path1" d="M0 0 L1000 0" style="animation: morph1 15s linear infinite alternate;"></path>
+                        <path id="path2" d="M0 100 L1000 100" style="animation: morph2 18s linear infinite alternate;"></path>
+                        <path id="path3" d="M0 200 L1000 200" style="animation: morph3 20s linear infinite alternate;"></path>
+                        <path id="path4" d="M0 300 L1000 300" style="animation: morph4 16s linear infinite alternate;"></path>
+                        <path id="path5" d="M0 400 L1000 400" style="animation: morph5 19s linear infinite alternate;"></path>
+                        <path id="path6" d="M0 500 L1000 500" style="animation: morph6 17s linear infinite alternate;"></path>
+                    </g>
+                </svg>
+            </div>
+            <div class="relative z-10 max-w-4xl mx-auto">
+                <h1 class="text-4xl md:text-6xl font-extrabold font-manrope leading-tight mb-6 tracking-wide heading-glow">
+                    Own Your Time. <br class="md:hidden"> Master Your Day.
+                </h1>
+                <p class="text-lg md:text-xl mb-10 opacity-80 max-w-2xl mx-auto">
+                    Seamlessly organize your life with intelligent task management. Achieve more, stress less.
+                </p>
+                <button id="start-scheduling-btn" class="btn bg-var(--color-accent) text-white px-8 py-4 rounded-full text-lg font-semibold glow-pulse shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-var(--color-accent) focus:ring-opacity-50">
+                    Start Scheduling
+                </button>
+            </div>
+        </section>
+
+        <!-- Task Addition Module -->
+        <section class="mt-12 page-transition-element">
+            <h2 class="text-3xl font-manrope font-bold mb-8 text-center heading-glow">Add New Task</h2>
+            <div class="neumorphic-card p-6 md:p-8 max-w-3xl mx-auto shadow-lg">
+                <form id="task-form" class="space-y-6">
+                    <div class="neumorphic-input-group">
+                        <input type="text" id="task-name" placeholder=" " class="neumorphic-input peer">
+                        <label for="task-name" class="neumorphic-input-label">Task Title</label>
+                    </div>
+                    <div class="neumorphic-input-group">
+                        <textarea id="task-description" placeholder=" " rows="3" class="neumorphic-input peer resize-none"></textarea>
+                        <label for="task-description" class="neumorphic-input-label">Description</label>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="neumorphic-input-group">
+                            <input type="date" id="task-date" placeholder=" " class="neumorphic-input peer">
+                            <label for="task-date" class="neumorphic-input-label">Due Date</label>
+                        </div>
+                        <div class="neumorphic-input-group">
+                            <input type="time" id="task-time" placeholder=" " class="neumorphic-input peer">
+                            <label for="task-time" class="neumorphic-input-label">Due Time</label>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-var(--color-text) mb-2">Priority</label>
+                        <div class="flex space-x-4">
+                            <label class="inline-flex items-center text-var(--color-text)">
+                                <input type="radio" name="priority" value="low" class="form-radio h-4 w-4 text-var(--color-accent) focus:ring-var(--color-accent)">
+                                <span class="ml-2">Low</span>
+                            </label>
+                            <label class="inline-flex items-center text-var(--color-text)">
+                                <input type="radio" name="priority" value="medium" checked class="form-radio h-4 w-4 text-var(--color-accent) focus:ring-var(--color-accent)">
+                                <span class="ml-2">Medium</span>
+                            </label>
+                            <label class="inline-flex items-center text-var(--color-text)">
+                                <input type="radio" name="priority" value="high" class="form-radio h-4 w-4 text-var(--color-accent) focus:ring-var(--color-accent)">
+                                <span class="ml-2">High</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="neumorphic-input-group">
+                        <select id="task-category" name="task-category" class="neumorphic-input peer pr-10">
+                            <option value="" disabled selected>Select Category</option>
+                            <option value="work">Work</option>
+                            <option value="personal">Personal</option>
+                            <option value="health">Health</option>
+                            <option value="finance">Finance</option>
+                            <option value="home">Home</option>
+                            <option value="social">Social</option>
+                            <option value="education">Education</option>
+                            <option value="general">General</option>
+                        </select>
+                        <label for="task-category" class="neumorphic-input-label">Category</label>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-var(--color-text) mb-2">Duration (minutes)</label>
+                        <div class="flex items-center space-x-4">
+                            <input type="range" id="task-duration-range" name="task-duration-range" min="5" max="240" step="5" value="30" class="flex-grow accent-var(--color-accent)">
+                            <input type="number" id="task-duration-number" name="task-duration-number" min="5" max="240" step="5" value="30" class="neumorphic-input w-20 text-center">
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between neumorphic-card p-4">
+                        <label for="smart-repeat-toggle" class="text-var(--color-text) font-semibold mr-4">Smart Repeat (Visual only)</label>
+                        <label class="smart-toggle">
+                            <input type="checkbox" id="smart-repeat-toggle">
+                            <span class="smart-slider"></span>
+                        </label>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn bg-var(--color-accent) text-white px-8 py-3 rounded-full font-semibold shadow-md hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-var(--color-accent) focus:ring-opacity-50">
+                            Add Task
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Task Table (Dashboard View) -->
+        <section class="mt-12 page-transition-element">
+            <h2 class="text-3xl font-manrope font-bold mb-8 text-center heading-glow">Your Tasks</h2>
+            <div class="neumorphic-card p-4 md:p-6 shadow-lg overflow-x-auto">
+                <div class="mb-4 flex flex-wrap gap-4 items-center">
+                    <div class="relative flex-grow min-w-[150px]">
+                        <select id="filter-category" class="neumorphic-input peer pr-10 appearance-none">
+                            <option value="all">All Categories</option>
+                            <option value="work">Work</option>
+                            <option value="personal">Personal</option>
+                            <option value="health">Health</option>
+                            <option value="finance">Finance</option>
+                            <option value="home">Home</option>
+                            <option value="social">Social</option>
+                            <option value="education">Education</option>
+                            <option value="general">General</option>
+                        </select>
+                        <label for="filter-category" class="neumorphic-input-label">Filter Category</label>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-var(--color-text)">
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </div>
+                    <div class="relative flex-grow min-w-[150px]">
+                        <select id="filter-status" class="neumorphic-input peer pr-10 appearance-none">
+                            <option value="all">All Statuses</option>
+                            <option value="pending">Pending</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                        <label for="filter-status" class="neumorphic-input-label">Filter Status</label>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-var(--color-text)">
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </div>
+                    <div class="relative flex-grow min-w-[150px]">
+                        <select id="sort-by" class="neumorphic-input peer pr-10 appearance-none">
+                            <option value="dueDate">Sort by Due Date</option>
+                            <option value="priority">Sort by Priority</option>
+                            <option value="name">Sort by Name</option>
+                        </select>
+                        <label for="sort-by" class="neumorphic-input-label">Sort By</label>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-var(--color-text)">
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </div>
+                </div>
+                <table class="min-w-full divide-y divide-var(--neumorphism-dark) hidden md:table">
+                    <thead class="bg-var(--color-secondary)">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-var(--color-text) uppercase tracking-wider cursor-pointer hover:text-var(--color-accent) transition-colors duration-200">
+                                Title <i class="fas fa-sort text-xs ml-1 opacity-50 hover:opacity-100"></i>
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-var(--color-text) uppercase tracking-wider cursor-pointer hover:text-var(--color-accent) transition-colors duration-200">
+                                Due Date <i class="fas fa-sort text-xs ml-1 opacity-50 hover:opacity-100"></i>
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-var(--color-text) uppercase tracking-wider cursor-pointer hover:text-var(--color-accent) transition-colors duration-200">
+                                Status <i class="fas fa-sort text-xs ml-1 opacity-50 hover:opacity-100"></i>
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-var(--color-text) uppercase tracking-wider">
+                                Actions
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="task-list-table" class="divide-y divide-var(--neumorphism-dark)">
+                        <!-- Tasks dynamically rendered here for desktop -->
+                    </tbody>
+                </table>
+                <p class="text-center text-var(--color-text) opacity-70 mt-4 italic md:hidden" id="no-tasks-message-mobile-table">
+                  No tasks to display in table view.
+                </p>
+                <p class="text-center text-var(--color-text) opacity-70 mt-4 italic hidden md:block" id="no-tasks-message-desktop-table">
+                  No tasks to display in table view.
+                </p>
+            </div>
+
+            <!-- Masonry-style grid for mobile (example conceptual structure) -->
+            <div id="task-grid-mobile" class="task-grid mt-8 md:hidden">
+                <p class="text-center text-var(--color-text) opacity-70 mt-4 italic" id="no-tasks-message-mobile-grid">
+                  No tasks to display. Add a new task above!
+                </p>
+                <!-- Tasks dynamically rendered here for mobile -->
+            </div>
+        </section>
+
+        <!-- Edit Task Modal -->
+        <div id="edit-task-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 hidden p-4">
+            <div class="neumorphic-card p-6 md:p-8 w-full max-w-lg relative max-h-[90vh] overflow-y-auto custom-scrollbar shadow-lg">
+                <button class="absolute top-4 right-4 text-var(--color-text) hover:text-red-500 text-2xl" id="close-edit-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+                <h2 class="text-2xl font-bold text-var(--color-text) mb-6 heading-glow">Edit Task</h2>
+                <form id="edit-task-form" class="space-y-6">
+                    <input type="hidden" id="edit-task-id" />
+                    <div class="neumorphic-input-group">
+                        <input type="text" id="edit-task-name" placeholder=" " class="neumorphic-input peer">
+                        <label for="edit-task-name" class="neumorphic-input-label">Task Name</label>
+                    </div>
+                    <div class="neumorphic-input-group">
+                        <textarea id="edit-task-description" placeholder=" " rows="3" class="neumorphic-input peer resize-none"></textarea>
+                        <label for="edit-task-description" class="neumorphic-input-label">Description</label>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="neumorphic-input-group">
+                            <input type="date" id="edit-task-date" placeholder=" " class="neumorphic-input peer">
+                            <label for="edit-task-date" class="neumorphic-input-label">Due Date</label>
+                        </div>
+                        <div class="neumorphic-input-group">
+                            <input type="time" id="edit-task-time" placeholder=" " class="neumorphic-input peer">
+                            <label for="edit-task-time" class="neumorphic-input-label">Due Time</label>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-var(--color-text) mb-2">Priority</label>
+                        <div class="flex space-x-4">
+                            <label class="inline-flex items-center text-var(--color-text)">
+                                <input type="radio" name="edit-priority" value="low" class="form-radio h-4 w-4 text-var(--color-accent) focus:ring-var(--color-accent)">
+                                <span class="ml-2">Low</span>
+                            </label>
+                            <label class="inline-flex items-center text-var(--color-text)">
+                                <input type="radio" name="edit-priority" value="medium" class="form-radio h-4 w-4 text-var(--color-accent) focus:ring-var(--color-accent)">
+                                <span class="ml-2">Medium</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="edit-priority" value="high" class="form-radio h-4 w-4 text-var(--color-accent) focus:ring-var(--color-accent)">
+                                <span class="ml-2">High</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="neumorphic-input-group">
+                        <select id="edit-task-category" name="task-category" class="neumorphic-input peer pr-10 appearance-none">
+                            <option value="work">Work</option>
+                            <option value="personal">Personal</option>
+                            <option value="health">Health</option>
+                            <option value="finance">Finance</option>
+                            <option value="home">Home</option>
+                            <option value="social">Social</option>
+                            <option value="education">Education</option>
+                            <option value="general">General</option>
+                        </select>
+                        <label for="edit-task-category" class="neumorphic-input-label">Category</label>
+                    </div>
+                    <div class="neumorphic-input-group">
+                        <select id="edit-task-status" name="task-status" class="neumorphic-input peer pr-10 appearance-none">
+                            <option value="pending">Pending</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                        <label for="edit-task-status" class="neumorphic-input-label">Status</label>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-var(--color-text) mb-2">Duration (minutes)</label>
+                        <div class="flex items-center space-x-4">
+                            <input type="range" id="edit-task-duration-range" name="task-duration-range" min="5" max="240" step="5" value="30" class="flex-grow accent-var(--color-accent)">
+                            <input type="number" id="edit-task-duration-number" name="task-duration-number" min="5" max="240" step="5" value="30" class="neumorphic-input w-20 text-center">
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn bg-var(--color-accent) text-white px-8 py-3 rounded-full font-semibold shadow-md hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-var(--color-accent) focus:ring-opacity-50">
+                            Update Task
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Settings/Modes Toggle (Bottom left corner) -->
+        <div class="fixed bottom-20 left-4 md:left-8 z-50 flex flex-col space-y-3">
+            <button id="high-contrast-toggle" class="btn p-3 rounded-full bg-var(--color-secondary) text-var(--color-text) shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-var(--color-accent)" aria-label="Toggle High Contrast Mode">
+                <i class="fas fa-adjust text-lg"></i>
+            </button>
+            <button id="focus-fun-toggle" class="btn p-3 rounded-full bg-var(--color-secondary) text-var(--color-text) shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-var(--color-accent)" aria-label="Toggle Focus/Fun Mode">
+                <i class="fas fa-lightbulb text-lg"></i>
+            </button>
+        </div>
+
+    </main>
+
+    <!-- Sticky Footer -->
+    <footer class="sticky bottom-0 left-0 right-0 z-40 p-4 lg:px-8 bg-gradient-to-l from-glass-background to-transparent backdrop-filter backdrop-blur-lg border-t border-glass-border flex flex-col md:flex-row justify-between items-center shadow-inner">
+        <p id="time-quote" class="text-sm md:text-base text-var(--color-text) opacity-70 mb-2 md:mb-0 text-center md:text-left transition-opacity duration-500">
+            <!-- Emoji-based time quote appears here -->
+        </p>
+        <div class="flex space-x-4">
+            <a href="#" class="btn p-2 rounded-full bg-var(--color-secondary) text-var(--color-text) shadow-md hover:shadow-lg hover:rotate-6 transition-transform duration-300" aria-label="Visit our X (Twitter) page">
+                <i class="fab fa-twitter text-lg"></i>
+            </a>
+            <a href="#" class="btn p-2 rounded-full bg-var(--color-secondary) text-var(--color-text) shadow-md hover:shadow-lg hover:rotate-6 transition-transform duration-300" aria-label="Visit our LinkedIn page">
+                <i class="fab fa-linkedin-in text-lg"></i>
+            </a>
+            <a href="#" class="btn p-2 rounded-full bg-var(--color-secondary) text-var(--color-text) shadow-md hover:shadow-lg hover:rotate-6 transition-transform duration-300" aria-label="Contact us via email">
+                <i class="fas fa-envelope text-lg"></i>
+            </a>
+        </div>
+    </footer>
 
     <script>
-      // Base URL for your backend API
-      const API_BASE_URL = 'https://schedulerbackend-fkcs.onrender.com/api';
+        // Base URL for your backend API (from old code)
+        const API_BASE_URL = 'https://schedulerbackend-fkcs.onrender.com/api';
 
-      // DOM Elements
-      const logoutButton = document.getElementById("logout-button");
-      const loginLink = document.getElementById("login-link");
-      const signupLink = document.getElementById("signup-link");
-      const taskForm = document.getElementById("task-form");
-      const taskList = document.getElementById("task-list");
-      const noTasksMessage = document.getElementById("no-tasks-message");
-      const editTaskModal = document.getElementById("edit-task-modal");
-      const closeEditModalButton = document.getElementById("close-edit-modal");
-      const editTaskForm = document.getElementById("edit-task-form");
-      const taskDurationRange = document.getElementById("task-duration-range");
-      const taskDurationNumber = document.getElementById("task-duration-number");
-      const editTaskDurationRange = document.getElementById("edit-task-duration-range");
-      const editTaskDurationNumber = document.getElementById("edit-task-duration-number");
-      const filterCategory = document.getElementById('filter-category');
-      const filterStatus = document.getElementById('filter-status');
-      const sortSelect = document.getElementById('sort-by');
-      let tasks = []; // Store tasks fetched from the backend
+        // --- Global State Variables ---
+        let isFunMode = true; // Default to fun mode
+        let currentQuoteIndex = 0;
+        let tasks = []; // Store tasks fetched from the backend (from old code)
 
-      // --- Utility Functions ---
+        const timeQuotes = [
+            "Tick-tock, seize the day! ⏰",
+            "Time flies when you're mastering it. 🚀",
+            "Every moment is a fresh beginning. ✨",
+            "Your future is created by what you do today. 🗓️",
+            "Don't wait for the perfect moment, take the moment and make it perfect. 🌟",
+            "The best time for new beginnings is now. 💖"
+        ];
+        const quotesOfTheDay = [
+            "The best way to predict the future is to create it.",
+            "Your time is limited, don't waste it living someone else's life.",
+            "The bad news is time flies. The good news is you're the pilot.",
+            "Lost time is never found again.",
+            "The present moment is the only moment available to us.",
+            "Time is what we want most, but what we use worst.",
+            "Efficiency is doing things right; effectiveness is the right things."
+        ];
 
-      function showNotification(message, bgColor, iconClass) {
-        const notificationContainer = document.getElementById("notification-container");
-        const notification = document.createElement("div");
-        notification.className = `notification ${bgColor} transition-all duration-500 ease-out`;
-        notification.innerHTML = `
-          <i class="${iconClass} text-xl"></i>
-          <span>${message}</span>
-        `;
-        notificationContainer.appendChild(notification);
 
-        // Animate in
-        setTimeout(() => {
-          notification.classList.add("show");
-        }, 50); // Small delay to allow reflow
+        // --- DOM Elements ---
+        const body = document.body;
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const quoteOfDayElement = document.getElementById('quote-of-day');
+        const progressRingCircle = document.querySelector('.progress-ring-circle');
+        const startSchedulingBtn = document.getElementById('start-scheduling-btn');
+        const allButtons = document.querySelectorAll('.btn');
+        const neumorphicInputs = document.querySelectorAll('.neumorphic-input');
+        const notificationBell = document.getElementById('notification-bell');
+        const notificationDot = document.getElementById('notification-dot');
+        const notificationDropdown = document.getElementById('notification-dropdown');
+        const timeQuoteElement = document.getElementById('time-quote');
+        const parallaxBg = document.getElementById('parallax-bg');
+        const highContrastToggle = document.getElementById('high-contrast-toggle');
+        const focusFunToggle = document.getElementById('focus-fun-toggle');
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileNavDrawer = document.getElementById('mobile-nav-drawer');
+        const closeDrawerButton = document.getElementById('close-drawer-button');
 
-        // Animate out and remove
-        setTimeout(() => {
-          notification.classList.remove("show");
-          setTimeout(() => {
-            notification.remove();
-          }, 500); // Wait for transition to finish
-        }, 3000); // Display for 3 seconds
-      }
+        // Backend related DOM Elements (from old code)
+        const logoutButton = document.getElementById("logout-button"); // Desktop logout
+        const loginLink = document.getElementById("login-link"); // Desktop login
+        const signupLink = document.getElementById("signup-link"); // Desktop signup
+        const logoutButtonMobile = document.getElementById("logout-button-mobile"); // Mobile logout
+        const loginLinkMobile = document.getElementById("login-link-mobile"); // Mobile login
+        const signupLinkMobile = document.getElementById("signup-link-mobile"); // Mobile signup
 
-      // --- Authentication Check ---
+        const taskForm = document.getElementById("task-form");
+        const taskListTable = document.getElementById("task-list-table"); // For desktop table view
+        const taskGridMobile = document.getElementById("task-grid-mobile"); // For mobile masonry view
+        const noTasksMessageDesktopTable = document.getElementById("no-tasks-message-desktop-table");
+        const noTasksMessageMobileGrid = document.getElementById("no-tasks-message-mobile-grid");
+        const editTaskModal = document.getElementById("edit-task-modal");
+        const closeEditModalButton = document.getElementById("close-edit-modal");
+        const editTaskForm = document.getElementById("edit-task-form");
 
-      function checkAuthentication() {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          // No token, show login/signup links and hide logout
-          logoutButton.classList.add('hidden');
-          loginLink.classList.remove('hidden');
-          signupLink.classList.remove('hidden');
-          // Redirect to login page as this is a protected dashboard
-          window.location.href = 'login.html';
-        } else {
-          // User is authenticated, hide login/signup links and show logout
-          logoutButton.classList.remove('hidden');
-          loginLink.classList.add('hidden');
-          signupLink.classList.add('hidden');
-          // Fetch tasks for the authenticated user
-          fetchTasks();
-        }
-      }
+        const taskDurationRange = document.getElementById("task-duration-range");
+        const taskDurationNumber = document.getElementById("task-duration-number");
+        const editTaskDurationRange = document.getElementById("edit-task-duration-range");
+        const editTaskDurationNumber = document.getElementById("edit-task-duration-number");
 
-      // --- API Calls ---
+        const filterCategory = document.getElementById('filter-category');
+        const filterStatus = document.getElementById('filter-status');
+        const sortSelect = document.getElementById('sort-by');
+        const notificationContainer = document.getElementById("notification-container"); // For success/error messages
 
-      async function fetchTasks() {
-        const token = localStorage.getItem('token');
-        if (!token) return; // Should be handled by checkAuthentication
 
-        try {
-          const response = await fetch(`${API_BASE_URL}/tasks`, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
+        // --- Utility Functions ---
+
+        /**
+         * Sets the theme (light/dark) based on the current hour.
+         * Day: 6 AM to 6 PM (18:00)
+         * Night: 6 PM (18:00) to 6 AM (6:00)
+         */
+        function setTimeBasedTheme() {
+            const hour = new Date().getHours();
+            if (hour >= 6 && hour < 18) {
+                body.setAttribute('data-theme', 'light');
+            } else {
+                body.setAttribute('data-theme', 'dark');
             }
-          });
+        }
 
-          if (response.ok) {
-            tasks = await response.json();
-            renderTasks();
-          } else if (response.status === 401) {
-            // Token expired or invalid
-            showNotification("Session expired. Please log in again.", "bg-red-500", "ri-error-warning-line");
-            localStorage.removeItem('token');
+        /**
+         * Animates the typing effect for text.
+         * @param {HTMLElement} element - The HTML element to display text in.
+         * @param {string} text - The text to type.
+         * @param {number} delay - Delay between each character.
+         * @returns {Promise<void>} A promise that resolves when typing is complete.
+         */
+        function typeText(element, text, delay = 50) {
+            return new Promise(resolve => {
+                let i = 0;
+                element.textContent = ''; // Clear existing text
+                const interval = setInterval(() => {
+                    if (i < text.length) {
+                        element.textContent += text.charAt(i);
+                        i++;
+                    } else {
+                        clearInterval(interval);
+                        resolve();
+                    }
+                }, delay);
+            });
+        }
+
+        /**
+         * Animates the progress ring from 0 to 100%.
+         * @param {SVGElement} circle - The SVG circle element.
+         * @param {number} duration - Animation duration in ms.
+         */
+        function animateProgressRing(circle, duration) {
+            const radius = circle.r.baseVal.value;
+            const circumference = 2 * Math.PI * radius;
+            circle.style.strokeDasharray = `${circumference} ${circumference}`;
+            circle.style.strokeDashoffset = circumference; // Start hidden
+
+            let startTime;
+            function animate(currentTime) {
+                if (!startTime) startTime = currentTime;
+                const elapsedTime = currentTime - startTime;
+                const progress = Math.min(elapsedTime / duration, 1);
+                const offset = circumference - progress * circumference;
+                circle.style.strokeDashoffset = offset;
+
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+
+        /**
+         * Adds a ripple effect to a button on click.
+         * @param {MouseEvent} event - The click event.
+         */
+        function addRippleEffect(event) {
+            const button = event.currentTarget;
+            const circle = document.createElement('span');
+            const diameter = Math.max(button.clientWidth, button.clientHeight);
+            const radius = diameter / 2;
+
+            circle.style.width = circle.style.height = `${diameter}px`;
+            circle.style.left = `${event.clientX - button.getBoundingClientRect().left - radius}px`;
+            circle.style.top = `${event.clientY - button.getBoundingClientRect().top - radius}px`;
+            circle.classList.add('ripple');
+
+            const existingRipple = button.querySelector('.ripple');
+            if (existingRipple) {
+                existingRipple.remove(); // Remove previous ripple for clean animation
+            }
+
+            button.appendChild(circle);
+        }
+
+        /**
+         * Applies a subtle magnetic effect on button hover.
+         * @param {MouseEvent} event - The mouse event.
+         */
+        function handleMagneticHover(event) {
+            const btn = event.currentTarget;
+            const rect = btn.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const mouseX = event.clientX;
+            const mouseY = event.clientY;
+
+            const strength = 0.1; // How strong the magnetic pull is
+            const offsetX = (mouseX - centerX) * strength;
+            const offsetY = (mouseY - centerY) * strength;
+
+            btn.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+        }
+
+        /**
+         * Resets button transform on mouse leave.
+         * @param {MouseEvent} event - The mouse event.
+         */
+        function resetMagneticHover(event) {
+            event.currentTarget.style.transform = 'translateY(-2px)'; // Reset to normal hover lift
+        }
+
+        /**
+         * Cycles through time quotes in the footer.
+         */
+        function cycleTimeQuote() {
+            timeQuoteElement.style.opacity = 0; // Fade out
             setTimeout(() => {
-              window.location.href = 'login.html';
-            }, 1500);
-          } else {
-            const errorData = await response.json();
-            showNotification(`Failed to fetch tasks: ${errorData.message}`, "bg-red-500", "ri-error-warning-line");
-          }
-        } catch (error) {
-          console.error("Error fetching tasks:", error);
-          showNotification("Network error. Could not connect to server.", "bg-red-500", "ri-error-warning-line");
+                timeQuoteElement.textContent = timeQuotes[currentQuoteIndex];
+                currentQuoteIndex = (currentQuoteIndex + 1) % timeQuotes.length;
+                timeQuoteElement.style.opacity = 1; // Fade in
+            }, 500); // Wait for fade out to complete
         }
-      }
 
-      async function addTask(taskData) {
-        const token = localStorage.getItem('token');
-        if (!token) return;
-
-        try {
-          const response = await fetch(`${API_BASE_URL}/tasks`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(taskData)
-          });
-
-          if (response.ok) {
-            const newTask = await response.json();
-            tasks.push(newTask); // Add new task to local array
-            renderTasks();
-            showNotification("Task added successfully!", "bg-green-500", "ri-check-line");
-            taskForm.reset(); // Reset form after successful submission
-            // Reset duration to default values for new task form
-            taskDurationRange.value = 30;
-            taskDurationNumber.value = 30;
-          } else {
-            const errorData = await response.json();
-            showNotification(`Failed to add task: ${errorData.message}`, "bg-red-500", "ri-error-warning-line");
-          }
-        } catch (error) {
-          console.error("Error adding task:", error);
-          showNotification("Network error. Could not add task.", "bg-red-500", "ri-error-warning-line");
-        }
-      }
-
-      async function updateTask(id, taskData) {
-        const token = localStorage.getItem('token');
-        if (!token) return;
-
-        try {
-          const response = await fetch(`${API_BASE_URL}/tasks/${id}`, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(taskData)
-          });
-
-          if (response.ok) {
-            const updatedTask = await response.json();
-            // Find and update the task in the local array
-            const index = tasks.findIndex(task => task._id === id);
-            if (index !== -1) {
-              tasks[index] = updatedTask;
+        /**
+         * Handles the parallax effect on background based on mouse position.
+         * @param {MouseEvent} e - The mouse event.
+         */
+        function handleParallax(e) {
+            const x = (e.clientX / window.innerWidth - 0.5) * 20; // -10 to 10
+            const y = (e.clientY / window.innerHeight - 0.5) * 20; // -10 to 10
+            if (parallaxBg) {
+                parallaxBg.style.transform = `translate3d(${x}px, ${y}px, 0)`;
             }
-            renderTasks();
-            showNotification("Task updated successfully!", "bg-green-500", "ri-check-line");
-            editTaskModal.classList.add('hidden'); // Close modal
-          } else {
-            const errorData = await response.json();
-            showNotification(`Failed to update task: ${errorData.message}`, "bg-red-500", "ri-error-warning-line");
-          }
-        } catch (error) {
-          console.error("Error updating task:", error);
-          showNotification("Network error. Could not update task.", "bg-red-500", "ri-error-warning-line");
-        }
-      }
-
-      async function deleteTask(id) {
-        const token = localStorage.getItem('token');
-        if (!token) return;
-
-        if (!confirm("Are you sure you want to delete this task?")) {
-          return;
         }
 
-        try {
-          const response = await fetch(`${API_BASE_URL}/tasks/${id}`, {
-            method: 'DELETE',
-            headers: {
-              'Authorization': `Bearer ${token}`
+        /**
+         * Simulates Lottie animations for task actions.
+         * @param {HTMLElement} element - The action button/icon.
+         * @param {string} actionType - 'play', 'edit', 'delete'.
+         */
+        function simulateLottie(element, actionType) {
+            const icon = element.querySelector('i');
+            if (!icon) return;
+
+            let animateClass = '';
+            switch (actionType) {
+                case 'start': // 'play' in new design is 'start' in old backend context
+                    animateClass = 'animate-pulse';
+                    break;
+                case 'edit':
+                    animateClass = 'animate-bounce'; // Simple bounce
+                    break;
+                case 'delete':
+                    animateClass = 'animate-spin-once'; // Simple spin
+                    break;
             }
-          });
 
-          if (response.ok) {
-            // Remove the task from the local array
-            tasks = tasks.filter(task => task._id !== id);
-            renderTasks();
-            showNotification("Task deleted successfully!", "bg-green-500", "ri-check-line");
-          } else {
-            const errorData = await response.json();
-            showNotification(`Failed to delete task: ${errorData.message}`, "bg-red-500", "ri-error-warning-line");
-          }
-        } catch (error) {
-          console.error("Error deleting task:", error);
-          showNotification("Network error. Could not delete task.", "bg-red-500", "ri-error-warning-line");
-        }
-      }
+            // Remove existing animation classes
+            icon.classList.remove('animate-pulse', 'animate-bounce', 'animate-spin-once');
 
-      // --- Render Tasks ---
-
-      function renderTasks() {
-        taskList.innerHTML = '';
-        noTasksMessage.classList.add('hidden'); // Hide default message initially
-
-        if (tasks.length === 0) {
-          noTasksMessage.classList.remove('hidden');
-          return;
-        }
-
-        // Apply filters
-        let filteredTasks = [...tasks];
-        const selectedCategory = filterCategory.value;
-        const selectedStatus = filterStatus.value;
-
-        if (selectedCategory !== 'all') {
-            filteredTasks = filteredTasks.filter(task => task.category === selectedCategory);
-        }
-        if (selectedStatus !== 'all') {
-            filteredTasks = filteredTasks.filter(task => task.status === selectedStatus);
-        }
-
-        // Apply sorting
-        const sortBy = sortSelect.value;
-        filteredTasks.sort((a, b) => {
-            if (sortBy === 'dueDate') {
-                // Combine date and time for accurate sorting
-                const dateTimeA = new Date(`${a.dueDate}T${a.dueTime}`);
-                const dateTimeB = new Date(`${b.dueDate}T${b.dueTime}`);
-                return dateTimeA - dateTimeB;
-            } else if (sortBy === 'priority') {
-                const priorityOrder = { 'high': 3, 'medium': 2, 'low': 1 };
-                return priorityOrder[b.priority] - priorityOrder[a.priority]; // High to low
-            } else if (sortBy === 'name') {
-                return a.name.localeCompare(b.name);
+            // Add new animation class
+            if (isFunMode) {
+                 icon.classList.add(animateClass);
+                 // Remove animation class after it completes to allow re-triggering
+                 icon.addEventListener('animationend', () => {
+                     icon.classList.remove(animateClass);
+                 }, { once: true });
             }
-            return 0;
+        }
+
+        /**
+         * Shows a transient notification message (from old code, adapted to new styling).
+         * @param {string} message - The message to display.
+         * @param {string} bgColor - Tailwind background color class (e.g., "bg-green-500").
+         * @param {string} iconClass - Font Awesome icon class (e.g., "fas fa-check-circle").
+         */
+        function showNotification(message, bgColor, iconClass) {
+            const notification = document.createElement("div");
+            notification.className = `notification-message-overlay ${bgColor} transition-all duration-500 ease-out`;
+            notification.innerHTML = `
+              <i class="${iconClass} text-xl"></i>
+              <span>${message}</span>
+            `;
+            notificationContainer.appendChild(notification);
+
+            // Animate in
+            setTimeout(() => {
+              notification.classList.add("show");
+            }, 50); // Small delay to allow reflow
+
+            // Animate out and remove
+            setTimeout(() => {
+              notification.classList.remove("show");
+              setTimeout(() => {
+                notification.remove();
+              }, 500); // Wait for transition to finish
+            }, 3000); // Display for 3 seconds
+        }
+
+
+        // --- Authentication Check (from old code) ---
+        function checkAuthentication() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                // No token, show login/signup links and hide logout
+                logoutButton.classList.add('hidden');
+                loginLink.classList.remove('hidden');
+                signupLink.classList.remove('hidden');
+                logoutButtonMobile.classList.add('hidden');
+                loginLinkMobile.classList.remove('hidden');
+                signupLinkMobile.classList.remove('hidden');
+
+                // Redirect to login page as this is a protected dashboard
+                window.location.href = 'login.html';
+            } else {
+                // User is authenticated, hide login/signup links and show logout
+                logoutButton.classList.remove('hidden');
+                loginLink.classList.add('hidden');
+                signupLink.classList.add('hidden');
+                logoutButtonMobile.classList.remove('hidden');
+                loginLinkMobile.classList.add('hidden');
+                signupLinkMobile.classList.add('hidden');
+
+                // Fetch tasks for the authenticated user
+                fetchTasks();
+            }
+        }
+
+        // --- API Calls (from old code) ---
+
+        async function fetchTasks() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/tasks`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    tasks = await response.json();
+                    renderTasks();
+                } else if (response.status === 401) {
+                    // Token expired or invalid
+                    showNotification("Session expired. Please log in again.", "bg-red-500", "fas fa-exclamation-triangle");
+                    localStorage.removeItem('token');
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 1500);
+                } else {
+                    const errorData = await response.json();
+                    showNotification(`Failed to fetch tasks: ${errorData.message}`, "bg-red-500", "fas fa-exclamation-circle");
+                }
+            } catch (error) {
+                console.error("Error fetching tasks:", error);
+                showNotification("Network error. Could not connect to server.", "bg-red-500", "fas fa-exclamation-circle");
+            }
+        }
+
+        async function addTask(taskData) {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/tasks`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(taskData)
+                });
+
+                if (response.ok) {
+                    const newTask = await response.json();
+                    tasks.push(newTask); // Add new task to local array
+                    renderTasks();
+                    showNotification("Task added successfully!", "bg-green-500", "fas fa-check-circle");
+                    taskForm.reset(); // Reset form after successful submission
+                    // Reset duration to default values for new task form
+                    taskDurationRange.value = 30;
+                    taskDurationNumber.value = 30;
+                    // Ensure floating labels reset for text/textarea
+                    document.getElementById("task-name").classList.remove('not(:placeholder-shown)');
+                    document.getElementById("task-description").classList.remove('not(:placeholder-shown)');
+
+                } else {
+                    const errorData = await response.json();
+                    showNotification(`Failed to add task: ${errorData.message}`, "bg-red-500", "fas fa-exclamation-circle");
+                }
+            } catch (error) {
+                console.error("Error adding task:", error);
+                showNotification("Network error. Could not add task.", "bg-red-500", "fas fa-exclamation-circle");
+            }
+        }
+
+        async function updateTask(id, taskData) {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/tasks/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(taskData)
+                });
+
+                if (response.ok) {
+                    const updatedTask = await response.json();
+                    // Find and update the task in the local array
+                    const index = tasks.findIndex(task => task._id === id);
+                    if (index !== -1) {
+                        tasks[index] = updatedTask;
+                    }
+                    renderTasks();
+                    showNotification("Task updated successfully!", "bg-green-500", "fas fa-check-circle");
+                    editTaskModal.classList.add('hidden'); // Close modal
+                } else {
+                    const errorData = await response.json();
+                    showNotification(`Failed to update task: ${errorData.message}`, "bg-red-500", "fas fa-exclamation-circle");
+                }
+            } catch (error) {
+                console.error("Error updating task:", error);
+                showNotification("Network error. Could not update task.", "bg-red-500", "fas fa-exclamation-circle");
+            }
+        }
+
+        async function deleteTask(id) {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            // --- IMPORTANT: Replaced confirm() with console.log as per instructions.
+            // In a real application, implement a custom modal for user confirmation. ---
+            console.log(`User confirmed delete for task ID: ${id}. (A custom confirmation modal would appear here)`);
+            // if (!confirm("Are you sure you want to delete this task?")) {
+            //   return;
+            // }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/tasks/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    // Remove the task from the local array
+                    tasks = tasks.filter(task => task._id !== id);
+                    renderTasks();
+                    showNotification("Task deleted successfully!", "bg-green-500", "fas fa-check-circle");
+                } else {
+                    const errorData = await response.json();
+                    showNotification(`Failed to delete task: ${errorData.message}`, "bg-red-500", "fas fa-exclamation-circle");
+                }
+            } catch (error) {
+                console.error("Error deleting task:", error);
+                showNotification("Network error. Could not delete task.", "bg-red-500", "fas fa-exclamation-circle");
+            }
+        }
+
+        // --- Render Tasks (Modified for new HTML structure) ---
+
+        function renderTasks() {
+            taskListTable.innerHTML = ''; // Clear desktop table
+            taskGridMobile.innerHTML = ''; // Clear mobile grid
+
+            noTasksMessageDesktopTable.classList.add('hidden');
+            noTasksMessageMobileGrid.classList.add('hidden');
+
+            // Apply filters
+            let filteredTasks = [...tasks];
+            const selectedCategory = filterCategory.value;
+            const selectedStatus = filterStatus.value;
+
+            if (selectedCategory !== 'all') {
+                filteredTasks = filteredTasks.filter(task => task.category === selectedCategory);
+            }
+            if (selectedStatus !== 'all') {
+                filteredTasks = filteredTasks.filter(task => task.status === selectedStatus);
+            }
+
+            // Apply sorting
+            const sortBy = sortSelect.value;
+            filteredTasks.sort((a, b) => {
+                if (sortBy === 'dueDate') {
+                    // Combine date and time for accurate sorting
+                    const dateTimeA = new Date(`${a.dueDate}T${a.dueTime}`);
+                    const dateTimeB = new Date(`${b.dueDate}T${b.dueTime}`);
+                    return dateTimeA - dateTimeB;
+                } else if (sortBy === 'priority') {
+                    const priorityOrder = { 'high': 3, 'medium': 2, 'low': 1 };
+                    return priorityOrder[b.priority] - priorityOrder[a.priority]; // High to low
+                } else if (sortBy === 'name') {
+                    return a.name.localeCompare(b.name);
+                }
+                return 0;
+            });
+
+            if (filteredTasks.length === 0) {
+                noTasksMessageDesktopTable.textContent = "No tasks match your current filters.";
+                noTasksMessageDesktopTable.classList.remove('hidden');
+                noTasksMessageMobileGrid.textContent = "No tasks match your current filters.";
+                noTasksMessageMobileGrid.classList.remove('hidden');
+                return;
+            }
+
+            // Render for Desktop Table View
+            filteredTasks.forEach(task => {
+                const row = document.createElement("tr");
+                row.className = `hover:bg-var(--color-primary) transition-colors duration-200 task-row border-b border-var(--neumorphism-dark)`; // Add subtle border
+
+                // Determine priority color class
+                let priorityColorClass = '';
+                if (task.priority === 'high') priorityColorClass = 'text-red-500';
+                else if (task.priority === 'medium') priorityColorClass = 'text-yellow-500';
+                else priorityColorClass = 'text-green-500';
+
+
+                // Format date and time for display
+                const dueDateObj = new Date(task.dueDate);
+                const formattedDate = dueDateObj.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                const [hours, minutes] = task.dueTime.split(':');
+                const formattedTime = new Date(0, 0, 0, parseInt(hours), parseInt(minutes)).toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                });
+
+                // Determine status badge class
+                let statusBadgeClass = 'status-pending'; // Default or a new one
+                if (task.status === 'in-progress') statusBadgeClass = 'status-in-progress'; // If backend sends 'in-progress'
+                else if (task.status === 'upcoming') statusBadgeClass = 'status-upcoming'; // If backend sends 'upcoming'
+                else if (task.status === 'completed') statusBadgeClass = 'status-completed';
+                else if (task.status === 'overdue') statusBadgeClass = 'status-overdue';
+                else statusBadgeClass = 'status-pending'; // For 'pending' or anything else
+
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">${task.name}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm opacity-80">${formattedDate} at ${formattedTime}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        <span class="status-badge ${statusBadgeClass}">${task.status.replace(/(\b[a-z])/g, char => char.toUpperCase())}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <div class="flex space-x-3 justify-end">
+                            <button data-id="${task._id}" data-status="${task.status}"
+                                    class="toggle-status-btn p-2 rounded-full text-sm hover:opacity-80 transition-all duration-200
+                                    ${task.status === 'completed' ? 'bg-green-600 text-white' : 'bg-var(--color-accent) text-white'}"
+                                    title="${task.status === 'completed' ? 'Mark as Pending' : 'Mark as Complete'}">
+                                <i class="fas ${task.status === 'completed' ? 'fa-undo' : 'fa-check'}"></i>
+                            </button>
+                            <button data-id="${task._id}"
+                                    class="edit-task-btn p-2 rounded-full bg-blue-500 text-white text-sm hover:opacity-80 transition-all duration-200"
+                                    title="Edit Task">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button data-id="${task._id}"
+                                    class="delete-task-btn p-2 rounded-full bg-red-500 text-white text-sm hover:opacity-80 transition-all duration-200"
+                                    title="Delete Task">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                taskListTable.appendChild(row);
+            });
+
+            // Render for Mobile Grid View
+            filteredTasks.forEach(task => {
+                const taskCard = document.createElement("div");
+                taskCard.className = `task-card neumorphic-card p-4 mb-4`;
+
+                let statusBadgeClass = 'status-pending';
+                if (task.status === 'in-progress') statusBadgeClass = 'status-in-progress';
+                else if (task.status === 'upcoming') statusBadgeClass = 'status-upcoming';
+                else if (task.status === 'completed') statusBadgeClass = 'status-completed';
+                else if (task.status === 'overdue') statusBadgeClass = 'status-overdue';
+                else statusBadgeClass = 'status-pending';
+
+                 const dueDateObj = new Date(task.dueDate);
+                const formattedDate = dueDateObj.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                const [hours, minutes] = task.dueTime.split(':');
+                const formattedTime = new Date(0, 0, 0, parseInt(hours), parseInt(minutes)).toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                });
+
+
+                taskCard.innerHTML = `
+                    <h3 class="font-semibold text-lg text-var(--color-text)">${task.name}</h3>
+                    <p class="text-sm opacity-80 mb-2">${task.description || 'No description'}</p>
+                    <div class="text-sm text-var(--color-text) opacity-70 mt-1 flex flex-col gap-1">
+                        <span><i class="fas fa-calendar-alt mr-1"></i> ${formattedDate} at ${formattedTime}</span>
+                        <span><i class="fas fa-flag mr-1"></i> ${task.priority.charAt(0).toUpperCase() + task.priority.slice(1)} Priority</span>
+                        <span><i class="fas fa-folder-open mr-1"></i> ${task.category.charAt(0).toUpperCase() + task.category.slice(1)}</span>
+                        <span><i class="fas fa-hourglass-half mr-1"></i> ${task.duration} min</span>
+                    </div>
+                    <span class="status-badge ${statusBadgeClass} mt-3 mb-4 inline-block">${task.status.replace(/(\b[a-z])/g, char => char.toUpperCase())}</span>
+                    <div class="flex space-x-3 mt-3">
+                        <button data-id="${task._id}" data-status="${task.status}"
+                                class="toggle-status-btn p-2 rounded-full bg-var(--color-accent) text-white text-sm hover:opacity-80 transition-all duration-200"
+                                title="${task.status === 'completed' ? 'Mark as Pending' : 'Mark as Complete'}">
+                            <i class="fas ${task.status === 'completed' ? 'fa-undo' : 'fa-check'}"></i>
+                        </button>
+                        <button data-id="${task._id}"
+                                class="edit-task-btn p-2 rounded-full bg-blue-500 text-white text-sm hover:opacity-80 transition-all duration-200"
+                                title="Edit Task">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button data-id="${task._id}"
+                                class="delete-task-btn p-2 rounded-full bg-red-500 text-white text-sm hover:opacity-80 transition-all duration-200"
+                                title="Delete Task">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                `;
+                taskGridMobile.appendChild(taskCard);
+            });
+        }
+
+
+        // --- Event Listeners ---
+
+        // Authentication Buttons
+        logoutButton.addEventListener('click', () => {
+            localStorage.removeItem('token');
+            showNotification("Logged out successfully!", "bg-green-500", "fas fa-check-circle");
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 1000);
+        });
+        logoutButtonMobile.addEventListener('click', () => { // For mobile drawer logout
+            localStorage.removeItem('token');
+            showNotification("Logged out successfully!", "bg-green-500", "fas fa-check-circle");
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 1000);
         });
 
-        if (filteredTasks.length === 0) {
-            noTasksMessage.textContent = "No tasks match your current filters.";
-            noTasksMessage.classList.remove('hidden');
-            return;
-        }
 
+        taskForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
 
-        filteredTasks.forEach(task => {
-          const taskItem = document.createElement("div");
-          taskItem.className = `bg-gray-50 p-4 rounded-lg shadow-sm border-l-4
-            ${task.priority === 'high' ? 'border-red-500' :
-              task.priority === 'medium' ? 'border-yellow-500' :
-              'border-green-500'}
-            flex items-center justify-between transition-all duration-300 ease-in-out
-            ${task.status === 'completed' ? 'opacity-70 line-through' : ''}`;
+            const name = document.getElementById("task-name").value;
+            const description = document.getElementById("task-description").value;
+            const dueDate = document.getElementById("task-date").value;
+            const dueTime = document.getElementById("task-time").value;
+            const priority = document.querySelector('input[name="priority"]:checked').value;
+            const category = document.getElementById("task-category").value;
+            const duration = parseInt(document.getElementById("task-duration-number").value, 10);
 
-          // Format date and time for display
-          const dueDateObj = new Date(task.dueDate);
-          const formattedDate = dueDateObj.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-          });
-          const [hours, minutes] = task.dueTime.split(':');
-          const formattedTime = new Date(0, 0, 0, hours, minutes).toLocaleTimeString('en-US', {
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: true
-          });
-
-
-          taskItem.innerHTML = `
-            <div class="flex-1">
-              <h3 class="text-lg font-semibold text-gray-800">${task.name}</h3>
-              <p class="text-sm text-gray-600">${task.description || 'No description'}</p>
-              <div class="text-sm text-gray-500 mt-1 flex flex-wrap gap-x-3">
-                <span><i class="ri-calendar-line"></i> ${formattedDate}</span>
-                <span><i class="ri-time-line"></i> ${formattedTime}</span>
-                <span><i class="ri-flag-line"></i> ${task.priority.charAt(0).toUpperCase() + task.priority.slice(1)} Priority</span>
-                <span><i class="ri-folder-open-line"></i> ${task.category.charAt(0).toUpperCase() + task.category.slice(1)}</span>
-                <span><i class="ri-hourglass-line"></i> ${task.duration} min</span>
-              </div>
-            </div>
-            <div class="flex space-x-2 ml-4">
-              <button data-id="${task._id}" data-status="${task.status}"
-                      class="toggle-status-btn p-2 rounded-full
-                      ${task.status === 'completed' ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}
-                      transition duration-200 ease-in-out"
-                      title="${task.status === 'completed' ? 'Mark as Pending' : 'Mark as Complete'}">
-                <i class="ri-check-line text-lg"></i>
-              </button>
-              <button data-id="${task._id}"
-                      class="edit-task-btn p-2 rounded-full bg-blue-100 text-blue-700 hover:bg-blue-200 transition duration-200 ease-in-out"
-                      title="Edit Task">
-                <i class="ri-edit-line text-lg"></i>
-              </button>
-              <button data-id="${task._id}"
-                      class="delete-task-btn p-2 rounded-full bg-red-100 text-red-700 hover:bg-red-200 transition duration-200 ease-in-out"
-                      title="Delete Task">
-                <i class="ri-delete-bin-line text-lg"></i>
-              </button>
-            </div>
-          `;
-          taskList.appendChild(taskItem);
+            const taskData = { name, description, dueDate, dueTime, priority, category, duration };
+            await addTask(taskData);
         });
-      }
 
-      // --- Event Listeners ---
+        // Event delegation for task list actions
+        document.addEventListener('click', async (e) => {
+            // Toggle Status
+            if (e.target.closest('.toggle-status-btn')) {
+                const btn = e.target.closest('.toggle-status-btn');
+                const taskId = btn.dataset.id;
+                const currentStatus = btn.dataset.status;
+                const newStatus = currentStatus === 'completed' ? 'pending' : 'completed';
+                await updateTask(taskId, { status: newStatus });
+                simulateLottie(btn, 'start'); // Use 'start' for status toggle visual feedback
+            }
 
-      logoutButton.addEventListener('click', () => {
-        localStorage.removeItem('token');
-        showNotification("Logged out successfully!", "bg-green-500", "ri-check-line");
-        setTimeout(() => {
-          window.location.href = 'login.html';
-        }, 1000);
-      });
+            // Edit Task
+            if (e.target.closest('.edit-task-btn')) {
+                const btn = e.target.closest('.edit-task-btn');
+                const taskId = btn.dataset.id;
+                const taskToEdit = tasks.find(task => task._id === taskId);
+                simulateLottie(btn, 'edit');
 
-      taskForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
+                if (taskToEdit) {
+                    document.getElementById("edit-task-id").value = taskToEdit._id;
+                    document.getElementById("edit-task-name").value = taskToEdit.name;
+                    document.getElementById("edit-task-description").value = taskToEdit.description;
+                    document.getElementById("edit-task-date").value = taskToEdit.dueDate.split('T')[0]; // Ensure YYYY-MM-DD
+                    document.getElementById("edit-task-time").value = taskToEdit.dueTime;
+                    // Set priority radio button
+                    const editPriorityRadios = document.querySelectorAll('input[name="edit-priority"]');
+                    editPriorityRadios.forEach(radio => {
+                        if (radio.value === taskToEdit.priority) {
+                            radio.checked = true;
+                        } else {
+                            radio.checked = false; // Ensure others are unchecked
+                        }
+                    });
 
-        const name = document.getElementById("task-name").value;
-        const description = document.getElementById("task-description").value;
-        const dueDate = document.getElementById("task-date").value;
-        const dueTime = document.getElementById("task-time").value;
-        const priority = document.querySelector('input[name="priority"]:checked').value;
-        const category = document.getElementById("task-category").value;
-        const duration = parseInt(document.getElementById("task-duration-number").value, 10);
+                    document.getElementById("edit-task-category").value = taskToEdit.category;
+                    document.getElementById("edit-task-status").value = taskToEdit.status;
+                    document.getElementById("edit-task-duration-range").value = taskToEdit.duration;
+                    document.getElementById("edit-task-duration-number").value = taskToEdit.duration;
 
-        const taskData = { name, description, dueDate, dueTime, priority, category, duration };
-        await addTask(taskData);
-      });
+                    // Ensure floating labels are correct for edit modal inputs
+                    const editInputs = editTaskModal.querySelectorAll('.neumorphic-input');
+                    editInputs.forEach(input => {
+                        if (input.value !== '' || input.type === 'date' || input.type === 'time' || input.tagName === 'SELECT') {
+                             // For inputs that don't auto-fill, if they have a value, ensure label is up
+                             if (input.value !== '') {
+                                 input.classList.remove('not(:placeholder-shown)'); // Remove if it was there
+                                 input.classList.add('not(:placeholder-shown)'); // Add to trigger label styling
+                             }
+                            input.parentNode.classList.add('is-focused');
+                        } else {
+                            input.parentNode.classList.remove('is-focused');
+                        }
+                    });
 
-      taskList.addEventListener('click', async (e) => {
-        // Toggle Status
-        if (e.target.closest('.toggle-status-btn')) {
-          const btn = e.target.closest('.toggle-status-btn');
-          const taskId = btn.dataset.id;
-          const currentStatus = btn.dataset.status;
-          const newStatus = currentStatus === 'completed' ? 'pending' : 'completed';
-          await updateTask(taskId, { status: newStatus });
+                    editTaskModal.classList.remove('hidden');
+                }
+            }
+
+            // Delete Task
+            if (e.target.closest('.delete-task-btn')) {
+                const btn = e.target.closest('.delete-task-btn');
+                const taskId = btn.dataset.id;
+                simulateLottie(btn, 'delete');
+                await deleteTask(taskId);
+            }
+        });
+
+        closeEditModalButton.addEventListener('click', () => {
+            editTaskModal.classList.add('hidden');
+        });
+
+        editTaskForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const taskId = document.getElementById("edit-task-id").value;
+            const name = document.getElementById("edit-task-name").value;
+            const description = document.getElementById("edit-task-description").value;
+            const dueDate = document.getElementById("edit-task-date").value;
+            const dueTime = document.getElementById("edit-task-time").value;
+            const priority = document.querySelector('input[name="edit-priority"]:checked').value;
+            const category = document.getElementById("edit-task-category").value;
+            const status = document.getElementById("edit-task-status").value;
+            const duration = parseInt(document.getElementById("edit-task-duration-number").value, 10);
+
+            const updatedData = { name, description, dueDate, dueTime, priority, category, status, duration };
+            await updateTask(taskId, updatedData);
+        });
+
+        // Sync range and number inputs for duration
+        taskDurationRange.addEventListener('input', () => {
+            taskDurationNumber.value = taskDurationRange.value;
+        });
+        taskDurationNumber.addEventListener('input', () => {
+            taskDurationRange.value = taskDurationNumber.value;
+        });
+
+        editTaskDurationRange.addEventListener('input', () => {
+            editTaskDurationNumber.value = editTaskDurationRange.value;
+        });
+        editTaskDurationNumber.addEventListener('input', () => {
+            editTaskDurationRange.value = editTaskDurationRange.value;
+        });
+
+        // Filter and Sort Event Listeners
+        filterCategory.addEventListener('change', renderTasks);
+        filterStatus.addEventListener('change', renderTasks);
+        sortSelect.addEventListener('change', renderTasks);
+
+
+        // --- Initial Load ---
+        document.addEventListener("DOMContentLoaded", () => {
+            // Set default date to today for new task form
+            document.getElementById("task-date").valueAsDate = new Date();
+            document.getElementById("task-time").value = "17:00"; // Default time
+
+            // Initialize all neumorphic input labels
+            neumorphicInputs.forEach(input => {
+                if (input.value !== '' || input.type === 'date' || input.type === 'time' || input.tagName === 'SELECT') {
+                    // For inputs that don't auto-fill, if they have a value, ensure label is up
+                    if (input.value !== '') {
+                        input.classList.add('not(:placeholder-shown)');
+                    }
+                    input.parentNode.classList.add('is-focused');
+                }
+            });
+
+            checkAuthentication(); // Check authentication state on page load
+        });
+
+        // 1. Initial Theme Setting
+        setTimeBasedTheme();
+        setInterval(setTimeBasedTheme, 3600000); // Check every hour
+
+        // 2. Loading Overlay Logic
+        window.addEventListener('load', async () => {
+            // Type quote of the day
+            await typeText(quoteOfDayElement, quotesOfTheDay[Math.floor(Math.random() * quotesOfTheDay.length)], 40);
+
+            // Animate progress ring
+            if (progressRingCircle) {
+                animateProgressRing(progressRingCircle, 2000); // 2-second animation
+            }
+
+            // Fade out loading overlay after a delay
+            setTimeout(() => {
+                loadingOverlay.classList.add('fade-out');
+                // Optional: Remove from DOM after transition
+                loadingOverlay.addEventListener('transitionend', () => loadingOverlay.remove(), { once: true });
+
+                // Start page load fade-in effect for main content
+                document.querySelectorAll('.page-transition-element').forEach(el => {
+                    el.style.animationPlayState = 'running';
+                });
+
+                // Trigger glow pulse for hero button after load
+                if (startSchedulingBtn && isFunMode) {
+                    startSchedulingBtn.classList.add('glow-pulse');
+                }
+
+            }, 3000); // Show loading for 3 seconds
+        });
+
+        // 3. Button Interactions (Ripple, Magnetic)
+        allButtons.forEach(button => {
+            button.addEventListener('click', addRippleEffect);
+            button.addEventListener('mousemove', handleMagneticHover);
+            button.addEventListener('mouseleave', resetMagneticHover);
+        });
+
+        // 4. Neumorphism Floating Input Labels
+        // Already handled in DOMContentLoaded, but add listener for dynamic input changes
+        neumorphicInputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                input.parentNode.classList.add('is-focused');
+            });
+            input.addEventListener('blur', () => {
+                if (input.value === '') {
+                    input.parentNode.classList.remove('is-focused');
+                }
+            });
+             input.addEventListener('input', () => { // Ensure labels update on input for text fields
+                if (input.value !== '') {
+                    input.classList.add('not(:placeholder-shown)');
+                } else {
+                    input.classList.remove('not(:placeholder-shown)');
+                }
+            });
+        });
+
+
+        // 5. Notification Bell (for new design's bell, not backend messages)
+        if (notificationBell) {
+            notificationBell.addEventListener('click', () => {
+                notificationDropdown.classList.toggle('hidden');
+                if (!notificationDropdown.classList.contains('hidden')) {
+                    notificationBell.classList.remove('bell-ring-animation'); // Stop ringing when opened
+                    notificationDot.classList.add('hidden'); // Hide dot when opened
+                }
+            });
+
+            // Simulate new notification (for the bell itself)
+            setTimeout(() => {
+                if (notificationDot && isFunMode) {
+                    notificationDot.classList.remove('hidden');
+                    notificationBell.classList.add('bell-ring-animation');
+                    notificationBell.style.animation = 'bellRing 0.8s ease-in-out 3'; // Ring 3 times
+                    notificationBell.addEventListener('animationend', () => {
+                        notificationBell.style.animation = ''; // Reset animation property
+                    }, { once: true });
+                }
+            }, 8000); // After 8 seconds (after initial load), simulate new notification
         }
 
-        // Edit Task
-        if (e.target.closest('.edit-task-btn')) {
-          const btn = e.target.closest('.edit-task-btn');
-          const taskId = btn.dataset.id;
-          const taskToEdit = tasks.find(task => task._id === taskId);
+        // Close dropdown if clicked outside
+        document.addEventListener('click', (event) => {
+            if (notificationBell && notificationDropdown && !notificationBell.contains(event.target) && !notificationDropdown.contains(event.target)) {
+                notificationDropdown.classList.add('hidden');
+            }
+            // Also close user dropdown if clicked outside
+            const userMenuButton = document.querySelector('.group > button[aria-label="User menu"]');
+            const userDropdown = document.querySelector('.group-hover\\:block'); // This selector is tricky, might need ID
+            if (userMenuButton && userDropdown && !userMenuButton.contains(event.target) && !userDropdown.contains(event.target)) {
+                 userDropdown.classList.add('hidden'); // Assuming hidden class works for this
+            }
+        });
 
-          if (taskToEdit) {
-            document.getElementById("edit-task-id").value = taskToEdit._id;
-            document.getElementById("edit-task-name").value = taskToEdit.name;
-            document.getElementById("edit-task-description").value = taskToEdit.description;
-            document.getElementById("edit-task-date").value = taskToEdit.dueDate.split('T')[0]; // Ensure YYYY-MM-DD
-            document.getElementById("edit-task-time").value = taskToEdit.dueTime;
-            document.querySelector(`input[name="edit-priority"][value="${taskToEdit.priority}"]`).checked = true;
-            document.getElementById("edit-task-category").value = taskToEdit.category;
-            document.getElementById("edit-task-status").value = taskToEdit.status;
-            document.getElementById("edit-task-duration-range").value = taskToEdit.duration;
-            document.getElementById("edit-task-duration-number").value = taskToEdit.duration;
 
-            editTaskModal.classList.remove('hidden');
-          }
+        // 6. Footer Time Quotes
+        cycleTimeQuote();
+        setInterval(cycleTimeQuote, 10000); // Change quote every 10 seconds
+
+        // 7. Parallax Effect
+        document.addEventListener('mousemove', handleParallax);
+
+        // 8. High Contrast Toggle
+        if (highContrastToggle) {
+            highContrastToggle.addEventListener('click', () => {
+                body.classList.toggle('high-contrast');
+            });
         }
 
-        // Delete Task
-        if (e.target.closest('.delete-task-btn')) {
-          const btn = e.target.closest('.delete-task-btn');
-          const taskId = btn.dataset.id;
-          await deleteTask(taskId);
+        // 9. Focus/Fun Mode Toggle
+        if (focusFunToggle) {
+            focusFunToggle.addEventListener('click', () => {
+                isFunMode = !isFunMode;
+                if (isFunMode) {
+                    body.classList.remove('focus-mode');
+                    focusFunToggle.innerHTML = '<i class="fas fa-lightbulb text-lg"></i>'; // Fun mode icon
+                } else {
+                    body.classList.add('focus-mode');
+                    focusFunToggle.innerHTML = '<i class="fas fa-minus-circle text-lg"></i>'; // Focus mode icon
+                }
+                // Re-apply/remove glow pulse from hero button based on mode
+                if (startSchedulingBtn) {
+                    if (isFunMode) {
+                        startSchedulingBtn.classList.add('glow-pulse');
+                    } else {
+                        startSchedulingBtn.classList.remove('glow-pulse');
+                    }
+                }
+                // Re-trigger/remove bell ring simulation
+                if (notificationBell) {
+                    if (isFunMode && notificationDot.classList.contains('hidden')) { // Only if no active notification
+                        notificationDot.classList.remove('hidden');
+                        notificationBell.classList.add('bell-ring-animation');
+                        notificationBell.style.animation = 'bellRing 0.8s ease-in-out 3'; // Ring 3 times
+                        notificationBell.addEventListener('animationend', () => {
+                            notificationBell.style.animation = ''; // Reset animation property
+                        }, { once: true });
+                    } else if (!isFunMode) {
+                        notificationDot.classList.add('hidden');
+                        notificationBell.classList.remove('bell-ring-animation');
+                        notificationBell.style.animation = '';
+                    }
+                }
+            });
         }
-      });
 
-      closeEditModalButton.addEventListener('click', () => {
-        editTaskModal.classList.add('hidden');
-      });
+        // 10. Mobile Navigation Drawer
+        if (mobileMenuButton) {
+            mobileMenuButton.addEventListener('click', () => {
+                mobileNavDrawer.classList.remove('translate-x-full');
+            });
+        }
+        if (closeDrawerButton) {
+            closeDrawerButton.addEventListener('click', () => {
+                mobileNavDrawer.classList.add('translate-x-full');
+            });
+        }
+        // Close drawer on link click
+        mobileNavDrawer.querySelectorAll('nav a').forEach(link => { // Select links within nav
+            link.addEventListener('click', () => {
+                mobileNavDrawer.classList.add('translate-x-full');
+            });
+        });
 
-      editTaskForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
+        // Additional CSS for animations triggered by JS (for Fun Mode)
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes animate-spin-once {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+            .animate-spin-once {
+                animation: animate-spin-once 0.5s ease-out forwards;
+            }
+            .animate-bounce {
+                animation: bounce 0.6s ease-in-out;
+            }
+            @keyframes bounce {
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(-10px); }
+            }
+            .bell-ring-animation {
+                animation: bellRing 0.8s ease-in-out infinite; /* Continuous ring for demonstration */
+            }
 
-        const taskId = document.getElementById("edit-task-id").value;
-        const name = document.getElementById("edit-task-name").value;
-        const description = document.getElementById("edit-task-description").value;
-        const dueDate = document.getElementById("edit-task-date").value;
-        const dueTime = document.getElementById("edit-task-time").value;
-        const priority = document.querySelector('input[name="edit-priority"]:checked').value;
-        const category = document.getElementById("edit-task-category").value;
-        const status = document.getElementById("edit-task-status").value;
-        const duration = parseInt(document.getElementById("edit-task-duration-number").value, 10);
+            /* SVG Hero animation keyframes */
+            @keyframes morph1 {
+                0% { d: path("M0 0 L1000 0"); }
+                50% { d: path("M0 50 L1000 450"); }
+                100% { d: path("M0 0 L1000 0"); }
+            }
+            @keyframes morph2 {
+                0% { d: path("M0 100 L1000 100"); }
+                50% { d: path("M0 150 L1000 50"); }
+                100% { d: path("M0 100 L1000 100"); }
+            }
+            @keyframes morph3 {
+                0% { d: path("M0 200 L1000 200"); }
+                50% { d: path("M0 250 L1000 150"); }
+                100% { d: path("M0 200 L1000 200"); }
+            }
+            @keyframes morph4 {
+                0% { d: path("M0 300 L1000 300"); }
+                50% { d: path("M0 350 L1000 250"); }
+                100% { d: path("M0 300 L1000 300"); }
+            }
+            @keyframes morph5 {
+                0% { d: path("M0 400 L1000 400"); }
+                50% { d: path("M0 450 L1000 350"); }
+                100% { d: path("M0 400 L1000 400"); }
+            }
+            @keyframes morph6 {
+                0% { d: path("M0 500 L1000 500"); }
+                50% { d: path("M0 450 L1000 50"); }
+                100% { d: path("M0 500 L1000 500"); }
+            }
+        `;
+        document.head.appendChild(style);
 
-        const updatedData = { name, description, dueDate, dueTime, priority, category, status, duration };
-        await updateTask(taskId, updatedData);
-      });
 
-      // Sync range and number inputs for duration
-      taskDurationRange.addEventListener('input', () => {
-        taskDurationNumber.value = taskDurationRange.value;
-      });
-      taskDurationNumber.addEventListener('input', () => {
-        taskDurationRange.value = taskDurationNumber.value;
-      });
-
-      editTaskDurationRange.addEventListener('input', () => {
-        editTaskDurationNumber.value = editTaskDurationRange.value;
-      });
-      editTaskDurationNumber.addEventListener('input', () => {
-        editTaskDurationRange.value = editTaskDurationNumber.value;
-      });
-
-      // Filter and Sort Event Listeners
-      filterCategory.addEventListener('change', renderTasks);
-      filterStatus.addEventListener('change', renderTasks);
-      sortSelect.addEventListener('change', renderTasks);
-
-
-      // --- Initial Load ---
-      document.addEventListener("DOMContentLoaded", () => {
-        // Set default date to today for new task form
-        document.getElementById("task-date").valueAsDate = new Date();
-        document.getElementById("task-time").value = "17:00"; // Default time
-
-        checkAuthentication(); // Check authentication state on page load
-      });
     </script>
-  </body>
+</body>
 </html>
